@@ -1,7 +1,10 @@
+import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
 import { BoothCard } from "@/components/ui/boothcard";
+
 export default function ClassBooth() {
   return (
     <div>
+      <SideMenu />
       <h1>クラス展示</h1>
       {/* スワイプして学年を切り替えれるスライドショーみたいな感じにする */}
       <div>
@@ -11,6 +14,21 @@ export default function ClassBooth() {
           description="クラスの説明"
           imageUrl=""
           imageAlt=""
+          congestionStatus="empty"
+        />
+        <BoothCard
+          name="1-1"
+          description="クラスの説明"
+          imageUrl=""
+          imageAlt=""
+          congestionStatus="clouded"
+        />
+        <BoothCard
+          name="1-1"
+          description="クラスの説明"
+          imageUrl=""
+          imageAlt=""
+          congestionStatus="veryClouded"
         />
       </div>
     </div>

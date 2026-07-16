@@ -20,7 +20,7 @@ export default function SideMenu() {
           <Button
             variant="outline"
             size="icon-lg"
-            className="absolute rounded-full top-6 right-4 bg-black/80"
+            className="absolute rounded-full top-13 right-4 bg-black/80 w-10 h-10"
           />
         }
       >
