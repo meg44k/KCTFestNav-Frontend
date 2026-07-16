@@ -1,3 +1,5 @@
+"use client";
+
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +22,7 @@ export default function SideMenu() {
           <Button
             variant="outline"
             size="icon-lg"
-            className="absolute rounded-full top-13 right-4 bg-black/80 w-10 h-10"
+            className="absolute rounded-full top-13 right-4 bg-black/80 w-10 h-10 z-50"
           />
         }
       >
