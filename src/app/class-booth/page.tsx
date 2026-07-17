@@ -1,5 +1,8 @@
+"use client";
+import { useEffect, useState } from "react";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
 import { BoothCard } from "@/components/ui/boothcard";
+import type { CarouselApi } from "@/components/ui/carousel";
 import {
   Carousel,
   CarouselContent,
@@ -193,17 +196,46 @@ export default function ClassBooth() {
   for (let i = 0; i < booths.length; i += chunkSize) {
     chunks.push(booths.slice(i, i + chunkSize));
   }
+
+  const [carouselApi, setCarouselApi] = useState<CarouselApi>();
+  const [currentCarouselPage, setCurrentCarouselPage] = useState(0);
+
+  // carouselからページ番号を受け取る
+  useEffect(() => {
+    if (!carouselApi) return;
+    carouselApi.on("select", () => {
+      setCurrentCarouselPage(carouselApi.selectedScrollSnap());
+    });
+  }, [carouselApi]);
+
   return (
     <div>
       <SideMenu />
-      <h1 className="font-extrabold text-4xl">クラス展示</h1>
+      <h1 className="flex justify-center font-extrabold text-4xl">
+        クラス展示
+      </h1>
 
-      <Carousel orientation="horizontal" className="w-full">
+      <div className="flex justify-center gap-4 text-2xl font-bold mb-2 mt-6">
+        {[1, 2, 3, 4, 5].map((year, i) => (
+          <span
+            key={year}
+            className={
+              currentCarouselPage === i ? "text-white" : "text-gray-500"
+            }
+          >
+            {year}年
+          </span>
+        ))}
+      </div>
+      <Carousel
+        setApi={setCarouselApi}
+        orientation="horizontal"
+        className="w-full"
+      >
         <CarouselContent className="h-full">
-          {chunks.map((chunk, index) => (
-            <CarouselItem key={index}>
-              <div className="flex flex-col gap-4 items-center">
-                <span className="text-2xl font-bold">{index + 1}年生</span>
+          {chunks.map((chunk) => (
+            <CarouselItem key={chunk[0].name}>
+              <div className="flex flex-col gap-3 items-center">
                 {chunk.map((booth) => (
                   <BoothCard
                     key={booth.name}
