@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { NaviButton } from "./naviButton";
 
 function BoothCard({
   name,
@@ -38,17 +38,18 @@ function BoothCard({
         </span>
       </div>
       <div className="flex flex-row bg-white rounded-sm h-full w-full shadow-2xl p-2">
-        <div className="flex flex-col mr-5">
-          <span className="text-black">{name}</span>
-          <span className="text-black text-sm">{description}</span>
-        </div>
-        <div className="relative aspect-square h-full bg-gray-300 overflow-hidden ml-auto">
+        <div className="relative aspect-square h-full bg-gray-300 overflow-hidden mr-2 rounded-sm">
           <Image
             alt={imageAlt}
             src={imageUrl}
             fill
             className="object-cover"
           ></Image>
+        </div>
+        <div className="flex flex-col mr-auto">
+          <span className="text-black">{name}</span>
+          <span className="text-black text-sm">{description}</span>
+          <NaviButton className="absolute bottom-3 right-3" />
         </div>
       </div>
     </div>
