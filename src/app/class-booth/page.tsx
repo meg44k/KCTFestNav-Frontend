@@ -244,6 +244,7 @@ export default function ClassBooth() {
                     imageUrl={booth.imageUrl}
                     imageAlt={booth.imageAlt}
                     congestionStatus={booth.congestionStatus}
+
                   />
                 ))}
               </div>

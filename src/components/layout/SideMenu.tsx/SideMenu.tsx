@@ -1,10 +1,9 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { Map as MapIcon, Menu, MicVocal, Store, Utensils } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
@@ -28,7 +27,7 @@ export default function SideMenu() {
       >
         <Menu />
       </DrawerTrigger>
-      <DrawerContent className="[--drawer-inset:10px] w-50 bg-amber-400/80 after:bg-amber-400/80 border-amber-300 [&_[data-slot=drawer-swipe-handle]]:after:bg-black/40">
+      <DrawerContent className="[--drawer-inset:10px] max-w-55 bg-amber-400/80 after:bg-amber-400/80 border-amber-300 [&_[data-slot=drawer-swipe-handle]]:after:bg-black/40">
         <DrawerHeader>
           <DrawerTitle className="pt-2 text-black">高専祭 2026</DrawerTitle>
           <DrawerDescription className="text-wrap">
@@ -37,9 +36,30 @@ export default function SideMenu() {
         </DrawerHeader>
         <div className="p-4">
           <Marker variant="border" className="border-black" />
-          <DrawerLabel content={"クラス展示"} href="/class-booth" />
-          <DrawerLabel content={"クラブバザー"} href="/bazaar" />
-          <DrawerLabel content={"ステージイベント"} href="stage-event" />
+          <DrawerLabel href="/main">
+            <div className="flex items-center gap-1 ">
+              <MapIcon size={20} strokeWidth={1.5} />
+              <span className="-translate-y-0.5">マップ</span>
+            </div>
+          </DrawerLabel>
+          <DrawerLabel href="/class-booth">
+            <div className="flex items-center gap-1">
+              <Store size={20} strokeWidth={1.5} />
+              <span className="-translate-y-0.5">クラス展示</span>
+            </div>
+          </DrawerLabel>
+          <DrawerLabel href="/bazaar">
+            <div className="flex items-center gap-1">
+              <Utensils size={20} strokeWidth={1.5} />
+              <span className="-translate-y-0.5">クラブバザー</span>
+            </div>
+          </DrawerLabel>
+          <DrawerLabel href="stage-event">
+            <div className="flex items-center gap-1">
+              <MicVocal size={20} strokeWidth={1.5} />
+              <span className="-translate-y-0.5">ステージイベント</span>
+            </div>
+          </DrawerLabel>
           <Marker variant="border" className="border-black" />
         </div>
         <DrawerFooter className="text-center">
@@ -54,15 +74,15 @@ export default function SideMenu() {
 }
 
 export function DrawerLabel({
-  content,
+  children,
   href,
 }: {
-  content: string;
+  children: React.ReactNode;
   href?: string;
 }) {
   return (
-    <div className="text-lg pt-2">
-      <a href={href}>{content}</a>
+    <div className="text-lg pt-2 ">
+      <a href={href}>{children}</a>
     </div>
   );
 }

@@ -21,7 +21,7 @@ export default function Main() {
         onClick={changeMapType}
         className="absolute flex justify-center items-center bottom-10 right-4 rounded-full w-10 h-10 border border-white-1"
       >
-        <span className="text-sm">{mapType}</span>
+        <span className="text-md -translate-y-[1px]">{mapType}</span>
       </button>
     </div>
   );
