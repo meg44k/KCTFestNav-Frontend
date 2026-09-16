@@ -8,12 +8,16 @@ function BoothCard({
   imageUrl,
   imageAlt,
   congestionStatus,
+  latitude,
+  longitude,
 }: {
   name: string;
   description: string;
   imageUrl: string;
   imageAlt: string;
   congestionStatus: string;
+  latitude: number;
+  longitude: number;
 }) {
   let congestionStatusMessage: string = "空いています";
   if (congestionStatus === "empty") {
@@ -62,13 +66,19 @@ function BoothCard({
               alt={imageAlt}
               src={imageUrl}
               fill
+              sizes="120px"
               className="object-cover"
             ></Image>
           </div>
           <div className="flex flex-col mr-auto">
             <span className="text-black">{name}</span>
             <span className="text-black text-sm">{description}</span>
-            <NaviButton className="absolute bottom-3 right-3" />
+            <NaviButton
+              latitude={latitude}
+              longitude={longitude}
+              name={name}
+              className="absolute bottom-3 right-3"
+            />
           </div>
         </div>
       </div>

@@ -19,6 +19,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "たこ焼き",
     congestionStatus: "empty",
+    latitude: 33.816853,
+    longitude: 130.871808,
   },
   {
     name: "焼きそば",
@@ -26,6 +28,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "焼きそば",
     congestionStatus: "clouded",
+    latitude: 33.816853,
+    longitude: 130.871908,
   },
   {
     name: "クレープ",
@@ -33,6 +37,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "クレープ",
     congestionStatus: "veryClouded",
+    latitude: 33.816853,
+    longitude: 130.872008,
   },
   {
     name: "フランクフルト",
@@ -40,6 +46,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "フランクフルト",
     congestionStatus: "empty",
+    latitude: 33.816853,
+    longitude: 130.872108,
   },
   {
     name: "わたあめ",
@@ -47,6 +55,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "わたあめ",
     congestionStatus: "clouded",
+    latitude: 33.816853,
+    longitude: 130.872208,
   },
   {
     name: "チュロス",
@@ -54,6 +64,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "チュロス",
     congestionStatus: "empty",
+    latitude: 33.817153,
+    longitude: 130.871808,
   },
   {
     name: "ポップコーン",
@@ -61,6 +73,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "ポップコーン",
     congestionStatus: "veryClouded",
+    latitude: 33.817153,
+    longitude: 130.871908,
   },
   {
     name: "かき氷",
@@ -68,6 +82,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "かき氷",
     congestionStatus: "clouded",
+    latitude: 33.817153,
+    longitude: 130.872008,
   },
   {
     name: "タピオカ",
@@ -75,6 +91,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "タピオカ",
     congestionStatus: "empty",
+    latitude: 33.817153,
+    longitude: 130.872108,
   },
   {
     name: "からあげ",
@@ -82,6 +100,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "からあげ",
     congestionStatus: "veryClouded",
+    latitude: 33.817153,
+    longitude: 130.872208,
   },
   {
     name: "お化け屋敷",
@@ -89,6 +109,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "お化け屋敷",
     congestionStatus: "veryClouded",
+    latitude: 33.817453,
+    longitude: 130.871808,
   },
   {
     name: "脱出ゲーム",
@@ -96,6 +118,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "脱出ゲーム",
     congestionStatus: "clouded",
+    latitude: 33.817453,
+    longitude: 130.871908,
   },
   {
     name: "射的",
@@ -103,6 +127,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "射的",
     congestionStatus: "empty",
+    latitude: 33.817453,
+    longitude: 130.872008,
   },
   {
     name: "縁日",
@@ -110,6 +136,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "縁日",
     congestionStatus: "clouded",
+    latitude: 33.817453,
+    longitude: 130.872108,
   },
   {
     name: "プラネタリウム",
@@ -117,6 +145,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "プラネタリウム",
     congestionStatus: "empty",
+    latitude: 33.817453,
+    longitude: 130.872208,
   },
   {
     name: "カフェ",
@@ -124,6 +154,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "カフェ",
     congestionStatus: "clouded",
+    latitude: 33.817753,
+    longitude: 130.871808,
   },
   {
     name: "ワッフル",
@@ -131,6 +163,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "ワッフル",
     congestionStatus: "empty",
+    latitude: 33.817753,
+    longitude: 130.871908,
   },
   {
     name: "スムージー",
@@ -138,6 +172,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "スムージー",
     congestionStatus: "veryClouded",
+    latitude: 33.817753,
+    longitude: 130.872008,
   },
   {
     name: "ベビーカステラ",
@@ -145,6 +181,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "ベビーカステラ",
     congestionStatus: "empty",
+    latitude: 33.817753,
+    longitude: 130.872108,
   },
   {
     name: "焼き鳥",
@@ -152,6 +190,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "焼き鳥",
     congestionStatus: "clouded",
+    latitude: 33.817753,
+    longitude: 130.872208,
   },
   {
     name: "迷路",
@@ -159,6 +199,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "迷路",
     congestionStatus: "veryClouded",
+    latitude: 33.818053,
+    longitude: 130.871808,
   },
   {
     name: "VR体験",
@@ -166,6 +208,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "VR体験",
     congestionStatus: "veryClouded",
+    latitude: 33.818053,
+    longitude: 130.871908,
   },
   {
     name: "バルーンアート",
@@ -173,6 +217,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "バルーンアート",
     congestionStatus: "empty",
+    latitude: 33.818053,
+    longitude: 130.872008,
   },
   {
     name: "似顔絵",
@@ -180,6 +226,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "似顔絵",
     congestionStatus: "clouded",
+    latitude: 33.818053,
+    longitude: 130.872108,
   },
   {
     name: "ミニゲーム",
@@ -187,6 +235,8 @@ const booths = [
     imageUrl: "/img1.png",
     imageAlt: "ミニゲーム",
     congestionStatus: "empty",
+    latitude: 33.818053,
+    longitude: 130.872208,
   },
 ];
 
@@ -244,7 +294,8 @@ export default function ClassBooth() {
                     imageUrl={booth.imageUrl}
                     imageAlt={booth.imageAlt}
                     congestionStatus={booth.congestionStatus}
-
+                    latitude={booth.latitude}
+                    longitude={booth.longitude}
                   />
                 ))}
               </div>
