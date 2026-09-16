@@ -44,3 +44,5 @@ next-env.d.ts
 storybook-static
 
 certificates
+# Next.js が生成する型定義 (実体は .next/types 以下)
+/types/

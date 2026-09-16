@@ -15,9 +15,10 @@ function BoothCard({
   description: string;
   imageUrl: string;
   imageAlt: string;
-  congestionStatus: string;
-  latitude: number;
-  longitude: number;
+  // 座標・混雑度がまだ用意できていないブースもあるため任意にする
+  congestionStatus?: string;
+  latitude?: number;
+  longitude?: number;
 }) {
   let congestionStatusMessage: string = "空いています";
   if (congestionStatus === "empty") {
@@ -73,12 +74,14 @@ function BoothCard({
           <div className="flex flex-col mr-auto">
             <span className="text-black">{name}</span>
             <span className="text-black text-sm">{description}</span>
-            <NaviButton
-              latitude={latitude}
-              longitude={longitude}
-              name={name}
-              className="absolute bottom-3 right-3"
-            />
+            {latitude !== undefined && longitude !== undefined && (
+              <NaviButton
+                latitude={latitude}
+                longitude={longitude}
+                name={name}
+                className="absolute bottom-3 right-3"
+              />
+            )}
           </div>
         </div>
       </div>
