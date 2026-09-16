@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "cert": "bash scripts/gen-cert.sh",
+    "dev": "npm run cert && next dev --experimental-https --experimental-https-key certificates/localhost-key.pem --experimental-https-cert certificates/localhost.pem --experimental-https-ca certificates/rootCA.pem",
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
