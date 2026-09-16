@@ -13,7 +13,8 @@ function BoothCard({
 }: {
   name: string;
   description: string;
-  imageUrl: string;
+  // バックエンドは画像未設定のブースを空文字で返すため任意にする
+  imageUrl?: string;
   imageAlt: string;
   // 座標・混雑度がまだ用意できていないブースもあるため任意にする
   congestionStatus?: string;
@@ -63,13 +64,15 @@ function BoothCard({
       >
         <div className="flex flex-row bg-[#ffffff] rounded-sm h-full w-full shadow-2xl p-2">
           <div className="relative aspect-square h-full bg-gray-300 overflow-hidden mr-2 rounded-sm">
-            <Image
-              alt={imageAlt}
-              src={imageUrl}
-              fill
-              sizes="120px"
-              className="object-cover"
-            ></Image>
+            {imageUrl && (
+              <Image
+                alt={imageAlt}
+                src={imageUrl}
+                fill
+                sizes="120px"
+                className="object-cover"
+              ></Image>
+            )}
           </div>
           <div className="flex flex-col mr-auto">
             <span className="text-black">{name}</span>
