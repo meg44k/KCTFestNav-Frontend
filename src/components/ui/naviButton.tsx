@@ -1,10 +1,8 @@
+"use client";
+
 import { Navigation } from "lucide-react";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import Image from "next/image";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useCompass } from "@/hooks/useCompass";
 import { cn } from "@/lib/utils";
 
@@ -19,16 +17,10 @@ function NaviButton({
   longitude: number;
   name: string;
 }) {
-  const {
-    angle,
-    heading,
-    bearing,
-    error,
-    isActive,
-    startCompass,
-    stopCompass,
-    distance,
-  } = useCompass(latitude, longitude);
+  const { angle, error, startCompass, stopCompass, distance } = useCompass(
+    latitude,
+    longitude,
+  );
   const normalizedAngle = ((angle % 360) + 360) % 360;
   const isFacingTarget = normalizedAngle < 15 || normalizedAngle > 345; // 誤差±15度以内なら正解方向とみなす
 
@@ -64,7 +56,6 @@ function NaviButton({
       >
         <div className="flex flex-col">
           <div className="h-1/3 relative">
-            <DialogClose className="absolute top-50 right-50 text-white"></DialogClose>
             <div className="text-2xl text-white">目的地: {name}</div>
             <div className="text-2xl text-white">{Math.floor(distance)}m</div>
             {error && <div className="text-red-500 text-sm">{error}</div>}
@@ -75,7 +66,8 @@ function NaviButton({
               <svg
                 viewBox="0 0 100 100"
                 className="absolute inset-0 h-full w-full"
-                aria-hidden
+                aria-hidden="true"
+                role="presentation"
               >
                 {/*
                   円周に沿った大きな弧を1本だけ描き、上だけを欠けさせて「切れ込み」にする。
@@ -100,7 +92,14 @@ function NaviButton({
                 className="absolute inset-0"
                 style={{ transform: `rotate(${angle}deg)` }}
               >
-                <img src="/Arrow.png" alt="" />
+                <Image
+                  src="/Arrow.png"
+                  alt=""
+                  width={501}
+                  height={521}
+                  sizes="(min-width: 768px) 300px, 60vw"
+                  className="w-full h-auto"
+                />
                 {/*
                   リングをくり抜くのではなく、不透明な丸をリングの上に「乗せる」だけ。
                   こうすると見えるのは丸自身の丸い縁だけになり、尖りが出ない。

@@ -1,5 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 
+// iOS Safari だけが持つ、真北基準の方位を返す独自プロパティ
+type CompassOrientationEvent = DeviceOrientationEvent & {
+  webkitCompassHeading?: number;
+};
+
+// iOS 13+ はセンサー利用に明示的な許可が必要
+type DeviceOrientationEventWithPermission = typeof DeviceOrientationEvent & {
+  requestPermission?: () => Promise<"granted" | "denied" | "prompt">;
+};
+
 const toRad = (deg: number) => (deg * Math.PI) / 180;
 const toDeg = (rad: number) => (rad * 180) / Math.PI;
 
@@ -56,8 +66,10 @@ export function useCompass(targetLat: number, targetLng: number) {
 
   const handleOrientation = useCallback((event: DeviceOrientationEvent) => {
     let currentHeading = 0;
-    if ((event as any).webkitCompassHeading !== undefined) {
-      currentHeading = (event as any).webkitCompassHeading;
+    const compassHeading = (event as CompassOrientationEvent)
+      .webkitCompassHeading;
+    if (compassHeading !== undefined) {
+      currentHeading = compassHeading;
     } else if (event.alpha !== null) {
       currentHeading = (360 - event.alpha) % 360;
     }
@@ -121,19 +133,18 @@ export function useCompass(targetLat: number, targetLng: number) {
   }, [bearing, heading]);
 
   const startCompass = async () => {
-    if (
-      typeof DeviceOrientationEvent !== "undefined" &&
-      typeof (DeviceOrientationEvent as any).requestPermission === "function"
-    ) {
+    const orientationEvent =
+      typeof DeviceOrientationEvent !== "undefined"
+        ? (DeviceOrientationEvent as DeviceOrientationEventWithPermission)
+        : undefined;
+    if (typeof orientationEvent?.requestPermission === "function") {
       try {
-        const permission = await (
-          DeviceOrientationEvent as any
-        ).requestPermission();
+        const permission = await orientationEvent.requestPermission();
         if (permission !== "granted") {
           setError("コンパスの使用が許可されませんでした");
           return;
         }
-      } catch (e) {
+      } catch {
         setError("コンパスの許可リクエストに失敗しました");
         return;
       }
@@ -141,9 +152,11 @@ export function useCompass(targetLat: number, targetLng: number) {
     if ("ondeviceorientationabsolute" in window) {
       window.addEventListener(
         "deviceorientationabsolute",
-        handleOrientation as any,
+        handleOrientation as EventListener,
       );
     } else {
+      // "ondeviceorientationabsolute" in window の絞り込みで
+      // else 側の window が never になるため、Window に戻してから登録する
       (window as Window).addEventListener(
         "deviceorientation",
         handleOrientation,
@@ -155,7 +168,7 @@ export function useCompass(targetLat: number, targetLng: number) {
   const stopCompass = () => {
     window.removeEventListener(
       "deviceorientationabsolute",
-      handleOrientation as any,
+      handleOrientation as EventListener,
     );
     window.removeEventListener("deviceorientation", handleOrientation);
     setIsActive(false);
