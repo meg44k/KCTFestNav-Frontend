@@ -44,3 +44,11 @@ export function groupBoothsByGrade(booths: Booth[]): GradeGroup[] {
     .sort(([a], [b]) => a - b)
     .map(([grade, gradeBooths]) => ({ grade, booths: gradeBooths }));
 }
+
+/**
+ * 部活など、主催者が学年を持たないブースだけを返す。
+ * クラブバザーのページで使う。groupBoothsByGrade が拾うブースの補集合になる。
+ */
+export function filterClubBooths(booths: Booth[]): Booth[] {
+  return booths.filter((booth) => parseGrade(booth.organizer) === null);
+}
