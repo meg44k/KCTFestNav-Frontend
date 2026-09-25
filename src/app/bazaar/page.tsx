@@ -44,6 +44,7 @@ export default async function BazaarPage() {
               name={booth.name}
               description={booth.description}
               organizer={booth.organizer}
+              location={booth.location}
               imageUrl={booth.imageUrl}
               imageAlt={booth.name}
               congestionStatus={booth.congestionStatus}
