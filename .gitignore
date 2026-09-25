@@ -42,3 +42,7 @@ next-env.d.ts
 
 *storybook.log
 storybook-static
+
+certificates
+# Next.js が生成する型定義 (実体は .next/types 以下)
+/types/
