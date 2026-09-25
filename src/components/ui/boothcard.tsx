@@ -5,6 +5,7 @@ import { NaviButton } from "./naviButton";
 function BoothCard({
   name,
   description,
+  organizer,
   imageUrl,
   imageAlt,
   congestionStatus,
@@ -13,6 +14,9 @@ function BoothCard({
 }: {
   name: string;
   description: string;
+  // クラブバザーでは主催の部活名が主要な情報になるため出す。
+  // クラス展示では主催者(ex. 1-1)を出さないので任意にしている
+  organizer?: string;
   // バックエンドは画像未設定のブースを空文字で返すため任意にする
   imageUrl?: string;
   imageAlt: string;
@@ -76,7 +80,21 @@ function BoothCard({
           </div>
           <div className="flex flex-col mr-auto">
             <span className="text-black">{name}</span>
-            <span className="text-black text-sm">{description}</span>
+            {/*
+              カードは高さ固定(h-30)。主催者を出すと1行増えるぶん、
+              説明文の折り返しを1行に抑えないと下に溢れてナビボタンと重なる
+            */}
+            <span
+              className={cn(
+                "text-black text-sm",
+                organizer ? "line-clamp-1" : "line-clamp-2",
+              )}
+            >
+              {description}
+            </span>
+            {organizer && (
+              <span className="text-black/60 text-xs">{organizer}</span>
+            )}
             {latitude !== undefined && longitude !== undefined && (
               <NaviButton
                 latitude={latitude}

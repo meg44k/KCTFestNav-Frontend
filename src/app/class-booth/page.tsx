@@ -2,6 +2,11 @@ import { fetchBooths } from "@/lib/api/booths";
 import { type GradeGroup, groupBoothsByGrade } from "@/lib/booth-grade";
 import ClassBooth from "./ClassBooth";
 
+// 混雑度が随時変わるため常にリクエスト時に描画する。
+// これが無いとビルド時に静的生成が試みられ、cache:"no-store" の fetch が
+// 投げる DynamicServerError を下の catch が拾ってしまう
+export const dynamic = "force-dynamic";
+
 export default async function ClassBoothPage() {
   let gradeGroups: GradeGroup[] = [];
   let loadFailed = false;

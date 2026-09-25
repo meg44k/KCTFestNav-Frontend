@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { Booth } from "@/lib/api/booths";
-import { groupBoothsByGrade, parseGrade } from "./booth-grade";
+import {
+  filterClubBooths,
+  groupBoothsByGrade,
+  parseGrade,
+} from "./booth-grade";
 
 function booth(name: string, organizer: string): Booth {
   return {
@@ -67,5 +71,49 @@ describe("groupBoothsByGrade", () => {
 
   it("空配列を渡しても落ちない", () => {
     expect(groupBoothsByGrade([])).toEqual([]);
+  });
+});
+
+describe("filterClubBooths", () => {
+  it("主催者がクラス表記でないブースだけを返す", () => {
+    const result = filterClubBooths([
+      booth("プラネタリウム", "天文部"),
+      booth("たこ焼き", "1-1"),
+      booth("VR体験", "PC部"),
+    ]);
+
+    expect(result.map((b) => b.name)).toEqual(["プラネタリウム", "VR体験"]);
+  });
+
+  it("渡された順序を保つ", () => {
+    const result = filterClubBooths([
+      booth("VR体験", "PC部"),
+      booth("プラネタリウム", "天文部"),
+    ]);
+
+    expect(result.map((b) => b.name)).toEqual(["VR体験", "プラネタリウム"]);
+  });
+
+  it("クラス展示だけのときは空配列", () => {
+    expect(filterClubBooths([booth("たこ焼き", "1-1")])).toEqual([]);
+  });
+
+  it("空配列を渡しても落ちない", () => {
+    expect(filterClubBooths([])).toEqual([]);
+  });
+
+  it("groupBoothsByGrade と互いに重複しない", () => {
+    const booths = [
+      booth("プラネタリウム", "天文部"),
+      booth("たこ焼き", "1-1"),
+      booth("焼きそば", "2-1"),
+    ];
+    const clubCount = filterClubBooths(booths).length;
+    const classCount = groupBoothsByGrade(booths).reduce(
+      (n, g) => n + g.booths.length,
+      0,
+    );
+
+    expect(clubCount + classCount).toBe(booths.length);
   });
 });
