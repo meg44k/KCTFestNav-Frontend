@@ -156,6 +156,16 @@ function BoothCard({
                 <DialogDescription className="text-black text-sm">
                   {description}
                 </DialogDescription>
+                {latitude !== undefined && longitude !== undefined && (
+                  // 説明文と重ならないよう、絶対配置ではなく最後の行として右に寄せる
+                  <div className="flex justify-end">
+                    <NaviButton
+                      latitude={latitude}
+                      longitude={longitude}
+                      name={name}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
