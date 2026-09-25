@@ -1,6 +1,8 @@
+import { XIcon } from "lucide-react";
 import Image from "next/image";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogTitle,
@@ -102,7 +104,10 @@ function BoothCard({
         </DialogTrigger>
 
         {/* ミニカードと同じ構成(混雑度のタブ + 色の枠 + 白い中身)を大きくしたもの */}
-        <DialogContent className="min-w-[85dvw] md:min-w-100 bg-transparent p-0 ring-0 text-black">
+        <DialogContent
+          showCloseButton={false}
+          className="min-w-[85dvw] md:min-w-100 bg-transparent p-0 ring-0 text-black"
+        >
           <div>
             <div
               className={cn(
@@ -120,7 +125,14 @@ function BoothCard({
                 congestionColor,
               )}
             >
-              <div className="flex flex-col gap-3 bg-white rounded-sm p-3 shadow-2xl">
+              <div className="relative flex flex-col gap-3 bg-white rounded-sm p-3 shadow-2xl">
+                {/* 画像の上に重なっても見えるよう背景を敷く */}
+                <DialogClose
+                  aria-label="閉じる"
+                  className="absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white"
+                >
+                  <XIcon className="size-5" />
+                </DialogClose>
                 <div className="relative w-full aspect-video bg-gray-300 rounded-sm overflow-hidden">
                   {imageUrl && (
                     <Image
