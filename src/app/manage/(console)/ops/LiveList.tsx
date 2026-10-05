@@ -45,7 +45,7 @@ export function LiveList({
           ))}
         </ul>
       )}
-      <p className="text-gray-400 text-sm">
+      <p className="font-bold text-[#e54141] text-sm">
         公演中にすると、ほかに公演中のライブは終了になります。
       </p>
     </section>

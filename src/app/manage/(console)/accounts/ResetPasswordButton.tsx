@@ -46,7 +46,7 @@ export function ResetPasswordButton({
           <IssuedTable rows={[issued]} />
         ) : (
           <>
-            <DialogDescription>
+            <DialogDescription className="font-bold text-[#e54141]">
               今のパスワードは使えなくなります。
             </DialogDescription>
             {error && (

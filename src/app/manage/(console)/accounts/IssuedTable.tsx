@@ -26,9 +26,9 @@ export function IssuedTable({
   failed?: string[];
 }) {
   return (
-    <section className="issued flex flex-col gap-3 rounded-lg border border-[#FDCB6E] p-4 print:border-0 print:bg-white print:text-black">
+    <section className="issued flex flex-col gap-3 rounded-lg border border-[#e54141] p-4 print:border-0 print:bg-white print:text-black">
       {rows.length > 0 && (
-        <p className="font-bold text-[#FDCB6E] print:hidden">
+        <p className="font-bold text-[#e54141] print:hidden">
           このパスワードはこの画面でしか見られません。印刷か CSV
           で保存してください。
         </p>
