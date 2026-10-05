@@ -57,7 +57,7 @@ describe("setLiveStatus", () => {
       ["/manage/lives/3/status", 2],
       ["/manage/lives/2/status", 1],
     ]);
-    expect(revalidatePath).toHaveBeenCalledWith("/manage/ops");
+    expect(revalidatePath).toHaveBeenCalledWith("/manage/ops", "layout");
   });
 
   it("前の公演中を終了にできなければ切り替えず、どれかを伝える", async () => {
@@ -141,7 +141,7 @@ describe("setLiveStatus", () => {
       error:
         "「A」は終了にしましたが、「B」を公演中にできませんでした。接続できませんでした。時間をおいて再度お試しください。",
     });
-    expect(revalidatePath).toHaveBeenCalledWith("/manage/ops");
+    expect(revalidatePath).toHaveBeenCalledWith("/manage/ops", "layout");
   });
 
   it("0/1/2 以外は送らない", async () => {
@@ -167,7 +167,7 @@ describe("setBoothCongestion", () => {
       method: "PATCH",
       body: JSON.stringify({ congestion_status: 1 }),
     });
-    expect(revalidatePath).toHaveBeenCalledWith("/manage/ops");
+    expect(revalidatePath).toHaveBeenCalledWith("/manage/ops", "layout");
   });
 
   it("0/1/2 以外は送らない", async () => {
@@ -258,6 +258,6 @@ describe("deleteLive", () => {
     expect(manageRequest).toHaveBeenCalledWith("/manage/lives/4", {
       method: "DELETE",
     });
-    expect(revalidatePath).toHaveBeenCalledWith("/manage/ops");
+    expect(revalidatePath).toHaveBeenCalledWith("/manage/ops", "layout");
   });
 });
