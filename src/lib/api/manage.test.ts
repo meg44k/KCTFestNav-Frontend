@@ -3,6 +3,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const cookieValue = vi.hoisted(() => ({
   token: "jwt-token" as string | undefined,
 }));
+vi.mock("next/navigation", () => ({
+  redirect: (path: string) => {
+    throw new Error(`REDIRECT:${path}`);
+  },
+}));
 vi.mock("next/headers", () => ({
   cookies: async () => ({
     get: (name: string) =>
@@ -12,7 +17,13 @@ vi.mock("next/headers", () => ({
   }),
 }));
 
-import { failureMessage, fetchMe, manageRequest, toFailure } from "./manage";
+import {
+  failureMessage,
+  fetchMe,
+  manageRequest,
+  requireRole,
+  toFailure,
+} from "./manage";
 
 const fetchMock = vi.fn();
 
@@ -126,5 +137,64 @@ describe("fetchMe", () => {
       new Response(JSON.stringify(user), { status: 200 }),
     );
     expect(await fetchMe()).toEqual({ ok: true, data: user });
+  });
+});
+
+describe("manageRequest の本文", () => {
+  it("本文が空の 200 / 201 も成功として扱う", async () => {
+    fetchMock.mockResolvedValueOnce(new Response("", { status: 200 }));
+    expect(await manageRequest("/manage/booths/1", { method: "PUT" })).toEqual({
+      ok: true,
+      data: undefined,
+    });
+    fetchMock.mockResolvedValueOnce(new Response(null, { status: 201 }));
+    expect(await manageRequest("/manage/booths", { method: "POST" })).toEqual({
+      ok: true,
+      data: undefined,
+    });
+  });
+});
+
+describe("requireRole", () => {
+  const me = (role: string) =>
+    new Response(
+      JSON.stringify({
+        id: "u",
+        name: "n",
+        login_id: "l",
+        assigned_booth_id: 0,
+        role,
+      }),
+      { status: 200 },
+    );
+
+  it("許可されたロールならユーザーを返す", async () => {
+    fetchMock.mockResolvedValue(me("Admin"));
+    const res = await requireRole(["Admin"]);
+    expect(res.ok && res.user.role).toBe("Admin");
+  });
+
+  it("ロール外は権限なし", async () => {
+    fetchMock.mockResolvedValue(me("Student"));
+    expect(await requireRole(["Admin"])).toEqual({
+      ok: false,
+      message: "この操作の権限がありません。",
+    });
+  });
+
+  it("期限切れはログインし直してもらう", async () => {
+    fetchMock.mockResolvedValue(new Response("{}", { status: 401 }));
+    await expect(requireRole(["Admin"])).rejects.toThrow(
+      "REDIRECT:/manage/logout",
+    );
+  });
+
+  it("サーバーに繋がらないときは案内を返す", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    fetchMock.mockRejectedValue(new TypeError("fetch failed"));
+    expect(await requireRole(["Admin"])).toEqual({
+      ok: false,
+      message: "サーバーに接続できません。時間をおいて再度お試しください。",
+    });
   });
 });

@@ -4,7 +4,8 @@
 // redirect はここではしない。呼び出し側が try/catch で包むと NEXT_REDIRECT を
 // 飲み込んでしまうため、失敗の種類を返して呼び出し側で判断する。
 import { cookies } from "next/headers";
-import type { ManageUser } from "@/lib/manage/roles";
+import { redirect } from "next/navigation";
+import type { ManageUser, Role } from "@/lib/manage/roles";
 import { TOKEN_COOKIE } from "@/lib/manage/session";
 import { API_BASE_URL, REQUEST_TIMEOUT_MS } from "./client";
 
@@ -51,9 +52,9 @@ export async function manageRequest<T>(
   }
 
   if (!res.ok) return { ok: false, reason: toFailure(res.status) };
-  // 更新・削除の API は本文を返さない
-  const data = res.status === 204 ? undefined : await res.json();
-  return { ok: true, data: data as T };
+  // 作成・更新・削除の API は本文を返さない(201/200/204 で空)
+  const text = await res.text();
+  return { ok: true, data: (text ? JSON.parse(text) : undefined) as T };
 }
 
 /**
@@ -79,4 +80,22 @@ export function failureMessage(reason: ManageFailure): string {
     default:
       return "サーバーに接続できません。時間をおいて再度お試しください。";
   }
+}
+
+/**
+ * ページの最初に呼ぶ。期限切れ・削除済みはログインし直し、
+ * ロール外や接続できないときは画面に出す文言を返す
+ */
+export async function requireRole(
+  allowed: Role[],
+): Promise<{ ok: true; user: ManageUser } | { ok: false; message: string }> {
+  const me = await fetchMe();
+  if (!me.ok) {
+    if (me.reason === "unauthorized") redirect("/manage/logout");
+    return { ok: false, message: failureMessage(me.reason) };
+  }
+  if (!allowed.includes(me.data.role)) {
+    return { ok: false, message: failureMessage("forbidden") };
+  }
+  return { ok: true, user: me.data };
 }
