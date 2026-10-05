@@ -27,13 +27,14 @@ function BoothCard({
   congestionStatus,
   latitude,
   longitude,
+  updatedLabel,
 }: {
   name: string;
   description: string;
   // クラブバザーでは主催の部活名が主要な情報になるため出す。
   // クラス展示では主催者(ex. 1-1)を出さないので任意にしている
   organizer?: string;
-  // 場所の説明(ex. 第一体育館)。詳細ダイアログにだけ出す
+  // 場所の説明(ex. 第一体育館)
   location?: string;
   // バックエンドは画像未設定のブースを空文字で返すため任意にする
   imageUrl?: string;
@@ -42,6 +43,8 @@ function BoothCard({
   congestionStatus?: string;
   latitude?: number;
   longitude?: number;
+  /** 混雑度タブの横に出す「○分前に更新」。未更新なら出さない */
+  updatedLabel?: string;
 }) {
   const congestionStatusMessage = congestionMessageOf(congestionStatus);
   const congestionColor = {
@@ -55,25 +58,32 @@ function BoothCard({
     // ナビボタンをカードの上に重ねるための基準。
     // ナビボタンを詳細ダイアログのトリガーの中に入れるとボタンが入れ子になり、
     // タップが両方に伝わってしまうため、トリガーの外に出して重ねている
-    <div className="relative w-fit">
+    <div className="relative w-full max-w-md">
       <Dialog>
         <DialogTrigger
-          className="block text-left cursor-pointer"
+          className="block w-full text-left cursor-pointer"
           aria-label={`${name}の詳細を見る`}
         >
-          <div
-            className={cn(
-              "relative flex justify-center items-center right-0 w-30 h-6 bg-white rounded-t-md",
-              congestionColor,
+          <div className="flex items-end gap-2">
+            <div
+              className={cn(
+                "relative flex justify-center items-center right-0 w-30 h-6 bg-white rounded-t-md",
+                congestionColor,
+              )}
+            >
+              <span className="text-black/60 text-xs font-bold whitespace-nowrap origin-center">
+                {congestionStatusMessage}
+              </span>
+            </div>
+            {updatedLabel && (
+              <span className="pb-0.5 text-gray-400 text-xs">
+                {updatedLabel}
+              </span>
             )}
-          >
-            <span className="text-black/60 text-xs font-bold whitespace-nowrap origin-center">
-              {congestionStatusMessage}
-            </span>
           </div>
           <div
             className={cn(
-              "relative rounded-b-md rounded-r-md w-80 h-30 bg-[#00B894] p-1 ",
+              "relative rounded-b-md rounded-r-md w-full h-30 bg-[#00B894] p-1 ",
               congestionColor,
             )}
           >
@@ -95,8 +105,10 @@ function BoothCard({
                 <span className="text-black text-sm line-clamp-1">
                   {description}
                 </span>
-                {organizer && (
-                  <span className="text-black/60 text-xs">{organizer}</span>
+                {(organizer || location) && (
+                  <span className="text-black/60 text-xs">
+                    {[organizer, location].filter(Boolean).join(" / ")}
+                  </span>
                 )}
               </div>
             </div>
