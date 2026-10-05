@@ -31,7 +31,7 @@ export function AnnouncementForm({ current }: { current: string }) {
         defaultValue={current}
         placeholder="13時から第一体育館で軽音部のライブがあります"
       />
-      <p className="text-gray-500 text-sm">来場者の画面に流れます。</p>
+      <p className="text-gray-500 text-sm">来場者の画面に表示されます。</p>
       {state?.error && (
         <p role="alert" className="text-[#e54141]">
           {state.error}
