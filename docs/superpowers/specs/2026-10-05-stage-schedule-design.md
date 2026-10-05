@@ -90,7 +90,7 @@ performers      出演者
 }
 ```
 
-- `now_playing`: §3 の条件を満たすとき true。演奏中の出演者は `performers` の中で `perform_order == current_order` のもの
+- `now_playing`: §3 の条件を満たすとき true。演奏中の出演者は `performers` の current_order 番目（出演順の番号ではなく並びの位置。削除で番号が飛んでもずれない）
 - 時刻は +09:00 で返す
 
 ### 学生会・管理者（Admin, Gakuseikai）

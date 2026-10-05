@@ -8,6 +8,7 @@ import {
   pickDay,
   sectionsOn,
   stageDays,
+  stepOrder,
 } from "@/lib/stage-schedule";
 import { cn } from "@/lib/utils";
 
@@ -79,8 +80,9 @@ export function StageOps({
         ))}
       </div>
       {rows.map((row) => (
+        // 時間になった(終わった)ブロックを自動で開く(閉じる)よう、時間内かどうかが変わったら作り直す
         <BlockControl
-          key={row.block.id}
+          key={`${row.block.id}-${inTime(row.block, serverNow)}`}
           row={row}
           live={inTime(row.block, serverNow)}
         />
@@ -102,9 +104,7 @@ function BlockControl({ row, live }: { row: Row; live: boolean }) {
   const step = (dir: "next" | "prev") =>
     start(async () => {
       setError(undefined);
-      setCurrent((c) =>
-        dir === "next" ? Math.min(c + 1, count + 1) : Math.max(c - 1, 0),
-      );
+      setCurrent((c) => stepOrder(c, count, dir));
       const res = await stepBlock(block.id, dir);
       if (res.error) setError(res.error);
     });

@@ -14,6 +14,8 @@ import {
   sectionsOn,
   sectionTimeRange,
   stageDays,
+  startingNow,
+  stepOrder,
 } from "./stage-schedule";
 
 const performer = (id: number, order = id): PerformerResponse => ({
@@ -210,5 +212,35 @@ describe("nextUp / sectionFinished / 時刻", () => {
     expect(
       blockTimeRange(block(9, "2026-10-31T04:00:00Z", "2026-10-31T04:30:00Z")),
     ).toBe("13:00〜13:30");
+  });
+});
+
+describe("stepOrder", () => {
+  it("次へは出演者数 + 1 で止まり、戻すは 0 で止まる", () => {
+    expect(stepOrder(0, 3, "next")).toBe(1);
+    expect(stepOrder(4, 3, "next")).toBe(4);
+    expect(stepOrder(0, 3, "prev")).toBe(0);
+    expect(stepOrder(2, 3, "prev")).toBe(1);
+  });
+  it("出演者が減って数を超えていたら、戻すと最後の出演者になる(バックエンドと同じ)", () => {
+    expect(stepOrder(4, 1, "prev")).toBe(1);
+    expect(stepOrder(9, 0, "prev")).toBe(0);
+  });
+});
+
+describe("startingNow", () => {
+  it("時間になったのにまだ 1 組目を始めていないブロック", () => {
+    const now = ms("2026-10-31T13:02:00+09:00");
+    const s = section(1, [
+      block(1, "2026-10-31T13:00:00+09:00", "2026-10-31T13:50:00+09:00"),
+      block(2, "2026-10-31T12:00:00+09:00", "2026-10-31T13:01:00+09:00"),
+      block(3, "2026-10-31T13:00:00+09:00", "2026-10-31T13:50:00+09:00", {
+        current_order: 1,
+      }),
+      block(4, "2026-10-31T13:00:00+09:00", "2026-10-31T13:50:00+09:00", {
+        performers: [],
+      }),
+    ]);
+    expect(startingNow([s], now).map((x) => x.block.id)).toEqual([1]);
   });
 });

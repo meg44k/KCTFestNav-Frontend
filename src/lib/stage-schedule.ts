@@ -179,3 +179,35 @@ export function sectionTimeRange(section: StageSectionResponse): string {
   const last = ends.reduce((a, b) => (ms(b) > ms(a) ? b : a));
   return `${hm(first)}〜${hm(last)}`;
 }
+
+/**
+ * 「次のバンドへ」「前に戻す」を押した後の current_order(バックエンドと同じ計算)。
+ * 出演者が消されて数を超えていても、戻すと 1 回で最後の出演者になる
+ */
+export function stepOrder(
+  current: number,
+  count: number,
+  dir: "next" | "prev",
+): number {
+  return dir === "next"
+    ? Math.min(current + 1, count + 1)
+    : Math.max(Math.min(current, count + 1) - 1, 0);
+}
+
+/** 時間になったのに、学生会がまだ 1 組目を始めていないブロック */
+export function startingNow(
+  sections: StageSectionResponse[],
+  nowMs: number,
+): { section: StageSectionResponse; block: StageBlockResponse }[] {
+  return sections.flatMap((section) =>
+    section.blocks
+      .filter(
+        (b) =>
+          b.current_order === 0 &&
+          b.performers.length > 0 &&
+          ms(b.start_time) <= nowMs &&
+          nowMs < ms(b.end_time),
+      )
+      .map((block) => ({ section, block })),
+  );
+}
