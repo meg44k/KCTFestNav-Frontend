@@ -71,6 +71,7 @@ describe("loginAction", () => {
     fetchMock.mockResolvedValue(new Response("{}", { status: 401 }));
     expect(await loginAction(undefined, form("booth-1", "wrong"))).toEqual({
       error: "ID かパスワードが違います",
+      loginId: "booth-1",
     });
     expect(cookieSet).not.toHaveBeenCalled();
   });
@@ -78,6 +79,7 @@ describe("loginAction", () => {
   it("未入力なら API を呼ばない", async () => {
     expect(await loginAction(undefined, form("", ""))).toEqual({
       error: "ID とパスワードを入力してください",
+      loginId: "",
     });
     expect(fetchMock).not.toHaveBeenCalled();
   });
@@ -87,6 +89,7 @@ describe("loginAction", () => {
     fetchMock.mockRejectedValue(new TypeError("fetch failed"));
     expect(await loginAction(undefined, form("booth-1", "pass"))).toEqual({
       error: "サーバーに接続できません。時間をおいて再度お試しください。",
+      loginId: "booth-1",
     });
     expect(cookieSet).not.toHaveBeenCalled();
   });

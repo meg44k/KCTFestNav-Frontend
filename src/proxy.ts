@@ -9,7 +9,10 @@ export function proxy(request: NextRequest) {
   if (needsLogin(request.nextUrl.pathname, hasToken)) {
     return NextResponse.redirect(new URL("/manage/login", request.url));
   }
-  return NextResponse.next();
+  const res = NextResponse.next();
+  // ログアウト後に戻るボタンで管理画面が見えないよう、ブラウザに保存させない
+  res.headers.set("Cache-Control", "no-store");
+  return res;
 }
 
 export const config = {
