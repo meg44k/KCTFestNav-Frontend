@@ -30,8 +30,11 @@ export default async function AccountsPage() {
     );
   }
 
-  const boothNames = Object.fromEntries(
-    booths.data.booths.map((b) => [b.id, b.name]),
+  const boothsById = Object.fromEntries(
+    booths.data.booths.map((b) => [
+      b.id,
+      { name: b.name, organizer: b.organizer },
+    ]),
   );
   const missing = boothsWithoutAccount(booths.data.booths, users.data.users);
 
@@ -42,7 +45,7 @@ export default async function AccountsPage() {
         <AddAccountDialog />
       </div>
       <IssueAccounts missing={missing.length} />
-      <AccountList users={users.data.users} boothNames={boothNames} />
+      <AccountList users={users.data.users} booths={boothsById} />
     </div>
   );
 }

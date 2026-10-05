@@ -10,15 +10,16 @@ const ROLE_LABEL: Record<ManageUser["role"], string> = {
 
 export function AccountList({
   users,
-  boothNames,
+  booths,
 }: {
   users: ManageUser[];
-  boothNames: Record<number, string>;
+  /** ブース ID → ブース名と担当者(主催者) */
+  booths: Record<number, { name: string; organizer: string }>;
 }) {
   // ブースの担当 → 学生会・管理者 → その他 の順に並べる
   // 担当ブースが無い(削除済み)ものは最後に回す
   const boothOrder = (u: ManageUser) =>
-    boothNames[u.assigned_booth_id] ? u.assigned_booth_id : Infinity;
+    booths[u.assigned_booth_id] ? u.assigned_booth_id : Infinity;
   const staff = users
     .filter((u) => u.role === "Student")
     .sort((a, b) => boothOrder(a) - boothOrder(b));
@@ -28,39 +29,72 @@ export function AccountList({
   const others = users.filter((u) => u.role === "Member");
 
   const boothOf = (u: ManageUser) =>
-    boothNames[u.assigned_booth_id] ?? "担当ブースなし";
+    booths[u.assigned_booth_id]?.name ?? "担当ブースなし";
+  // 担当者(1-1 など)はブースの主催者。ブースが削除済みならアカウントの名前
+  const organizerOf = (u: ManageUser) =>
+    booths[u.assigned_booth_id]?.organizer || u.name;
 
   const section = (title: string, list: ManageUser[], showBooth: boolean) =>
     list.length > 0 && (
       <section className="flex flex-col gap-2">
         <h2 className="font-bold text-xl">{title}</h2>
-        <ul className="flex flex-col">
-          {list.map((u) => (
-            <li
-              key={u.id}
-              className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-white/10 py-2"
-            >
-              {showBooth && (
-                <span
-                  className={`min-w-32 font-bold ${boothNames[u.assigned_booth_id] ? "" : "text-gray-500"}`}
-                >
-                  {boothOf(u)}
-                </span>
-              )}
-              <span className="font-mono">{u.login_id}</span>
-              <span className="text-gray-400">
-                {u.name}（{ROLE_LABEL[u.role]}）
-              </span>
-              <span className="ml-auto">
-                <ResetPasswordButton
-                  userId={u.id}
-                  loginId={u.login_id}
-                  label={showBooth ? boothOf(u) : u.name}
-                />
-              </span>
-            </li>
-          ))}
-        </ul>
+        {/* スマホ幅で入りきらないときは表だけ横にスクロールする */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left whitespace-nowrap">
+            <thead className="text-gray-400 text-sm">
+              <tr className="border-b border-white/10">
+                {showBooth ? (
+                  <>
+                    <th className="py-2 pr-4">担当者</th>
+                    <th className="pr-4">ブース</th>
+                    <th className="pr-4">ログインID</th>
+                  </>
+                ) : (
+                  <>
+                    <th className="py-2 pr-4">ログインID</th>
+                    <th className="pr-4">名前</th>
+                    <th className="pr-4">役職</th>
+                  </>
+                )}
+                <th className="text-right">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              {list.map((u) => (
+                <tr key={u.id} className="border-b border-white/10">
+                  {showBooth ? (
+                    <>
+                      <td className="py-2 pr-4 font-bold">{organizerOf(u)}</td>
+                      <td
+                        className={`pr-4 ${booths[u.assigned_booth_id] ? "" : "text-gray-500"}`}
+                      >
+                        {boothOf(u)}
+                      </td>
+                      <td className="pr-4 font-mono text-gray-400">
+                        {u.login_id}
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td className="py-2 pr-4 font-mono">{u.login_id}</td>
+                      <td className="pr-4">{u.name}</td>
+                      <td className="pr-4 text-gray-400">
+                        {ROLE_LABEL[u.role]}
+                      </td>
+                    </>
+                  )}
+                  <td className="text-right">
+                    <ResetPasswordButton
+                      userId={u.id}
+                      loginId={u.login_id}
+                      label={showBooth ? boothOf(u) : u.name}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
     );
 
