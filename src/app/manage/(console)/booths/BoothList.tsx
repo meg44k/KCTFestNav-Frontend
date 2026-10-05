@@ -31,7 +31,7 @@ export function BoothList({
 }) {
   if (booths.length === 0) {
     return (
-      <p className="text-gray-400">
+      <p className="text-gray-500">
         まだブースがありません。「ブースを追加」から登録してください。
       </p>
     );
@@ -48,8 +48,8 @@ export function BoothList({
     <>
       {/* PC: 表 */}
       <table className="hidden w-full text-left md:table">
-        <thead className="text-gray-400 text-sm">
-          <tr className="border-b border-white/10">
+        <thead className="text-gray-500 text-sm">
+          <tr className="border-b border-black/10">
             <th className="py-2">名前</th>
             <th>主催者</th>
             <th>場所</th>
@@ -60,7 +60,7 @@ export function BoothList({
         </thead>
         <tbody>
           {booths.map((b) => (
-            <tr key={b.id} className="border-b border-white/10">
+            <tr key={b.id} className="border-b border-black/10">
               <td className="py-3 pr-4 font-bold">{b.name}</td>
               <td className="pr-4">{b.organizer}</td>
               <td className="pr-4">{b.location}</td>
@@ -81,13 +81,13 @@ export function BoothList({
         {booths.map((b) => (
           <li
             key={b.id}
-            className="flex flex-col gap-2 rounded-lg border border-white/10 p-3"
+            className="flex flex-col gap-2 rounded-lg border border-black/10 p-3"
           >
             <div className="flex items-center justify-between gap-2">
               <span className="font-bold">{b.name}</span>
               <Congestion status={b.congestion_status} />
             </div>
-            <div className="text-gray-400 text-sm">
+            <div className="text-gray-500 text-sm">
               {b.organizer} / {b.location || "場所未設定"} / 担当
               {hasStaff(b.id) ? "あり" : "なし"}
             </div>

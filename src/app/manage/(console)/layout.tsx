@@ -25,9 +25,12 @@ export default async function ConsoleLayout({
   }
 
   return (
-    <div className="flex flex-col min-h-full">
+    <div className="flex flex-1 flex-col min-h-full">
       <ConsoleHeader user={me.data} menu={menuFor(me.data.role)} />
-      <main className="flex-1 px-4 py-6">{children}</main>
+      {/* 中身は白地に黒文字。ボタンなどが使う背景・文字の色もこの中だけ白・黒にする */}
+      <main className="flex-1 px-4 py-6 bg-white text-black [--background:oklch(1_0_0)] [--foreground:oklch(0.145_0_0)]">
+        {children}
+      </main>
     </div>
   );
 }

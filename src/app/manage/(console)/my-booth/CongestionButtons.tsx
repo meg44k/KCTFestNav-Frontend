@@ -41,7 +41,7 @@ export function CongestionButtons({
             style={{ backgroundColor: level.color }}
             className={cn(
               "h-20 rounded-xl text-2xl font-extrabold text-black transition",
-              selected ? "ring-4 ring-white" : "opacity-60",
+              selected ? "ring-4 ring-black" : "opacity-60",
             )}
           >
             {selected && "✓ "}

@@ -39,8 +39,8 @@ export function OpsTabs({
             aria-selected={tab === t}
             onClick={() => choose(t)}
             className={cn(
-              "h-12 rounded-lg border border-white/20 font-bold",
-              tab === t ? "bg-white text-black" : "text-gray-300",
+              "h-12 rounded-lg border border-black/20 font-bold",
+              tab === t ? "bg-black text-white" : "text-gray-600",
             )}
           >
             {LABELS[t]}

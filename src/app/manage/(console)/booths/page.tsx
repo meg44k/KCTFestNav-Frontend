@@ -42,7 +42,7 @@ export default async function BoothsPage() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-extrabold text-3xl">
           ブース管理{" "}
-          <span className="text-base text-gray-400">
+          <span className="text-base text-gray-500">
             {booths.data.booths.length}件
           </span>
         </h1>

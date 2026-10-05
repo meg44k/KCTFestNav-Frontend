@@ -28,7 +28,7 @@ export function AutoRefresh() {
   }, [router]);
 
   return (
-    <div className="flex items-center gap-2 text-gray-400 text-sm">
+    <div className="flex items-center gap-2 text-gray-500 text-sm">
       <span>60秒ごとに自動で最新にします</span>
       <Button
         variant="outline"

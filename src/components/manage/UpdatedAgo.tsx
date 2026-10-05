@@ -33,13 +33,13 @@ export function UpdatedAgo({
   const { label, stale } = updatedAgo(updatedAt, now);
   if (compact) {
     return (
-      <span className={stale ? "font-bold text-[#e54141]" : "text-gray-400"}>
+      <span className={stale ? "font-bold text-[#e54141]" : "text-gray-500"}>
         {label}
       </span>
     );
   }
   return (
-    <p className={stale ? "font-bold text-[#e54141]" : "text-gray-400"}>
+    <p className={stale ? "font-bold text-[#e54141]" : "text-gray-500"}>
       最終更新: {label}
       {stale && " — 混雑度を更新してください"}
     </p>

@@ -41,8 +41,8 @@ export function AccountList({
         {/* スマホ幅で入りきらないときは表だけ横にスクロールする */}
         <div className="overflow-x-auto">
           <table className="w-full text-left whitespace-nowrap">
-            <thead className="text-gray-400 text-sm">
-              <tr className="border-b border-white/10">
+            <thead className="text-gray-500 text-sm">
+              <tr className="border-b border-black/10">
                 {showBooth ? (
                   <>
                     <th className="py-2 pr-4">担当者</th>
@@ -61,7 +61,7 @@ export function AccountList({
             </thead>
             <tbody>
               {list.map((u) => (
-                <tr key={u.id} className="border-b border-white/10">
+                <tr key={u.id} className="border-b border-black/10">
                   {showBooth ? (
                     <>
                       <td className="py-2 pr-4 font-bold">{organizerOf(u)}</td>
@@ -70,7 +70,7 @@ export function AccountList({
                       >
                         {boothOf(u)}
                       </td>
-                      <td className="pr-4 font-mono text-gray-400">
+                      <td className="pr-4 font-mono text-gray-500">
                         {u.login_id}
                       </td>
                     </>
@@ -78,7 +78,7 @@ export function AccountList({
                     <>
                       <td className="py-2 pr-4 font-mono">{u.login_id}</td>
                       <td className="pr-4">{u.name}</td>
-                      <td className="pr-4 text-gray-400">
+                      <td className="pr-4 text-gray-500">
                         {ROLE_LABEL[u.role]}
                       </td>
                     </>

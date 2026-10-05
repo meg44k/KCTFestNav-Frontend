@@ -23,7 +23,7 @@ export function CongestionMonitor({
 
   return (
     <section className="flex flex-col gap-3">
-      <p className={staleCount ? "font-bold text-[#e54141]" : "text-gray-400"}>
+      <p className={staleCount ? "font-bold text-[#e54141]" : "text-gray-500"}>
         更新が止まっているブース {staleCount} 件
         {staleCount > 0 && "（担当者に声をかけてください）"}
       </p>
@@ -53,17 +53,17 @@ function BoothRow({
     });
 
   return (
-    <li className="flex flex-col gap-2 border-b border-white/10 py-3">
+    <li className="flex flex-col gap-2 border-b border-black/10 py-3">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3">
         <span className="font-bold">
           {booth.name}{" "}
-          <span className="font-normal text-gray-400 text-sm">
+          <span className="font-normal text-gray-500 text-sm">
             {booth.organizer}
           </span>
         </span>
         <span className="text-sm">
           {pending ? (
-            <span className="text-gray-400">更新中…</span>
+            <span className="text-gray-500">更新中…</span>
           ) : (
             <UpdatedAgo
               key={booth.congestion_updated_at ?? "never"}
@@ -87,7 +87,7 @@ function BoothRow({
               style={{ backgroundColor: level.color }}
               className={cn(
                 "h-10 rounded-md text-sm font-bold text-black",
-                selected ? "ring-2 ring-white" : "opacity-40",
+                selected ? "ring-2 ring-black" : "opacity-40",
               )}
             >
               {level.label}

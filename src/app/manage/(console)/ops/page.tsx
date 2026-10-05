@@ -46,13 +46,13 @@ export default async function OpsPage({
         <h1 className="font-extrabold text-3xl">当日運営</h1>
         <AutoRefresh />
       </div>
-      <p className="rounded-lg border border-white/10 p-3">
+      <p className="rounded-lg border border-black/10 p-3">
         {ongoing ? (
           <>
             いまのライブ: <b className="text-[#e54141]">{ongoing.name}</b>
           </>
         ) : (
-          <span className="text-gray-400">公演中のライブはありません</span>
+          <span className="text-gray-500">公演中のライブはありません</span>
         )}
       </p>
       <OpsTabs
