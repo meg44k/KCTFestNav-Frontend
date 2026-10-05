@@ -29,7 +29,7 @@ export function AutoRefresh() {
 
   return (
     <div className="flex items-center gap-2 text-gray-500 text-sm">
-      <span>60秒ごとに自動で最新にします</span>
+      <span>60秒ごとに自動で更新されます</span>
       <Button
         variant="outline"
         size="sm"
