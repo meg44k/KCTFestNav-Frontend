@@ -21,6 +21,18 @@ const dayLabel = (iso: string) => {
   return `${md}（${wd}）`;
 };
 
+// タブ用の短い表記「10/31(土)」
+const dayShort = (iso: string) => {
+  const d = new Date(iso);
+  const md = d.toLocaleDateString("ja-JP", {
+    timeZone: TZ,
+    month: "numeric",
+    day: "numeric",
+  });
+  const wd = d.toLocaleDateString("ja-JP", { timeZone: TZ, weekday: "short" });
+  return `${md}(${wd})`;
+};
+
 const hm = (iso: string) =>
   new Date(iso).toLocaleTimeString("ja-JP", {
     timeZone: TZ,
@@ -30,7 +42,7 @@ const hm = (iso: string) =>
 
 const ms = (iso: string) => new Date(iso).getTime();
 
-export type StageDay = { key: string; label: string };
+export type StageDay = { key: string; label: string; short: string };
 
 /** 番組のある日(日本時間)。日付順 */
 export function stageDays(sections: StageSectionResponse[]): StageDay[] {
@@ -38,7 +50,12 @@ export function stageDays(sections: StageSectionResponse[]): StageDay[] {
   for (const s of sections) {
     for (const b of s.blocks) {
       const key = dayKey(b.start_time);
-      if (!days.has(key)) days.set(key, { key, label: dayLabel(b.start_time) });
+      if (!days.has(key))
+        days.set(key, {
+          key,
+          label: dayLabel(b.start_time),
+          short: dayShort(b.start_time),
+        });
     }
   }
   return [...days.values()].sort((a, b) => a.key.localeCompare(b.key));

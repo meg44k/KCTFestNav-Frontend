@@ -68,8 +68,8 @@ describe("stageDays / pickDay", () => {
 
   it("日本時間の日付を重ねずに並べる", () => {
     expect(stageDays(sections)).toEqual([
-      { key: "2026-10-31", label: "10月31日（土）" },
-      { key: "2026-11-01", label: "11月1日（日）" },
+      { key: "2026-10-31", label: "10月31日（土）", short: "10/31(土)" },
+      { key: "2026-11-01", label: "11月1日（日）", short: "11/1(日)" },
     ]);
   });
 
