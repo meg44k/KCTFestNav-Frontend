@@ -65,14 +65,14 @@ export function DetailForm({ booth }: { booth: BoothResponse }) {
         </p>
       )}
       {state?.saved && !pending && (
-        <p className="text-[#00B894]">保存しました</p>
+        <p className="text-[#00B894]">公開しました</p>
       )}
       <Button
         type="submit"
         disabled={pending}
         className="h-12 border-2 border-[#00B894] bg-white text-[#00B894] hover:bg-[#00B894]/10 font-bold"
       >
-        {pending ? "保存中…" : "保存"}
+        {pending ? "公開中…" : "保存して公開"}
       </Button>
       <Dialog
         open={confirming !== null}
@@ -84,7 +84,7 @@ export function DetailForm({ booth }: { booth: BoothResponse }) {
           <DialogTitle>この内容で公開しますか？</DialogTitle>
           <DialogDescription render={<div />} className="flex flex-col gap-2">
             <p>
-              保存すると、出し物の説明と展示物画像は
+              公開すると、出し物の説明と展示物画像は
               <b className="text-[#e54141]">
                 すぐに来場者全員のスマホに表示されます。
               </b>
