@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { BoothResponse } from "@/lib/api/booths";
 
-/** 説明と画像だけを直すフォーム */
+/** 出し物の説明と展示物画像だけを直すフォーム */
 export function DetailForm({ booth }: { booth: BoothResponse }) {
   const [state, action] = useActionState<DetailState, FormData>(
     saveDetail,
@@ -26,7 +26,7 @@ export function DetailForm({ booth }: { booth: BoothResponse }) {
   return (
     <form onSubmit={submit} className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
-        <Label htmlFor="detail">説明</Label>
+        <Label htmlFor="detail">出し物の説明</Label>
         <Textarea
           id="detail"
           name="detail"
@@ -35,7 +35,7 @@ export function DetailForm({ booth }: { booth: BoothResponse }) {
         />
       </div>
       <div className="flex flex-col gap-1">
-        <Label htmlFor="imageUrl">画像 URL</Label>
+        <Label htmlFor="imageUrl">展示物画像</Label>
         <Input
           id="imageUrl"
           name="imageUrl"
