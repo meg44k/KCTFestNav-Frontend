@@ -1,15 +1,19 @@
 import { redirect } from "next/navigation";
 import { ConsoleMessage } from "@/components/manage/ConsoleMessage";
-import { failureMessage, manageRequest } from "@/lib/api/manage";
-import { homePathFor, type ManageUser } from "@/lib/manage/roles";
+import { failureMessage, fetchMe } from "@/lib/api/manage";
+import { homePathFor } from "@/lib/manage/roles";
 
 export default async function ManageHome() {
-  const me = await manageRequest<ManageUser>("/auth/me");
+  const me = await fetchMe();
   if (!me.ok) {
     if (me.reason === "unauthorized") redirect("/manage/logout");
     return (
       <ConsoleMessage title="管理画面">
-        {failureMessage(me.reason)}
+        <p>{failureMessage(me.reason)}</p>
+        {/* ヘッダーが出ないので、ここからログインし直せるようにする */}
+        <a href="/manage/logout" className="inline-block mt-4 underline">
+          ログインし直す
+        </a>
       </ConsoleMessage>
     );
   }

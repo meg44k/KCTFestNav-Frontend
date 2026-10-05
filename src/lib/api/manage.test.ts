@@ -12,7 +12,7 @@ vi.mock("next/headers", () => ({
   }),
 }));
 
-import { failureMessage, manageRequest, toFailure } from "./manage";
+import { failureMessage, fetchMe, manageRequest, toFailure } from "./manage";
 
 const fetchMock = vi.fn();
 
@@ -49,6 +49,12 @@ describe("manageRequest", () => {
     expect(url).toMatch(/\/auth\/me$/);
     expect(init.headers.Authorization).toBe("Bearer jwt-token");
     expect(init.cache).toBe("no-store");
+  });
+
+  it("応答が返らないまま待ち続けないよう、タイムアウトを付ける", async () => {
+    fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
+    await manageRequest("/auth/me");
+    expect(fetchMock.mock.calls[0][1].signal).toBeInstanceOf(AbortSignal);
   });
 
   it("本文の無い 204 は data を undefined にする", async () => {
@@ -99,5 +105,26 @@ describe("failureMessage", () => {
       "サーバーに接続できません。時間をおいて再度お試しください。",
     );
     expect(failureMessage("forbidden")).toBe("この操作の権限がありません。");
+  });
+});
+
+describe("fetchMe", () => {
+  it("アカウントが削除されていて 404 のときもログインし直してもらう", async () => {
+    fetchMock.mockResolvedValue(new Response("{}", { status: 404 }));
+    expect(await fetchMe()).toEqual({ ok: false, reason: "unauthorized" });
+  });
+
+  it("成功時はユーザーを返す", async () => {
+    const user = {
+      id: "u",
+      name: "管理者",
+      login_id: "a",
+      assigned_booth_id: 0,
+      role: "Admin",
+    };
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify(user), { status: 200 }),
+    );
+    expect(await fetchMe()).toEqual({ ok: true, data: user });
   });
 });

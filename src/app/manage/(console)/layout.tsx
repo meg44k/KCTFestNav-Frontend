@@ -1,21 +1,25 @@
 import { redirect } from "next/navigation";
 import { ConsoleHeader } from "@/components/manage/ConsoleHeader";
 import { ConsoleMessage } from "@/components/manage/ConsoleMessage";
-import { failureMessage, manageRequest } from "@/lib/api/manage";
-import { type ManageUser, menuFor } from "@/lib/manage/roles";
+import { failureMessage, fetchMe } from "@/lib/api/manage";
+import { menuFor } from "@/lib/manage/roles";
 
 export default async function ConsoleLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const me = await manageRequest<ManageUser>("/auth/me");
+  const me = await fetchMe();
   if (!me.ok) {
     // 期限切れ・不正なトークンは Cookie を消してログインし直してもらう
     if (me.reason === "unauthorized") redirect("/manage/logout");
     return (
       <ConsoleMessage title="管理画面">
-        {failureMessage(me.reason)}
+        <p>{failureMessage(me.reason)}</p>
+        {/* ヘッダーが出ないので、ここからログインし直せるようにする */}
+        <a href="/manage/logout" className="inline-block mt-4 underline">
+          ログインし直す
+        </a>
       </ConsoleMessage>
     );
   }

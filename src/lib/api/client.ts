@@ -7,6 +7,9 @@
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:1323";
 
+/** 当日バックエンドが詰まっても、ログインや画面が何分も固まらないようにする */
+export const REQUEST_TIMEOUT_MS = 10_000;
+
 export class ApiError extends Error {
   readonly status: number;
 

@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { API_BASE_URL } from "@/lib/api/client";
+import { API_BASE_URL, REQUEST_TIMEOUT_MS } from "@/lib/api/client";
 import { failureMessage } from "@/lib/api/manage";
 import { clearToken, saveToken } from "@/lib/manage/cookie";
 
@@ -25,6 +25,7 @@ export async function loginAction(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ login_id: loginId, password }),
       cache: "no-store",
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
   } catch (e) {
     console.error("ログインAPIに接続できませんでした", e);

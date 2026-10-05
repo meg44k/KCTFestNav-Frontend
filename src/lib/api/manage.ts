@@ -4,8 +4,9 @@
 // redirect はここではしない。呼び出し側が try/catch で包むと NEXT_REDIRECT を
 // 飲み込んでしまうため、失敗の種類を返して呼び出し側で判断する。
 import { cookies } from "next/headers";
+import type { ManageUser } from "@/lib/manage/roles";
 import { TOKEN_COOKIE } from "@/lib/manage/session";
-import { API_BASE_URL } from "./client";
+import { API_BASE_URL, REQUEST_TIMEOUT_MS } from "./client";
 
 export type ManageFailure =
   | "unauthorized"
@@ -36,6 +37,7 @@ export async function manageRequest<T>(
     res = await fetch(`${API_BASE_URL}${path}`, {
       // 管理画面は常に最新の値を見せる
       cache: "no-store",
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       ...init,
       headers: {
         "Content-Type": "application/json",
@@ -52,6 +54,18 @@ export async function manageRequest<T>(
   // 更新・削除の API は本文を返さない
   const data = res.status === 204 ? undefined : await res.json();
   return { ok: true, data: data as T };
+}
+
+/**
+ * ログイン中のユーザー。アカウントが削除されていると、トークンが有効でも
+ * バックエンドは 404 を返すため、期限切れと同じくログインし直してもらう
+ */
+export async function fetchMe(): Promise<ManageResult<ManageUser>> {
+  const me = await manageRequest<ManageUser>("/auth/me");
+  if (!me.ok && me.reason === "rejected") {
+    return { ok: false, reason: "unauthorized" };
+  }
+  return me;
 }
 
 export function failureMessage(reason: ManageFailure): string {

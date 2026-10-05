@@ -55,6 +55,12 @@ describe("loginAction", () => {
     });
   });
 
+  it("応答が返らないまま待ち続けないよう、タイムアウトを付ける", async () => {
+    fetchMock.mockResolvedValue(new Response("{}", { status: 401 }));
+    await loginAction(undefined, form("booth-1", "pass"));
+    expect(fetchMock.mock.calls[0][1].signal).toBeInstanceOf(AbortSignal);
+  });
+
   it("ID の前後の空白は取り除く", async () => {
     fetchMock.mockResolvedValue(
       new Response(JSON.stringify({ token: "jwt" }), { status: 200 }),
