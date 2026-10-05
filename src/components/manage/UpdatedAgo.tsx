@@ -12,10 +12,13 @@ import { serverClockNow, updatedAgo } from "@/lib/manage/congestion";
 export function UpdatedAgo({
   updatedAt,
   serverNow,
+  compact = false,
 }: {
   updatedAt?: string | null;
   /** ページを描画したときのサーバーの時刻(ミリ秒) */
   serverNow: number;
+  /** 一覧の行など狭い場所用。「N分前」だけを出す */
+  compact?: boolean;
 }) {
   const [now, setNow] = useState(() => new Date(serverNow));
   useEffect(() => {
@@ -28,6 +31,13 @@ export function UpdatedAgo({
   }, [serverNow]);
 
   const { label, stale } = updatedAgo(updatedAt, now);
+  if (compact) {
+    return (
+      <span className={stale ? "font-bold text-[#e54141]" : "text-gray-400"}>
+        {label}
+      </span>
+    );
+  }
   return (
     <p className={stale ? "font-bold text-[#e54141]" : "text-gray-400"}>
       最終更新: {label}

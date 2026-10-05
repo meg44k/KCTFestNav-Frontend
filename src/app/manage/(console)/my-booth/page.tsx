@@ -1,8 +1,8 @@
 import { loadMyBooth } from "@/app/actions/my-booth";
 import { ConsoleMessage } from "@/components/manage/ConsoleMessage";
+import { UpdatedAgo } from "@/components/manage/UpdatedAgo";
 import { CongestionButtons } from "./CongestionButtons";
 import { DetailForm } from "./DetailForm";
-import { UpdatedAgo } from "./UpdatedAgo";
 
 export default async function MyBoothPage() {
   const res = await loadMyBooth();
