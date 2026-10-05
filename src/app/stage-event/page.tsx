@@ -25,7 +25,7 @@ export default async function StageEvent() {
     <div>
       <SideMenu />
       <RefreshEvery seconds={60} />
-      <PageTitle>ライブ紹介</PageTitle>
+      <PageTitle>ステージイベント</PageTitle>
       {loadFailed ? (
         <p className="flex justify-center mt-10 text-gray-400">
           ライブ情報を読み込めませんでした。時間をおいて再度お試しください。
