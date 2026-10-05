@@ -14,6 +14,8 @@ export type BoothResponse = {
   z: number;
   latitude: number;
   longitude: number;
+  /** 混雑度を最後に更新した時刻(ISO 8601)。未更新は null。古いバックエンドでは無い */
+  congestion_updated_at?: string | null;
 };
 
 export type CongestionStatus = "empty" | "clouded" | "veryClouded";
