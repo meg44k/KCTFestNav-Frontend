@@ -1,7 +1,10 @@
 import type { BoothResponse } from "@/lib/api/booths";
 
 /** POST/PUT /manage/booths に送る形。混雑度は別の API で変えるので含めない */
-export type BoothPayload = Omit<BoothResponse, "id" | "congestion_status">;
+export type BoothPayload = Omit<
+  BoothResponse,
+  "id" | "congestion_status" | "congestion_updated_at"
+>;
 
 const text = (f: FormData, key: string) => String(f.get(key) ?? "").trim();
 
@@ -48,5 +51,29 @@ export function parseBoothForm(
       y: current?.y ?? 0,
       z: current?.z ?? 0,
     },
+  };
+}
+
+/** 企画担当が直せるのは説明と画像だけ。他の項目は今の値をそのまま送る */
+export function parseDetailForm(
+  formData: FormData,
+  current: BoothResponse,
+): { ok: true; payload: BoothPayload } | { ok: false; error: string } {
+  const imageUrl = text(formData, "imageUrl");
+  if (imageUrl && !/^https?:\/\//.test(imageUrl)) {
+    return {
+      ok: false,
+      error: "画像 URL は http:// か https:// で始めてください",
+    };
+  }
+  const {
+    id: _id,
+    congestion_status: _status,
+    congestion_updated_at: _updatedAt,
+    ...rest
+  } = current;
+  return {
+    ok: true,
+    payload: { ...rest, detail: text(formData, "detail"), image_url: imageUrl },
   };
 }
