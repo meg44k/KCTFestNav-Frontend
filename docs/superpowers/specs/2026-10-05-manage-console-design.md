@@ -109,6 +109,10 @@
 
 ### 6.2 アカウント発行 `/manage/accounts`
 
+> 2026-10-05 追記: バックエンドの `PUT /manage/users/:id` は受け取ったパスワードをハッシュ化せずにそのまま保存しており、
+> 更新後はログインできなくなる。パスワード再発行の前提として、段階1でバックエンドを直す
+> （パスワードが空なら今のハッシュを保つ、空でなければハッシュ化して保存する）。
+
 ブースごとに 1 アカウントなので、CSV の取り込みではなく「ブース一覧から発行する」形にする。
 
 - 「未発行のブースにまとめて発行」ボタン: 担当アカウントの無いブースすべてに Student アカウントを作る
@@ -166,7 +170,7 @@
 | 段階 | フロント | バックエンド |
 |---|---|---|
 | 0 | `feature/manage-foundation` | `feature/manage-auth-fix` |
-| 1 | `feature/manage-admin` | （変更なし） |
+| 1 | `feature/manage-admin` | `feature/user-update-password` |
 | 2 | `feature/manage-booth-staff` | `feature/congestion-updated-at` |
 | 3 | `feature/manage-ops` | （変更なし） |
 
