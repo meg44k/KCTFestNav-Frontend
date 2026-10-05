@@ -1,36 +1,42 @@
+import Link from "next/link";
 import { ConsoleMessage } from "@/components/manage/ConsoleMessage";
-import type { LiveResponse } from "@/lib/api/lives";
 import { failureMessage, manageRequest, requireRole } from "@/lib/api/manage";
-import { LiveList } from "../LiveList";
+import type { StageSectionResponse } from "@/lib/api/stage";
+import { StageOps } from "../StageOps";
 
 export default async function LivesPage() {
-  // 追加・編集・削除は Admin にだけ出すため、役職を見る(権限の確認は layout でも済んでいる)
+  // 番組表の編集へのリンクは Admin にだけ出すため、役職を見る(権限の確認は layout でも済んでいる)
   const auth = await requireRole(["Admin", "Gakuseikai"]);
   if (!auth.ok) {
     return <ConsoleMessage title="ライブ">{auth.message}</ConsoleMessage>;
   }
-  const lives = await manageRequest<{ lives: LiveResponse[] }>("/lives");
-  if (!lives.ok) {
+  const stage = await manageRequest<{ sections: StageSectionResponse[] }>(
+    "/stage",
+  );
+  if (!stage.ok) {
     return (
       <ConsoleMessage title="ライブ">
-        {failureMessage(lives.reason)}
+        {failureMessage(stage.reason)}
       </ConsoleMessage>
     );
   }
-  const ongoing = lives.data.lives.find((l) => l.status === 1);
   return (
     <>
-      <h1 className="font-extrabold text-3xl">ライブ</h1>
-      <p className="rounded-lg border border-black/10 px-3 py-2">
-        {ongoing ? (
-          <>
-            いまのライブ: <b className="text-[#e54141]">{ongoing.name}</b>
-          </>
-        ) : (
-          <span className="text-gray-500">公演中のライブはありません</span>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="font-extrabold text-3xl">ライブ</h1>
+        {auth.user.role === "Admin" && (
+          <Link
+            href="/manage/ops/lives/edit"
+            className="rounded-md border border-black/20 px-4 py-2 font-bold"
+          >
+            番組表を編集
+          </Link>
         )}
+      </div>
+      <p className="text-gray-600 text-sm">
+        バンドが替わったら「次のバンドへ」を押してください。来場者の画面に演奏中として表示されます。
       </p>
-      <LiveList lives={lives.data.lives} isAdmin={auth.user.role === "Admin"} />
+      <StageOps sections={stage.data.sections} serverNow={Date.now()} />
     </>
   );
 }
