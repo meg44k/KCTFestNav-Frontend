@@ -4,7 +4,7 @@
 // ブラウザ(Client Component)から http:// のAPIを直接叩くと mixed content
 // として遮断される。Server Component / Server Action から呼ぶか、
 // API 側も HTTPS で配信する必要がある。
-const API_BASE_URL =
+export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:1323";
 
 export class ApiError extends Error {
