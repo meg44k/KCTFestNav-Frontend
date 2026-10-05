@@ -21,7 +21,12 @@ export function ConsoleHeader({
         ))}
       </nav>
       <form action={logoutAction} className="ml-auto">
-        <Button type="submit" variant="outline" size="sm">
+        <Button
+          type="submit"
+          variant="outline"
+          size="sm"
+          className="border-[#e54141] text-[#e54141] hover:bg-[#e54141]/10 hover:text-[#e54141]"
+        >
           ログアウト
         </Button>
       </form>
