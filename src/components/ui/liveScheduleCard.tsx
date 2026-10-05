@@ -66,9 +66,19 @@ function BandBar({
           </div>
         )}
         <div className="text-2xl">{bandName}</div>
-        <div className="w-30 h-30">
-          <Image src={thumbnail} alt="バンド写真" className="aspect-square" />
-        </div>
+        {/* サムネイルが未設定のライブもある。外部の画像 URL をそのまま出すため最適化はしない */}
+        {thumbnail && (
+          <div className="relative w-30 h-30">
+            <Image
+              src={thumbnail}
+              alt="バンド写真"
+              fill
+              sizes="120px"
+              unoptimized
+              className="object-cover aspect-square"
+            />
+          </div>
+        )}
 
         <div>
           {startTime}~{endTime}
