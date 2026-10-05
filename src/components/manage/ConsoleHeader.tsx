@@ -19,7 +19,7 @@ export function ConsoleHeader({
           type="submit"
           variant="outline"
           size="sm"
-          className="border-[#e54141] text-[#e54141] hover:bg-[#e54141]/10 hover:text-[#e54141]"
+          className="cursor-pointer border-[#e54141] text-[#e54141] hover:bg-[#e54141] hover:text-white"
         >
           ログアウト
         </Button>
