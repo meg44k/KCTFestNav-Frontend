@@ -24,6 +24,12 @@ const TITLES: Record<BoothType, string> = {
   club: "クラブバザー",
 };
 
+// 「空いている○○だけ」の切り替えの文言
+const EMPTY_LABELS: Record<BoothType, string> = {
+  class: "空いている展示",
+  club: "空いているバザー",
+};
+
 const chip = (active: boolean) =>
   cn(
     "h-10 shrink-0 rounded-full border px-4 text-sm font-bold",
@@ -163,7 +169,7 @@ export function BoothBrowser({
                 aria-label="ブースを探す"
                 className="h-11 w-full rounded-md border border-white/30 bg-black px-3 text-base text-white placeholder:text-gray-500"
               />
-              {/* 並び順 2 つと「空いている展示」は必ず 1 行に並べる */}
+              {/* 並び順 2 つと「空いている展示/バザー」は必ず 1 行に並べる */}
               <div className="grid grid-cols-[auto_auto_1fr] gap-2">
                 {BOOTH_SORTS.map((s) => (
                   <button
@@ -190,7 +196,8 @@ export function BoothBrowser({
                       : "border-[#00B894]/60 text-[#00B894]",
                   )}
                 >
-                  {filters.onlyEmpty ? "✓ " : ""}空いている展示
+                  {filters.onlyEmpty ? "✓ " : ""}
+                  {EMPTY_LABELS[filters.type]}
                 </button>
               </div>
             </div>
