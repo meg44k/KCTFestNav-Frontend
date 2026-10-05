@@ -12,7 +12,7 @@ export type ManageUser = {
 
 export type MenuItem = { href: string; label: string };
 
-const BOOTHS: MenuItem = { href: "/manage/booths", label: "ブース" };
+const BOOTHS: MenuItem = { href: "/manage/booths", label: "ブース管理" };
 const ACCOUNTS: MenuItem = {
   href: "/manage/accounts",
   label: "アカウント管理",
