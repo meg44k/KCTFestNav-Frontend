@@ -15,6 +15,7 @@ import {
   type BoothType,
   filtersToQuery,
   gradeCounts,
+  sortLabel,
   updatedLabel,
 } from "@/lib/booth-browser";
 import { cn } from "@/lib/utils";
@@ -173,16 +174,16 @@ export function BoothBrowser({
               <div className="grid grid-cols-[auto_auto_1fr] gap-2">
                 {BOOTH_SORTS.map((s) => (
                   <button
-                    key={s.value}
+                    key={s}
                     type="button"
-                    aria-pressed={filters.sort === s.value}
-                    onClick={() => update({ sort: s.value })}
+                    aria-pressed={filters.sort === s}
+                    onClick={() => update({ sort: s })}
                     className={cn(
-                      chip(filters.sort === s.value),
+                      chip(filters.sort === s),
                       "px-3 whitespace-nowrap",
                     )}
                   >
-                    {s.label}
+                    {sortLabel(s, filters.type)}
                   </button>
                 ))}
                 <button

@@ -6,6 +6,7 @@ import {
   filtersToQuery,
   gradeCounts,
   parseFilters,
+  sortLabel,
   updatedLabel,
 } from "./booth-browser";
 
@@ -45,7 +46,21 @@ const ids = (f: Partial<BoothFilters>) =>
 describe("applyFilters", () => {
   it("クラス順は数字を数として並べる(1-2 は 1-10 の前)", () => {
     expect(ids({})).toEqual([3, 2, 1]);
+  });
+
+  it("クラブバザーの名前順はブース名の順", () => {
+    // VR体験(5) < プラネタリウム(4)
     expect(ids({ type: "club" })).toEqual([5, 4]);
+    const more = [...booths, booth(6, "写真部", "empty", { name: "Art展" })];
+    expect(
+      applyFilters(more, { ...base, type: "club" }).map((b) => b.id),
+    ).toEqual([6, 5, 4]);
+  });
+
+  it("並び順の文言は種類で変わる", () => {
+    expect(sortLabel("class", "class")).toBe("クラス順");
+    expect(sortLabel("class", "club")).toBe("名前順");
+    expect(sortLabel("empty", "club")).toBe("混雑度順");
   });
 
   it("クラス展示だけ・クラブバザーだけ", () => {

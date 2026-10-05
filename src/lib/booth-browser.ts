@@ -20,11 +20,13 @@ export const BOOTH_TYPES: { value: BoothType; label: string }[] = [
   { value: "club", label: "クラブバザー" },
 ];
 
-export const BOOTH_SORTS: { value: BoothSort; label: string }[] = [
-  { value: "class", label: "クラス順" },
-  // 空いているものから先に並べる
-  { value: "empty", label: "混雑度順" },
-];
+export const BOOTH_SORTS: BoothSort[] = ["class", "empty"];
+
+/** 並び順の文言。基本の並びはクラス展示ではクラス順、クラブバザーではブース名の順 */
+export function sortLabel(sort: BoothSort, type: BoothType): string {
+  if (sort === "empty") return "混雑度順"; // 空いているものから先に並べる
+  return type === "club" ? "名前順" : "クラス順";
+}
 
 // 1-2 が 1-10 より前に来るよう、数字は数として比べる
 const collate = new Intl.Collator("ja", { numeric: true }).compare;
@@ -35,6 +37,11 @@ function byClass(a: Booth, b: Booth): number {
   const bClub = parseGrade(b.organizer) === null;
   if (aClub !== bClub) return aClub ? 1 : -1;
   return collate(a.organizer, b.organizer) || a.id - b.id;
+}
+
+// クラブバザーはカードに大きく出るブース名の順
+function byName(a: Booth, b: Booth): number {
+  return collate(a.name, b.name) || a.id - b.id;
 }
 
 const CROWD_RANK: Record<Booth["congestionStatus"], number> = {
@@ -77,11 +84,12 @@ export function applyFilters(booths: Booth[], f: BoothFilters): Booth[] {
       f.grade === "all" ||
       parseGrade(b.organizer) === f.grade,
   );
+  const base = f.type === "club" ? byName : byClass;
   return filtered.sort((a, b) =>
     f.sort === "empty"
       ? CROWD_RANK[a.congestionStatus] - CROWD_RANK[b.congestionStatus] ||
-        byClass(a, b)
-      : byClass(a, b),
+        base(a, b)
+      : base(a, b),
   );
 }
 
