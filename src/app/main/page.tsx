@@ -1,28 +1,28 @@
-"use client";
-import { useState } from "react";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
+import { RefreshEvery } from "@/components/RefreshEvery";
 import { BulletinBoard } from "@/components/ui/bulletinBoard";
-export default function Main() {
-  const [mapType, setMapType] = useState("2D");
+import { apiFetch } from "@/lib/api/client";
+import { announcementOrDefault } from "@/lib/live-schedule";
+import { MapTypeToggle } from "./MapTypeToggle";
 
-  const changeMapType = () => {
-    if (mapType === "2D") {
-      setMapType("3D");
-    } else {
-      setMapType("2D");
-    }
-  };
+export default async function Main() {
+  let content: string | undefined;
+  try {
+    // 学生会が管理画面から書き換えるので、キャッシュしない
+    ({ content } = await apiFetch<{ content: string }>("/announcements", {
+      cache: "no-store",
+    }));
+  } catch (e) {
+    // API が落ちていても画面は出し、既定の文を流す
+    console.error("お知らせの取得に失敗しました", e);
+  }
+
   return (
     <div>
-      <BulletinBoard content="2026 高専祭開催中!!" />
+      <BulletinBoard content={announcementOrDefault(content)} />
       <SideMenu />
-      <button
-        type="button"
-        onClick={changeMapType}
-        className="absolute flex justify-center items-center bottom-10 right-4 rounded-full w-10 h-10 border border-white-1"
-      >
-        <span className="text-md -translate-y-[1px]">{mapType}</span>
-      </button>
+      <MapTypeToggle />
+      <RefreshEvery seconds={60} />
     </div>
   );
 }
