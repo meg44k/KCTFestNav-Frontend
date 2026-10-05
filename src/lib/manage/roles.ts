@@ -13,7 +13,10 @@ export type ManageUser = {
 export type MenuItem = { href: string; label: string };
 
 const BOOTHS: MenuItem = { href: "/manage/booths", label: "ブース" };
-const ACCOUNTS: MenuItem = { href: "/manage/accounts", label: "アカウント" };
+const ACCOUNTS: MenuItem = {
+  href: "/manage/accounts",
+  label: "アカウント管理",
+};
 const OPS: MenuItem = { href: "/manage/ops", label: "当日運営" };
 
 /** ログイン後に最初に開く画面。管理画面を使えないロールは null */

@@ -10,7 +10,9 @@ import { IssueAccounts } from "./IssueAccounts";
 export default async function AccountsPage() {
   const auth = await requireRole(["Admin"]);
   if (!auth.ok) {
-    return <ConsoleMessage title="アカウント">{auth.message}</ConsoleMessage>;
+    return (
+      <ConsoleMessage title="アカウント管理">{auth.message}</ConsoleMessage>
+    );
   }
 
   const [booths, users] = await Promise.all([
@@ -24,7 +26,7 @@ export default async function AccountsPage() {
         ? users.reason
         : "unavailable";
     return (
-      <ConsoleMessage title="アカウント">
+      <ConsoleMessage title="アカウント管理">
         {failureMessage(reason)}
       </ConsoleMessage>
     );
@@ -41,7 +43,7 @@ export default async function AccountsPage() {
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-8">
       <div className="flex flex-wrap items-center justify-between gap-4 print:hidden">
-        <h1 className="font-extrabold text-3xl">アカウント</h1>
+        <h1 className="font-extrabold text-3xl">アカウント管理</h1>
         <AddAccountDialog />
       </div>
       <IssueAccounts missing={missing.length} />
