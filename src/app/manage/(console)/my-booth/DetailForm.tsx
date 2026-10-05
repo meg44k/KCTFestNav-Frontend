@@ -22,7 +22,7 @@ export function DetailForm({ booth }: { booth: BoothResponse }) {
     undefined,
   );
   const [pending, start] = useTransition();
-  // 公開前の確認で待っている入力。null なら確認は閉じている
+  // 更新前の確認で待っている入力。null なら確認は閉じている
   const [confirming, setConfirming] = useState<FormData | null>(null);
 
   // すぐには保存せず、来場者全員に見られることを確認してもらう。
@@ -72,7 +72,7 @@ export function DetailForm({ booth }: { booth: BoothResponse }) {
         disabled={pending}
         className="h-12 border-2 border-[#00B894] bg-white text-[#00B894] hover:bg-[#00B894]/10 font-bold"
       >
-        {pending ? "公開中…" : "保存して公開"}
+        {pending ? "更新中…" : "更新"}
       </Button>
       <Dialog
         open={confirming !== null}
@@ -81,10 +81,10 @@ export function DetailForm({ booth }: { booth: BoothResponse }) {
         }}
       >
         <DialogContent showCloseButton={false}>
-          <DialogTitle>この内容で公開しますか？</DialogTitle>
+          <DialogTitle>この内容で更新しますか？</DialogTitle>
           <DialogDescription render={<div />} className="flex flex-col gap-2">
             <p>
-              公開すると、出し物の説明と展示物画像は
+              更新すると、出し物の説明と展示物画像は
               <b className="text-[#e54141]">
                 すぐに来場者全員のスマホに表示されます。
               </b>
@@ -111,7 +111,7 @@ export function DetailForm({ booth }: { booth: BoothResponse }) {
               onClick={publish}
               className="h-12 cursor-pointer bg-[#00B894] text-black hover:bg-[#00B894]/90 font-bold"
             >
-              公開する
+              更新する
             </Button>
           </div>
         </DialogContent>
