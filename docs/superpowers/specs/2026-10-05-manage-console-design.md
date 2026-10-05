@@ -152,7 +152,8 @@
 - **混雑度の監視**: 全ブースを「最終更新が古い順」に並べる。30 分以上更新が無いブースは赤で強調。
   各ブースの混雑度をその場で変えられる（担当者の代わりに更新するため）
 - **ライブ**: ライブの一覧（開始時刻順）。各ライブに「開演前／公演中／終了」の切り替えボタン（`PATCH /manage/lives/:id/status`）。
-  ライブの追加・編集・削除は Admin のみ API で許されているので、Admin にだけ表示する
+  ライブの追加・削除は Admin のみ API で許されている。編集は API では学生会にも許されている（`docs/permissions.md`）が、画面では追加・編集・削除を Admin にだけ表示する
+  （2026-10-05 追記）公演中にすると、他の公演中は終了にする（現在のライブを 1 つに保つ）
 - **お知らせ**: 現在のお知らせを表示し、書き換えて保存する（`PUT /manage/announcements`）
 
 ### 8.2 注意
@@ -172,6 +173,6 @@
 | 0 | `feature/manage-foundation` | `feature/manage-auth-fix` |
 | 1 | `feature/manage-admin` | `feature/user-update-password` |
 | 2 | `feature/manage-booth-staff` | `feature/congestion-updated-at` |
-| 3 | `feature/manage-ops` | （変更なし） |
+| 3 | `feature/manage-ops` | `feature/live-status-fix` |
 
 どれも `develop` から切り、段階ごとに PR を出す。マージは本人が行う。
