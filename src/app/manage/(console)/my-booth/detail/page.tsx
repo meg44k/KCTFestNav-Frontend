@@ -10,7 +10,7 @@ export default async function MyBoothDetailPage() {
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="font-bold">出し物の説明と展示物画像</h2>
+      <h2 className="font-bold">出し物の詳細を編集</h2>
       <DetailForm booth={res.booth} />
     </section>
   );
