@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { type TouchEvent, useRef, useState } from "react";
+import { PageTitle } from "@/components/layout/PageTitle";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
 import { RefreshEvery } from "@/components/RefreshEvery";
 import { BoothCard } from "@/components/ui/boothcard";
@@ -98,9 +99,7 @@ export function BoothBrowser({
     >
       <SideMenu />
       <RefreshEvery seconds={60} />
-      <h1 className="flex justify-center font-extrabold text-4xl">
-        {TITLES[filters.type]}
-      </h1>
+      <PageTitle>{TITLES[filters.type]}</PageTitle>
 
       {loadFailed ? (
         <p className="flex justify-center mt-10 text-gray-400">

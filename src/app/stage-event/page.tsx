@@ -1,3 +1,4 @@
+import { PageTitle } from "@/components/layout/PageTitle";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
 import { RefreshEvery } from "@/components/RefreshEvery";
 import { BandBar, LiveScheduleCard } from "@/components/ui/liveScheduleCard";
@@ -24,9 +25,7 @@ export default async function StageEvent() {
     <div>
       <SideMenu />
       <RefreshEvery seconds={60} />
-      <h1 className="flex justify-center font-extrabold text-4xl p-5">
-        ライブ紹介
-      </h1>
+      <PageTitle>ライブ紹介</PageTitle>
       {loadFailed ? (
         <p className="flex justify-center mt-10 text-gray-400">
           ライブ情報を読み込めませんでした。時間をおいて再度お試しください。
