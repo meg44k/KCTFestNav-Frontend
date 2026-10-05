@@ -19,7 +19,9 @@ export function AddAccountDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
-        render={<Button variant="outline" className="h-12 px-6" />}
+        render={
+          <Button className="h-12 px-6 bg-[#00B894] text-black hover:bg-[#00B894]/90 font-bold" />
+        }
       >
         アカウントを追加
       </DialogTrigger>
