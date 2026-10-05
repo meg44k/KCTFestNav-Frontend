@@ -65,7 +65,7 @@ function AddForm() {
           placeholder="学生会 会計 など"
         />
       </div>
-      <fieldset className="flex gap-6">
+      <fieldset className="flex flex-wrap gap-x-6 gap-y-2">
         <legend className="mb-1 text-sm">ロール</legend>
         <label className="flex items-center gap-2">
           <input type="radio" name="role" value="Gakuseikai" defaultChecked />
@@ -74,6 +74,9 @@ function AddForm() {
         <label className="flex items-center gap-2">
           <input type="radio" name="role" value="Admin" />
           管理者
+          <span className="font-bold text-[#e54141] text-sm">
+            ※管理者はすべての権限を所持します
+          </span>
         </label>
       </fieldset>
       {state?.error && (
