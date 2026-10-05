@@ -95,7 +95,7 @@ export async function addAccount(
   const name = String(formData.get("name") ?? "").trim() || loginId;
   const role = String(formData.get("role") ?? "");
   if (!loginId) return { error: "ログイン ID を入力してください" };
-  if (!ADDABLE_ROLES.has(role)) return { error: "ロールを選んでください" };
+  if (!ADDABLE_ROLES.has(role)) return { error: "役職を選んでください" };
 
   const password = newPassword();
   const res = await manageRequest("/manage/users", {

@@ -129,7 +129,7 @@ describe("addAccount", () => {
 
   it("Student / Member はここでは作らない", async () => {
     expect(await addAccount(undefined, f("x", "Student"))).toEqual({
-      error: "ロールを選んでください",
+      error: "役職を選んでください",
     });
   });
 

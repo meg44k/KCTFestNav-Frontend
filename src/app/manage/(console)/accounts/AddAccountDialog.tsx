@@ -66,7 +66,7 @@ function AddForm() {
         />
       </div>
       <fieldset className="flex flex-wrap gap-x-6 gap-y-2">
-        <legend className="mb-1 text-sm">ロール</legend>
+        <legend className="mb-1 text-sm">役職</legend>
         <label className="flex items-center gap-2">
           <input type="radio" name="role" value="Gakuseikai" defaultChecked />
           学生会
