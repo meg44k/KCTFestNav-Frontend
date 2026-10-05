@@ -56,7 +56,7 @@ export async function setCongestion(
     body: JSON.stringify({ congestion_status: status }),
   });
   if (!res.ok) return { error: failed(res.reason) };
-  revalidatePath("/manage/my-booth");
+  revalidatePath("/manage/my-booth", "layout");
   return {};
 }
 
@@ -77,6 +77,6 @@ export async function saveDetail(
     body: JSON.stringify(parsed.payload),
   });
   if (!res.ok) return { error: failed(res.reason) };
-  revalidatePath("/manage/my-booth");
+  revalidatePath("/manage/my-booth", "layout");
   return { saved: true };
 }

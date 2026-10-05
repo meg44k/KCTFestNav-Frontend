@@ -5,7 +5,7 @@ describe("homePathFor", () => {
   it("ロールごとにログイン後の画面を返す", () => {
     expect(homePathFor("Admin")).toBe("/manage/booths");
     expect(homePathFor("Gakuseikai")).toBe("/manage/ops/congestion");
-    expect(homePathFor("Student")).toBe("/manage/my-booth");
+    expect(homePathFor("Student")).toBe("/manage/my-booth/congestion");
   });
 
   it("Member は管理画面を使えないので null", () => {
@@ -32,8 +32,14 @@ describe("menuFor", () => {
     ]);
   });
 
-  it("Student と Member にはメニューを出さない", () => {
-    expect(menuFor("Student")).toEqual([]);
+  it("Student は自分のブースの混雑度と説明", () => {
+    expect(menuFor("Student")).toEqual([
+      { href: "/manage/my-booth/congestion", label: "混雑度" },
+      { href: "/manage/my-booth/detail", label: "ブースの説明" },
+    ]);
+  });
+
+  it("Member にはメニューを出さない", () => {
     expect(menuFor("Member")).toEqual([]);
   });
 });
