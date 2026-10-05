@@ -44,6 +44,20 @@ describe("toBooth", () => {
     });
   });
 
+  it("混雑度の更新時刻を移し替える(未更新や古いバックエンドでは undefined)", () => {
+    expect(
+      toBooth({
+        ...baseResponse,
+        congestion_updated_at: "2026-10-31T03:00:00Z",
+      }).congestionUpdatedAt,
+    ).toBe("2026-10-31T03:00:00Z");
+    expect(
+      toBooth({ ...baseResponse, congestion_updated_at: null })
+        .congestionUpdatedAt,
+    ).toBeUndefined();
+    expect(toBooth(baseResponse).congestionUpdatedAt).toBeUndefined();
+  });
+
   it("画像が未設定(空文字)のときは undefined にする", () => {
     const booth = toBooth({ ...baseResponse, image_url: "" });
     expect(booth.imageUrl).toBeUndefined();
