@@ -65,7 +65,7 @@ export function DetailForm({ booth }: { booth: BoothResponse }) {
         </p>
       )}
       {state?.saved && !pending && (
-        <p className="text-[#00B894]">公開しました</p>
+        <p className="text-[#00B894]">更新しました</p>
       )}
       <Button
         type="submit"
