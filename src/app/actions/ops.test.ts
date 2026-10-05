@@ -85,9 +85,63 @@ describe("setLiveStatus", () => {
   });
 
   it("開演前・終了への切り替えは他を触らない", async () => {
-    manageRequest.mockResolvedValue({ ok: true, data: undefined });
+    manageRequest.mockImplementation(async (path: string) =>
+      path === "/lives"
+        ? {
+            ok: true,
+            data: {
+              lives: [
+                { id: 1, name: "A", status: 1 },
+                { id: 2, name: "B", status: 1 },
+              ],
+            },
+          }
+        : { ok: true, data: undefined },
+    );
     expect(await setLiveStatus(2, 2)).toEqual({});
-    expect(manageRequest).toHaveBeenCalledTimes(1);
+    const patches = manageRequest.mock.calls.filter(
+      (c) => c[1]?.method === "PATCH",
+    );
+    expect(patches.map((c) => c[0])).toEqual(["/manage/lives/2/status"]);
+  });
+
+  it("削除されたライブは切り替えず、他も触らない", async () => {
+    manageRequest.mockImplementation(async (path: string) =>
+      path === "/lives"
+        ? { ok: true, data: { lives: [{ id: 1, name: "A", status: 1 }] } }
+        : { ok: true, data: undefined },
+    );
+    expect(await setLiveStatus(2, 1)).toEqual({
+      error: "このライブは削除されています。画面を更新してください。",
+    });
+    expect(manageRequest.mock.calls.some((c) => c[1]?.method === "PATCH")).toBe(
+      false,
+    );
+  });
+
+  it("前の公演中を終了にした後で失敗したら、終了にしたものを伝えて画面を更新する", async () => {
+    manageRequest.mockImplementation(async (path: string) => {
+      if (path === "/lives") {
+        return {
+          ok: true,
+          data: {
+            lives: [
+              { id: 1, name: "A", status: 1 },
+              { id: 2, name: "B", status: 0 },
+            ],
+          },
+        };
+      }
+      if (path === "/manage/lives/2/status") {
+        return { ok: false, reason: "unavailable" };
+      }
+      return { ok: true, data: undefined };
+    });
+    expect(await setLiveStatus(2, 1)).toEqual({
+      error:
+        "「A」は終了にしましたが、「B」を公演中にできませんでした。サーバーに接続できません。時間をおいて再度お試しください。",
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/manage/ops");
   });
 
   it("0/1/2 以外は送らない", async () => {
@@ -143,12 +197,26 @@ describe("saveLive", () => {
     expect(manageRequest.mock.calls[0][1].method).toBe("POST");
   });
 
-  it("編集は PUT /manage/lives/:id", async () => {
-    manageRequest.mockResolvedValue({ ok: true, data: undefined });
-    await saveLive({ id: 4, status: 1 } as LiveResponse, undefined, form());
-    expect(manageRequest.mock.calls[0][0]).toBe("/manage/lives/4");
-    expect(manageRequest.mock.calls[0][1].method).toBe("PUT");
-    expect(JSON.parse(manageRequest.mock.calls[0][1].body).status).toBe(1);
+  it("編集は保存の直前の状態を取り直して PUT する(開いている間の切り替えを戻さない)", async () => {
+    manageRequest
+      .mockResolvedValueOnce({ ok: true, data: { id: 4, status: 1 } })
+      .mockResolvedValueOnce({ ok: true, data: undefined });
+    // 画面を開いたときは開演前だった
+    await saveLive({ id: 4, status: 0 } as LiveResponse, undefined, form());
+    expect(manageRequest.mock.calls[0][0]).toBe("/lives/4");
+    expect(manageRequest.mock.calls[1][0]).toBe("/manage/lives/4");
+    expect(manageRequest.mock.calls[1][1].method).toBe("PUT");
+    expect(JSON.parse(manageRequest.mock.calls[1][1].body).status).toBe(1);
+  });
+
+  it("編集中に削除されていたら保存しない", async () => {
+    manageRequest.mockResolvedValueOnce({ ok: false, reason: "rejected" });
+    expect(
+      await saveLive({ id: 4, status: 0 } as LiveResponse, undefined, form()),
+    ).toEqual({
+      error: "このライブは削除されています。画面を更新してください。",
+    });
+    expect(manageRequest).toHaveBeenCalledTimes(1);
   });
 
   it("入力エラーは送らない", async () => {
