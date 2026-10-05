@@ -75,7 +75,7 @@ describe("issueMissingAccounts", () => {
     expect(await issueMissingAccounts()).toEqual({
       issued: [],
       failed: [],
-      error: "サーバーに接続できません。時間をおいて再度お試しください。",
+      error: "接続できませんでした。時間をおいて再度お試しください。",
     });
   });
 });

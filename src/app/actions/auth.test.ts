@@ -94,7 +94,7 @@ describe("loginAction", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     fetchMock.mockRejectedValue(new TypeError("fetch failed"));
     expect(await loginAction(undefined, form("booth-1", "pass"))).toEqual({
-      error: "サーバーに接続できません。時間をおいて再度お試しください。",
+      error: "接続できませんでした。時間をおいて再度お試しください。",
       loginId: "booth-1",
     });
     expect(cookieSet).not.toHaveBeenCalled();
