@@ -164,7 +164,7 @@ export function BoothBrowser({
                 aria-label="ブースを探す"
                 className="h-11 w-full rounded-md border border-white/30 bg-black px-3 text-base text-white placeholder:text-gray-500"
               />
-              {/* 並び順 2 つと「空いているブース」は必ず 1 行に並べる */}
+              {/* 並び順 2 つと「空いている展示」は必ず 1 行に並べる */}
               <div className="grid grid-cols-[auto_auto_1fr] gap-2">
                 {BOOTH_SORTS.map((s) => (
                   <button
@@ -191,7 +191,7 @@ export function BoothBrowser({
                       : "border-[#00B894]/60 text-[#00B894]",
                   )}
                 >
-                  {filters.onlyEmpty ? "✓ " : ""}空いているブース
+                  {filters.onlyEmpty ? "✓ " : ""}空いている展示
                 </button>
               </div>
             </div>
