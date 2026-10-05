@@ -3,27 +3,27 @@ import { parseGrade } from "@/lib/booth-grade";
 import { updatedAgo } from "@/lib/manage/congestion";
 
 /** 来場者のブース一覧の絞り込みと並び順。URL のクエリにも同じものを持つ */
-export type BoothType = "all" | "class" | "club";
+export type BoothType = "class" | "club";
 export type BoothSort = "class" | "empty";
 export type BoothFilters = {
   type: BoothType;
   /** 学年(クラス展示のときだけ使う) */
   grade: number | "all";
   sort: BoothSort;
-  /** 空いているブースだけ */
+  /** 空いているブースだけを出す */
   onlyEmpty: boolean;
   q: string;
 };
 
 export const BOOTH_TYPES: { value: BoothType; label: string }[] = [
-  { value: "all", label: "すべて" },
   { value: "class", label: "クラス展示" },
   { value: "club", label: "クラブバザー" },
 ];
 
 export const BOOTH_SORTS: { value: BoothSort; label: string }[] = [
   { value: "class", label: "クラス順" },
-  { value: "empty", label: "空いている順" },
+  // 空いているものから先に並べる
+  { value: "empty", label: "混雑度順" },
 ];
 
 // 1-2 が 1-10 より前に来るよう、数字は数として比べる
@@ -56,7 +56,6 @@ function matches(booth: Booth, q: string): boolean {
 }
 
 function matchesType(booth: Booth, type: BoothType): boolean {
-  if (type === "all") return true;
   const isClass = parseGrade(booth.organizer) !== null;
   return type === "class" ? isClass : !isClass;
 }

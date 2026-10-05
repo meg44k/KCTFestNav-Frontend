@@ -19,7 +19,6 @@ import {
 import { cn } from "@/lib/utils";
 
 const TITLES: Record<BoothType, string> = {
-  all: "ブース一覧",
   class: "クラス展示",
   club: "クラブバザー",
 };
@@ -70,6 +69,11 @@ export function BoothBrowser({
   // クラス展示では左右にスワイプして学年を切り替える
   const touch = useRef<{ x: number; y: number } | null>(null);
   const onTouchStart = (e: TouchEvent) => {
+    // 上の操作欄(横にスクロールするタブなど)で触ったときは学年を変えない
+    if ((e.target as Element).closest("[data-no-swipe]")) {
+      touch.current = null;
+      return;
+    }
     touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
   };
   const onTouchEnd = (e: TouchEvent) => {
@@ -86,7 +90,12 @@ export function BoothBrowser({
   };
 
   return (
-    <div>
+    // 一覧が短くても空いた所でスワイプできるよう、画面全体で受ける
+    <div
+      className="min-h-dvh"
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
       <SideMenu />
       <RefreshEvery seconds={60} />
       <h1 className="flex justify-center font-extrabold text-4xl">
@@ -100,7 +109,10 @@ export function BoothBrowser({
       ) : (
         <>
           {/* スクロールしても条件を変えられるよう上に固定する */}
-          <div className="sticky top-0 z-40 mt-4 bg-black/95 px-4 py-3">
+          <div
+            data-no-swipe
+            className="sticky top-0 z-40 mt-4 bg-black/95 px-4 py-3"
+          >
             <div className="mx-auto flex max-w-md flex-col gap-2">
               <div className="flex gap-2 overflow-x-auto">
                 {BOOTH_TYPES.map((t) => (
@@ -152,14 +164,18 @@ export function BoothBrowser({
                 aria-label="ブースを探す"
                 className="h-11 w-full rounded-md border border-white/30 bg-black px-3 text-base text-white placeholder:text-gray-500"
               />
-              <div className="flex flex-wrap items-center gap-2">
+              {/* 並び順 2 つと「空いているブース」は必ず 1 行に並べる */}
+              <div className="grid grid-cols-[auto_auto_1fr] gap-2">
                 {BOOTH_SORTS.map((s) => (
                   <button
                     key={s.value}
                     type="button"
                     aria-pressed={filters.sort === s.value}
                     onClick={() => update({ sort: s.value })}
-                    className={chip(filters.sort === s.value)}
+                    className={cn(
+                      chip(filters.sort === s.value),
+                      "px-3 whitespace-nowrap",
+                    )}
                   >
                     {s.label}
                   </button>
@@ -169,23 +185,19 @@ export function BoothBrowser({
                   aria-pressed={filters.onlyEmpty}
                   onClick={() => update({ onlyEmpty: !filters.onlyEmpty })}
                   className={cn(
-                    "h-10 shrink-0 rounded-full border px-4 text-sm font-bold",
+                    "h-10 rounded-full border px-3 text-sm font-bold whitespace-nowrap",
                     filters.onlyEmpty
                       ? "border-[#00B894] bg-[#00B894] text-black"
                       : "border-[#00B894]/60 text-[#00B894]",
                   )}
                 >
-                  {filters.onlyEmpty ? "✓ " : ""}空いているブースだけ
+                  {filters.onlyEmpty ? "✓ " : ""}空いているブース
                 </button>
               </div>
             </div>
           </div>
 
-          <div
-            className="flex min-h-[50dvh] flex-col items-center gap-3 px-4 pt-3 pb-10"
-            onTouchStart={onTouchStart}
-            onTouchEnd={onTouchEnd}
-          >
+          <div className="flex flex-col items-center gap-3 px-4 pt-3 pb-10">
             {shown.length === 0 ? (
               <p className="mt-6 text-center text-gray-400">
                 {booths.length === 0

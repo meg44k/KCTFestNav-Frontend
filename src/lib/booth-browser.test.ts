@@ -33,7 +33,7 @@ const booths = [
 ];
 
 const base: BoothFilters = {
-  type: "all",
+  type: "class",
   grade: "all",
   sort: "class",
   onlyEmpty: false,
@@ -43,8 +43,9 @@ const ids = (f: Partial<BoothFilters>) =>
   applyFilters(booths, { ...base, ...f }).map((b) => b.id);
 
 describe("applyFilters", () => {
-  it("クラス順は数字を数として並べ、部活はクラスの後", () => {
-    expect(ids({})).toEqual([3, 2, 1, 5, 4]);
+  it("クラス順は数字を数として並べる(1-2 は 1-10 の前)", () => {
+    expect(ids({})).toEqual([3, 2, 1]);
+    expect(ids({ type: "club" })).toEqual([5, 4]);
   });
 
   it("クラス展示だけ・クラブバザーだけ", () => {
@@ -57,19 +58,21 @@ describe("applyFilters", () => {
     expect(ids({ type: "club", grade: 1 })).toEqual([5, 4]);
   });
 
-  it("空いている順、同じならクラス順", () => {
-    expect(ids({ sort: "empty" })).toEqual([2, 4, 3, 5, 1]);
+  it("混雑度順は空いているものから、同じならクラス順", () => {
+    expect(ids({ sort: "empty" })).toEqual([2, 3, 1]);
+    expect(ids({ type: "club", sort: "empty" })).toEqual([4, 5]);
   });
 
   it("空いているブースだけ", () => {
-    expect(ids({ onlyEmpty: true })).toEqual([2, 4]);
+    expect(ids({ onlyEmpty: true })).toEqual([2]);
+    expect(ids({ type: "club", onlyEmpty: true })).toEqual([4]);
   });
 
   it("キーワードは名前・説明・主催者・場所から探し、全角半角や大文字小文字を区別しない", () => {
     expect(ids({ q: "たこ" })).toEqual([1]);
     expect(ids({ q: "こわい" })).toEqual([2]);
     expect(ids({ q: "中庭" })).toEqual([3]);
-    expect(ids({ q: "ｖｒ" })).toEqual([5]);
+    expect(ids({ type: "club", q: "ｖｒ" })).toEqual([5]);
     expect(ids({ q: "１－２" })).toEqual([3]);
   });
 
@@ -104,6 +107,8 @@ describe("parseFilters / filtersToQuery", () => {
       onlyEmpty: true,
       q: "たこ",
     });
+    // 「すべて」は無くしたので、type=all もそのページの既定の種類にする
+    expect(parseFilters({ type: "all" }, "club").type).toBe("club");
     expect(parseFilters({ type: "x", grade: "9", sort: "y" }, "class")).toEqual(
       {
         ...base,
@@ -118,7 +123,7 @@ describe("parseFilters / filtersToQuery", () => {
       filtersToQuery(
         {
           ...base,
-          type: "all",
+          type: "club",
           grade: 2,
           sort: "empty",
           onlyEmpty: true,
@@ -127,7 +132,7 @@ describe("parseFilters / filtersToQuery", () => {
         "class",
       ),
     ).toBe(
-      "?type=all&grade=2&sort=empty&empty=1&q=%E3%81%9F%E3%81%93+%E7%84%BC%E3%81%8D",
+      "?type=club&grade=2&sort=empty&empty=1&q=%E3%81%9F%E3%81%93+%E7%84%BC%E3%81%8D",
     );
   });
 });
