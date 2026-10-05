@@ -20,7 +20,7 @@ export function IssueAccounts({ missing }: { missing: number }) {
         </span>
         <Button
           disabled={pending || missing === 0}
-          className="h-14 px-6 bg-white text-black hover:bg-white/90 font-bold"
+          className="h-14 px-6 bg-black text-white hover:bg-black/80 font-bold"
           onClick={() =>
             start(async () => setResult(await issueMissingAccounts()))
           }

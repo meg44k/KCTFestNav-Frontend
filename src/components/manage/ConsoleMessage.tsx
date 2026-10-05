@@ -9,7 +9,7 @@ export function ConsoleMessage({
   return (
     <div className="flex flex-col items-center gap-4 mt-16 px-4 text-center">
       <h1 className="font-extrabold text-3xl">{title}</h1>
-      {children && <div className="text-gray-400">{children}</div>}
+      {children && <div className="text-gray-500">{children}</div>}
     </div>
   );
 }

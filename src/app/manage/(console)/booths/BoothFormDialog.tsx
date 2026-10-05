@@ -30,7 +30,7 @@ export function BoothFormDialog({ current }: { current?: BoothResponse }) {
           current ? (
             <Button variant="outline" size="sm" />
           ) : (
-            <Button className="h-12 px-6 bg-white text-black hover:bg-white/90 font-bold" />
+            <Button className="h-12 px-6 bg-black text-white hover:bg-black/80 font-bold" />
           )
         }
       >

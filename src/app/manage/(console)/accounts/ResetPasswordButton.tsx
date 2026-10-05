@@ -46,7 +46,7 @@ export function ResetPasswordButton({
           <IssuedTable rows={[issued]} />
         ) : (
           <>
-            <DialogDescription>
+            <DialogDescription className="font-bold text-[#e54141]">
               今のパスワードは使えなくなります。
             </DialogDescription>
             {error && (
@@ -56,7 +56,7 @@ export function ResetPasswordButton({
             )}
             <Button
               disabled={pending}
-              className="h-12 font-bold"
+              className="h-12 bg-[#e54141] text-white hover:bg-[#e54141]/90 font-bold"
               onClick={() =>
                 start(async () => {
                   const res = await resetPassword(userId);

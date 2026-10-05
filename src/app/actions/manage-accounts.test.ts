@@ -75,7 +75,7 @@ describe("issueMissingAccounts", () => {
     expect(await issueMissingAccounts()).toEqual({
       issued: [],
       failed: [],
-      error: "サーバーに接続できません。時間をおいて再度お試しください。",
+      error: "接続できませんでした。時間をおいて再度お試しください。",
     });
   });
 });
@@ -129,7 +129,7 @@ describe("addAccount", () => {
 
   it("Student / Member はここでは作らない", async () => {
     expect(await addAccount(undefined, f("x", "Student"))).toEqual({
-      error: "ロールを選んでください",
+      error: "役職を選んでください",
     });
   });
 

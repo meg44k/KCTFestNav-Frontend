@@ -37,7 +37,7 @@ export function LiveList({
         </div>
       )}
       {lives.length === 0 ? (
-        <p className="text-gray-400">ライブが登録されていません。</p>
+        <p className="text-gray-500">ライブが登録されていません。</p>
       ) : (
         <ul className="flex flex-col">
           {sortLives(lives).map((l) => (
@@ -45,7 +45,7 @@ export function LiveList({
           ))}
         </ul>
       )}
-      <p className="text-gray-400 text-sm">
+      <p className="font-bold text-[#e54141] text-sm">
         公演中にすると、ほかに公演中のライブは終了になります。
       </p>
     </section>
@@ -65,18 +65,18 @@ function LiveRow({ live, isAdmin }: { live: LiveResponse; isAdmin: boolean }) {
   return (
     <li
       className={cn(
-        "flex flex-col gap-2 border-b border-white/10 py-3",
+        "flex flex-col gap-2 border-b border-black/10 py-3",
         live.status === 1 && "rounded-lg border border-[#e54141] px-3",
       )}
     >
       <div className="flex flex-wrap items-baseline justify-between gap-x-3">
         <span className="font-bold">
           {live.name}{" "}
-          <span className="font-normal text-gray-400 text-sm">
+          <span className="font-normal text-gray-500 text-sm">
             第{live.session_number}回
           </span>
         </span>
-        <span className="text-gray-400 text-sm">
+        <span className="text-gray-500 text-sm">
           {day(live.start_time)} {hm(live.start_time)}〜{hm(live.end_time)}
         </span>
       </div>
@@ -95,8 +95,8 @@ function LiveRow({ live, isAdmin }: { live: LiveResponse; isAdmin: boolean }) {
                 selected
                   ? s.value === 1
                     ? "border-[#e54141] bg-[#e54141] text-white"
-                    : "border-white bg-white text-black"
-                  : "border-white/20 text-gray-300",
+                    : "border-black bg-black text-white"
+                  : "border-black/20 text-gray-600",
               )}
             >
               {s.label}
@@ -104,7 +104,7 @@ function LiveRow({ live, isAdmin }: { live: LiveResponse; isAdmin: boolean }) {
           );
         })}
       </div>
-      {pending && <p className="text-gray-400 text-sm">切り替え中…</p>}
+      {pending && <p className="text-gray-500 text-sm">切り替え中…</p>}
       {error && (
         <p role="alert" className="text-[#e54141] text-sm">
           {error}

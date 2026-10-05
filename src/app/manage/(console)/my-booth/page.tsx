@@ -15,7 +15,7 @@ export default async function MyBoothPage() {
     <div className="mx-auto flex max-w-md flex-col gap-6">
       <div className="text-center">
         <h1 className="font-extrabold text-3xl">{booth.name}</h1>
-        {booth.location && <p className="text-gray-400">{booth.location}</p>}
+        {booth.location && <p className="text-gray-500">{booth.location}</p>}
       </div>
       <section className="flex flex-col gap-3">
         <h2 className="font-bold">いまの混雑度</h2>
@@ -29,7 +29,7 @@ export default async function MyBoothPage() {
           serverNow={Date.now()}
         />
       </section>
-      <hr className="border-white/10" />
+      <hr className="border-black/10" />
       <section className="flex flex-col gap-3">
         <h2 className="font-bold">説明と画像</h2>
         <DetailForm booth={booth} />

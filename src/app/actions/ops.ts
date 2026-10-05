@@ -13,6 +13,7 @@ import { parseLiveForm } from "@/lib/manage/ops";
 export type LiveFormState = { error?: string; done?: boolean } | undefined;
 export type AnnouncementState = { error?: string; saved?: boolean } | undefined;
 
+// 当日運営の 3 ページ(混雑度・ライブ・お知らせ)をまとめて更新する
 const OPS = "/manage/ops";
 const isLevel = (n: number) => [0, 1, 2].includes(n);
 
@@ -33,7 +34,7 @@ export async function setBoothCongestion(
     body: JSON.stringify({ congestion_status: status }),
   });
   if (!res.ok) return { error: failed(res.reason) };
-  revalidatePath(OPS);
+  revalidatePath(OPS, "layout");
   return {};
 }
 
@@ -64,7 +65,7 @@ export async function setLiveStatus(
       if (other.id === liveId || other.status !== 1) continue;
       const res = await patchLiveStatus(other.id, 2);
       if (!res.ok) {
-        if (ended.length) revalidatePath(OPS);
+        if (ended.length) revalidatePath(OPS, "layout");
         return {
           error: `「${other.name}」を終了にできませんでした。${failed(res.reason)}`,
         };
@@ -77,13 +78,13 @@ export async function setLiveStatus(
   if (!res.ok) {
     if (!ended.length) return { error: failed(res.reason) };
     // ここまでに変えたものは戻さない。何が変わったかを伝え、画面も最新にする
-    revalidatePath(OPS);
+    revalidatePath(OPS, "layout");
     const names = ended.map((n) => `「${n}」`).join("、");
     return {
       error: `${names}は終了にしましたが、「${target.name}」を公演中にできませんでした。${failed(res.reason)}`,
     };
   }
-  revalidatePath(OPS);
+  revalidatePath(OPS, "layout");
   return {};
 }
 
@@ -114,14 +115,14 @@ export async function saveLive(
     { method: latest ? "PUT" : "POST", body: JSON.stringify(parsed.payload) },
   );
   if (!res.ok) return { error: failed(res.reason) };
-  revalidatePath(OPS);
+  revalidatePath(OPS, "layout");
   return { done: true };
 }
 
 export async function deleteLive(id: number): Promise<{ error?: string }> {
   const res = await manageRequest(`/manage/lives/${id}`, { method: "DELETE" });
   if (!res.ok) return { error: failed(res.reason) };
-  revalidatePath(OPS);
+  revalidatePath(OPS, "layout");
   return {};
 }
 
@@ -136,6 +137,6 @@ export async function saveAnnouncement(
     body: JSON.stringify({ content }),
   });
   if (!res.ok) return { error: failed(res.reason) };
-  revalidatePath(OPS);
+  revalidatePath(OPS, "layout");
   return { saved: true };
 }

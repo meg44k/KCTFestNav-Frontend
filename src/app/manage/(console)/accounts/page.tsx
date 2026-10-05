@@ -10,7 +10,9 @@ import { IssueAccounts } from "./IssueAccounts";
 export default async function AccountsPage() {
   const auth = await requireRole(["Admin"]);
   if (!auth.ok) {
-    return <ConsoleMessage title="アカウント">{auth.message}</ConsoleMessage>;
+    return (
+      <ConsoleMessage title="アカウント管理">{auth.message}</ConsoleMessage>
+    );
   }
 
   const [booths, users] = await Promise.all([
@@ -24,25 +26,28 @@ export default async function AccountsPage() {
         ? users.reason
         : "unavailable";
     return (
-      <ConsoleMessage title="アカウント">
+      <ConsoleMessage title="アカウント管理">
         {failureMessage(reason)}
       </ConsoleMessage>
     );
   }
 
-  const boothNames = Object.fromEntries(
-    booths.data.booths.map((b) => [b.id, b.name]),
+  const boothsById = Object.fromEntries(
+    booths.data.booths.map((b) => [
+      b.id,
+      { name: b.name, organizer: b.organizer },
+    ]),
   );
   const missing = boothsWithoutAccount(booths.data.booths, users.data.users);
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-8">
       <div className="flex flex-wrap items-center justify-between gap-4 print:hidden">
-        <h1 className="font-extrabold text-3xl">アカウント</h1>
+        <h1 className="font-extrabold text-3xl">アカウント管理</h1>
         <AddAccountDialog />
       </div>
       <IssueAccounts missing={missing.length} />
-      <AccountList users={users.data.users} boothNames={boothNames} />
+      <AccountList users={users.data.users} booths={boothsById} />
     </div>
   );
 }

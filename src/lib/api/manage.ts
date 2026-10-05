@@ -78,7 +78,7 @@ export function failureMessage(reason: ManageFailure): string {
     case "rejected":
       return "入力内容を確認してください。";
     default:
-      return "サーバーに接続できません。時間をおいて再度お試しください。";
+      return "接続できませんでした。時間をおいて再度お試しください。";
   }
 }
 

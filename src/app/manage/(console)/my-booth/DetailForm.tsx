@@ -55,7 +55,7 @@ export function DetailForm({ booth }: { booth: BoothResponse }) {
       <Button
         type="submit"
         disabled={pending}
-        className="h-12 bg-white text-black hover:bg-white/90 font-bold"
+        className="h-12 bg-black text-white hover:bg-black/80 font-bold"
       >
         {pending ? "保存中…" : "保存"}
       </Button>

@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 import type { BoothResponse } from "@/lib/api/booths";
 import type { LiveResponse } from "@/lib/api/lives";
-import { parseLiveForm, sortForMonitor, sortLives, toLocalInput } from "./ops";
+import {
+  parseLiveForm,
+  sortBooths,
+  sortForMonitor,
+  sortLives,
+  toLocalInput,
+} from "./ops";
 
 const booth = (id: number, updated: string | null) =>
   ({ id, congestion_updated_at: updated }) as BoothResponse;
@@ -116,5 +122,49 @@ describe("toLocalInput", () => {
   it("どのタイムゾーン表記でも日本時間の datetime-local にする", () => {
     expect(toLocalInput("2026-10-31T04:00:00Z")).toBe("2026-10-31T13:00");
     expect(toLocalInput("2026-10-31T13:00:00+09:00")).toBe("2026-10-31T13:00");
+  });
+});
+
+describe("sortBooths", () => {
+  const b = (
+    id: number,
+    organizer: string,
+    status: number,
+    updated: string | null,
+  ) =>
+    ({
+      id,
+      organizer,
+      congestion_status: status,
+      congestion_updated_at: updated,
+    }) as BoothResponse;
+  const list = [
+    b(3, "1-10", 0, "2026-10-31T03:00:00Z"),
+    b(1, "2-1", 2, "2026-10-31T03:30:00Z"),
+    b(2, "1-2", 1, null),
+    b(4, "天文部", 2, "2026-10-31T02:00:00Z"),
+  ];
+  const ids = (s: Parameters<typeof sortBooths>[1]) =>
+    sortBooths(list, s).map((x) => x.id);
+
+  it("登録順は ID 順", () => {
+    expect(ids("booth")).toEqual([1, 2, 3, 4]);
+  });
+
+  it("主催者順は数字を数として比べる(1-2 が 1-10 より前)", () => {
+    expect(ids("organizer")).toEqual([2, 3, 1, 4]);
+  });
+
+  it("更新が古い順は未更新が先頭", () => {
+    expect(ids("stale")).toEqual([2, 4, 3, 1]);
+  });
+
+  it("混んでいる順、同じなら更新が古い方が先", () => {
+    expect(ids("crowded")).toEqual([4, 1, 2, 3]);
+  });
+
+  it("元の配列は変えない", () => {
+    sortBooths(list, "booth");
+    expect(list.map((x) => x.id)).toEqual([3, 1, 2, 4]);
   });
 });

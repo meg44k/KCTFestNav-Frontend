@@ -19,7 +19,9 @@ export function AddAccountDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
-        render={<Button variant="outline" className="h-12 px-6" />}
+        render={
+          <Button className="h-12 px-6 bg-[#00B894] text-black hover:bg-[#00B894]/90 font-bold" />
+        }
       >
         アカウントを追加
       </DialogTrigger>
@@ -63,8 +65,8 @@ function AddForm() {
           placeholder="学生会 会計 など"
         />
       </div>
-      <fieldset className="flex gap-6">
-        <legend className="mb-1 text-sm">ロール</legend>
+      <fieldset className="flex flex-wrap gap-x-6 gap-y-2">
+        <legend className="mb-1 text-sm">役職</legend>
         <label className="flex items-center gap-2">
           <input type="radio" name="role" value="Gakuseikai" defaultChecked />
           学生会
@@ -72,6 +74,9 @@ function AddForm() {
         <label className="flex items-center gap-2">
           <input type="radio" name="role" value="Admin" />
           管理者
+          <span className="font-bold text-[#e54141] text-sm">
+            ※管理者はすべての権限を所持します
+          </span>
         </label>
       </fieldset>
       {state?.error && (

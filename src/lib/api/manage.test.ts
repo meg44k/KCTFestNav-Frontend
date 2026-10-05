@@ -113,7 +113,7 @@ describe("manageRequest", () => {
 describe("failureMessage", () => {
   it("API が止まっているときの文言は来場者画面と同じ方針", () => {
     expect(failureMessage("unavailable")).toBe(
-      "サーバーに接続できません。時間をおいて再度お試しください。",
+      "接続できませんでした。時間をおいて再度お試しください。",
     );
     expect(failureMessage("forbidden")).toBe("この操作の権限がありません。");
   });
@@ -194,7 +194,7 @@ describe("requireRole", () => {
     fetchMock.mockRejectedValue(new TypeError("fetch failed"));
     expect(await requireRole(["Admin"])).toEqual({
       ok: false,
-      message: "サーバーに接続できません。時間をおいて再度お試しください。",
+      message: "接続できませんでした。時間をおいて再度お試しください。",
     });
   });
 });

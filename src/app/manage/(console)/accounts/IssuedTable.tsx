@@ -26,16 +26,16 @@ export function IssuedTable({
   failed?: string[];
 }) {
   return (
-    <section className="issued flex flex-col gap-3 rounded-lg border border-[#FDCB6E] p-4 print:border-0 print:bg-white print:text-black">
+    <section className="issued flex flex-col gap-3 rounded-lg border border-[#e54141] p-4 print:border-0 print:bg-white print:text-black">
       {rows.length > 0 && (
-        <p className="font-bold text-[#FDCB6E] print:hidden">
+        <p className="font-bold text-[#e54141] print:hidden">
           このパスワードはこの画面でしか見られません。印刷か CSV
           で保存してください。
         </p>
       )}
       {rows.length > 0 && (
         <table className="w-full text-left">
-          <thead className="text-sm text-gray-400 print:text-black">
+          <thead className="text-sm text-gray-500 print:text-black">
             <tr>
               <th className="py-1 pr-4">ブース</th>
               <th className="pr-4">ログインID</th>
@@ -46,7 +46,7 @@ export function IssuedTable({
             {rows.map((r) => (
               <tr
                 key={r.loginId}
-                className="border-t border-white/10 print:border-black/20"
+                className="border-t border-black/10 print:border-black/20"
               >
                 <td className="py-2 pr-4">{r.boothName}</td>
                 <td className="pr-4 font-mono">{r.loginId}</td>
