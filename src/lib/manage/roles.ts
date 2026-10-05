@@ -17,6 +17,11 @@ const ACCOUNTS: MenuItem = {
   href: "/manage/accounts",
   label: "アカウント管理",
 };
+// 企画担当は混雑度とブースの説明を別のページにしてヘッダーから開く
+const MY_BOOTH: MenuItem[] = [
+  { href: "/manage/my-booth/congestion", label: "混雑度" },
+  { href: "/manage/my-booth/detail", label: "ブースの説明" },
+];
 // 当日運営は 3 つのページに分けてヘッダーから直接開く
 const OPS: MenuItem[] = [
   { href: "/manage/ops/congestion", label: "混雑度" },
@@ -32,19 +37,21 @@ export function homePathFor(role: Role): string | null {
     case "Gakuseikai":
       return OPS[0].href;
     case "Student":
-      return "/manage/my-booth";
+      return MY_BOOTH[0].href;
     default:
       return null;
   }
 }
 
-/** ヘッダーに出すメニュー。企画担当は使う画面が1つなので出さない */
+/** ヘッダーに出すメニュー */
 export function menuFor(role: Role): MenuItem[] {
   switch (role) {
     case "Admin":
       return [BOOTHS, ACCOUNTS, ...OPS];
     case "Gakuseikai":
       return OPS;
+    case "Student":
+      return MY_BOOTH;
     default:
       return [];
   }

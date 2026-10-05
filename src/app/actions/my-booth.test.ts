@@ -46,7 +46,7 @@ describe("setCongestion", () => {
       method: "PATCH",
       body: JSON.stringify({ congestion_status: 2 }),
     });
-    expect(revalidatePath).toHaveBeenCalledWith("/manage/my-booth");
+    expect(revalidatePath).toHaveBeenCalledWith("/manage/my-booth", "layout");
   });
 
   it("0/1/2 以外は送らない", async () => {
@@ -106,7 +106,7 @@ describe("saveDetail", () => {
       name: "管理者が直した名前",
       detail: "新しい説明",
     });
-    expect(revalidatePath).toHaveBeenCalledWith("/manage/my-booth");
+    expect(revalidatePath).toHaveBeenCalledWith("/manage/my-booth", "layout");
   });
 
   it("担当ブースを取れないときは保存しない", async () => {

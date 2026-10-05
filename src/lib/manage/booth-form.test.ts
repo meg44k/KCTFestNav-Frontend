@@ -119,7 +119,7 @@ describe("parseDetailForm", () => {
       parseDetailForm(fd({ detail: "", imageUrl: "ftp://x" }), current),
     ).toEqual({
       ok: false,
-      error: "画像 URL は http:// か https:// で始めてください",
+      error: "展示物画像は http:// か https:// で始まる URL を入力してください",
     });
   });
 });
