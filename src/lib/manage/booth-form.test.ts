@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { BoothResponse } from "@/lib/api/booths";
-import { parseBoothForm } from "./booth-form";
+import { parseBoothForm, parseDetailForm } from "./booth-form";
 
 const fd = (v: Record<string, string>) => {
   const f = new FormData();
@@ -72,5 +72,54 @@ describe("parseBoothForm", () => {
     expect(res.ok && [res.payload.x, res.payload.y, res.payload.z]).toEqual([
       1, 2, 3,
     ]);
+  });
+});
+
+describe("parseDetailForm", () => {
+  const current = {
+    id: 3,
+    name: "たこ焼き",
+    organizer: "1-1",
+    detail: "古い説明",
+    location: "中庭",
+    image_url: "",
+    congestion_status: 1,
+    congestion_updated_at: "2026-10-31T03:00:00Z",
+    x: 1,
+    y: 2,
+    z: 3,
+    latitude: 33.8,
+    longitude: 130.8,
+  } as BoothResponse;
+
+  it("説明と画像だけを変え、他は今の値のまま", () => {
+    const res = parseDetailForm(
+      fd({ detail: " 新しい説明 ", imageUrl: "https://example.com/a.jpg" }),
+      current,
+    );
+    expect(res).toEqual({
+      ok: true,
+      payload: {
+        name: "たこ焼き",
+        organizer: "1-1",
+        detail: "新しい説明",
+        location: "中庭",
+        image_url: "https://example.com/a.jpg",
+        latitude: 33.8,
+        longitude: 130.8,
+        x: 1,
+        y: 2,
+        z: 3,
+      },
+    });
+  });
+
+  it("画像 URL は http(s) のみ", () => {
+    expect(
+      parseDetailForm(fd({ detail: "", imageUrl: "ftp://x" }), current),
+    ).toEqual({
+      ok: false,
+      error: "画像 URL は http:// か https:// で始めてください",
+    });
   });
 });
