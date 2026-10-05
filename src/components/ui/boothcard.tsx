@@ -100,7 +100,7 @@ function BoothCard({
                 )}
               </div>
               <div className="flex flex-col mr-auto">
-                <span className="text-black">{name}</span>
+                <span className="font-bold text-black">{name}</span>
                 {/* 全文はタップで開く詳細ダイアログで読めるため、カードでは1行に抑える */}
                 <span className="text-black text-sm line-clamp-1">
                   {description}
