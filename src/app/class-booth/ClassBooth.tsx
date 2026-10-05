@@ -76,6 +76,7 @@ export default function ClassBooth({
                         key={booth.id}
                         name={booth.name}
                         description={booth.description}
+                        location={booth.location}
                         imageUrl={booth.imageUrl}
                         imageAlt={booth.name}
                         congestionStatus={booth.congestionStatus}

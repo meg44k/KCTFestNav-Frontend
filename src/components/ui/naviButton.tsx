@@ -35,6 +35,7 @@ function NaviButton({
       }}
     >
       <DialogTrigger
+        aria-label={`${name}への方角を見る`}
         className={cn(
           "flex border border-black rounded-full w-8 h-8 justify-center items-center",
           className,
@@ -48,7 +49,7 @@ function NaviButton({
       </DialogTrigger>
       <DialogContent
         className={cn(
-          "md:min-w-100 md:min-h-150 min-w-[80dvw] min-h-[80dvh] bg-black transition-colors duration-300",
+          "md:min-w-100 md:min-h-150 min-w-[80dvw] min-h-[80dvh] bg-black text-white transition-colors duration-300",
           {
             "bg-green-600 transition-colors duration-300": isFacingTarget,
           },
