@@ -11,7 +11,7 @@ import type { BoothResponse } from "@/lib/api/booths";
 /** 説明と画像だけを直すフォーム */
 export function DetailForm({ booth }: { booth: BoothResponse }) {
   const [state, action] = useActionState<DetailState, FormData>(
-    saveDetail.bind(null, booth),
+    saveDetail,
     undefined,
   );
   const [pending, start] = useTransition();

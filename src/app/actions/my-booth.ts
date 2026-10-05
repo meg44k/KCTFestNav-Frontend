@@ -60,14 +60,19 @@ export async function setCongestion(
   return {};
 }
 
+/**
+ * 説明と画像を保存する。ページを開いた時点の値ではなく保存の直前に取り直した値に重ねるので、
+ * その間に管理者が直した名前などを戻さない。ブースもクライアントからは受け取らない
+ */
 export async function saveDetail(
-  current: BoothResponse,
   _prev: DetailState,
   formData: FormData,
 ): Promise<DetailState> {
-  const parsed = parseDetailForm(formData, current);
+  const mine = await loadMyBooth();
+  if (!mine.ok) return { error: mine.message };
+  const parsed = parseDetailForm(formData, mine.booth);
   if (!parsed.ok) return { error: parsed.error };
-  const res = await manageRequest(`/manage/booths/${current.id}`, {
+  const res = await manageRequest(`/manage/booths/${mine.booth.id}`, {
     method: "PUT",
     body: JSON.stringify(parsed.payload),
   });

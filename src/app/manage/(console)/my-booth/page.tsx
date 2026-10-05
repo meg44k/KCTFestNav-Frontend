@@ -26,6 +26,7 @@ export default async function MyBoothPage() {
         <UpdatedAgo
           key={booth.congestion_updated_at ?? "never"}
           updatedAt={booth.congestion_updated_at}
+          serverNow={Date.now()}
         />
       </section>
       <hr className="border-white/10" />

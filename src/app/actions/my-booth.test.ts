@@ -18,7 +18,6 @@ vi.mock("next/headers", () => ({
   cookies: async () => ({ get: () => undefined }),
 }));
 
-import type { BoothResponse } from "@/lib/api/booths";
 import { loadMyBooth, saveDetail, setCongestion } from "./my-booth";
 
 // 戻り値を返すと vitest が後片付けの関数として呼んでしまうので、ブロックで書く
@@ -73,27 +72,49 @@ describe("setCongestion", () => {
 });
 
 describe("saveDetail", () => {
-  it("今の値に説明と画像を重ねて PUT する", async () => {
-    manageRequest.mockResolvedValue({ ok: true, data: undefined });
+  const detailForm = () => {
     const f = new FormData();
     f.set("detail", "新しい説明");
     f.set("imageUrl", "");
-    const current = {
-      id: 3,
-      name: "たこ焼き",
-      x: 0,
-      y: 0,
-      z: 0,
-    } as BoothResponse;
-    expect(await saveDetail(current, undefined, f)).toEqual({ saved: true });
-    const [path, init] = manageRequest.mock.calls[0];
+    return f;
+  };
+
+  it("保存する直前の値を取り直し、説明と画像だけを重ねて PUT する", async () => {
+    // ページを開いた後で管理者が名前を直していても、それを戻さない
+    requireRole.mockResolvedValue(student(3));
+    manageRequest
+      .mockResolvedValueOnce({
+        ok: true,
+        data: {
+          id: 3,
+          name: "管理者が直した名前",
+          location: "中庭",
+          x: 0,
+          y: 0,
+          z: 0,
+        },
+      })
+      .mockResolvedValueOnce({ ok: true, data: undefined });
+
+    expect(await saveDetail(undefined, detailForm())).toEqual({ saved: true });
+
+    expect(manageRequest.mock.calls[0][0]).toBe("/booths/3");
+    const [path, init] = manageRequest.mock.calls[1];
     expect(path).toBe("/manage/booths/3");
     expect(init.method).toBe("PUT");
     expect(JSON.parse(init.body)).toMatchObject({
-      name: "たこ焼き",
+      name: "管理者が直した名前",
       detail: "新しい説明",
     });
     expect(revalidatePath).toHaveBeenCalledWith("/manage/my-booth");
+  });
+
+  it("担当ブースを取れないときは保存しない", async () => {
+    requireRole.mockResolvedValue(student(0));
+    expect(await saveDetail(undefined, detailForm())).toEqual({
+      error: "担当ブースが見つかりません。管理者に連絡してください。",
+    });
+    expect(manageRequest).not.toHaveBeenCalled();
   });
 });
 

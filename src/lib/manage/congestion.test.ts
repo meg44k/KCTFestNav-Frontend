@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { CONGESTION_LEVELS, STALE_MINUTES, updatedAgo } from "./congestion";
+import {
+  CONGESTION_LEVELS,
+  STALE_MINUTES,
+  serverClockNow,
+  updatedAgo,
+} from "./congestion";
 
 const now = new Date("2026-10-31T12:00:00+09:00");
 const ago = (minutes: number) =>
@@ -46,5 +51,15 @@ describe("updatedAgo", () => {
 describe("CONGESTION_LEVELS", () => {
   it("来場者画面と同じ 3 段階", () => {
     expect(CONGESTION_LEVELS.map((l) => l.value)).toEqual([0, 1, 2]);
+  });
+});
+
+describe("serverClockNow", () => {
+  it("端末の時計ではなく、サーバーの時刻から経過時間だけ進める", () => {
+    const serverNow = Date.parse("2026-10-31T12:00:00+09:00");
+    // 画面を開いてから 5 分たった
+    expect(
+      serverClockNow(serverNow, 1_000, 1_000 + 5 * 60_000).toISOString(),
+    ).toBe(new Date(serverNow + 5 * 60_000).toISOString());
   });
 });

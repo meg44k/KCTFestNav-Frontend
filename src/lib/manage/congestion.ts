@@ -8,6 +8,18 @@ export const CONGESTION_LEVELS = [
   { value: 2, label: "非常に混雑", color: "#e54141" },
 ] as const;
 
+/**
+ * 経過時間の計算に使う「今」。端末の時計はずれていることがあるので、
+ * ページを描画したときのサーバーの時刻に、画面を開いてからの経過時間を足す
+ */
+export function serverClockNow(
+  serverNow: number,
+  mountedAt: number,
+  perfNow: number,
+): Date {
+  return new Date(serverNow + (perfNow - mountedAt));
+}
+
 const NEVER = { label: "まだ更新されていません", stale: true };
 
 export function updatedAgo(
