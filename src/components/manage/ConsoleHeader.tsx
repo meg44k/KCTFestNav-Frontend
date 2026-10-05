@@ -11,7 +11,7 @@ export function ConsoleHeader({
   menu: MenuItem[];
 }) {
   return (
-    <header className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 border-b border-white/10">
+    <header className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 border-b border-white/10 print:hidden">
       <span className="font-bold">{user.name}</span>
       <nav className="flex gap-4 text-gray-300">
         {menu.map((item) => (

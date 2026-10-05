@@ -148,3 +148,19 @@
     @apply font-sans;
   }
 }
+
+/* 管理画面で発行したパスワードの表(.issued)を印刷するときは、表だけを白地で出す */
+@media print {
+  body:has(.issued) * {
+    visibility: hidden;
+  }
+  body:has(.issued) .issued,
+  body:has(.issued) .issued * {
+    visibility: visible;
+  }
+  body:has(.issued) .issued {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+  }
+}
