@@ -34,3 +34,10 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## 本番
+
+- Vercel(東京 `hnd1`)。本番のブランチは main。main 以外はビルドしない(`vercel.json` の `ignoreCommand`。プレビューが本番の API につながり、管理画面の操作が本番のデータに入るのを防ぐ)
+- Vercel の画面で: リポジトリを取り込む → Settings → Git の Production Branch を `main` → 環境変数 `NEXT_PUBLIC_API_BASE_URL=https://api.kctfest.jp`(Production)→ Domains に `kctfest.jp` と `www.kctfest.jp`(www は kctfest.jp へ転送)
+- DNS のレコードはバックエンドの `infra/`(Terraform)が作る。作り方は KCTFestNav-Backend の `infra/README.md`
+- 負荷テスト(k6): `k6 run -e BASE_URL=https://kctfest.jp scripts/loadtest.js`(同時 300 人・10 分。エラー 0・95% が 1 秒以内)
