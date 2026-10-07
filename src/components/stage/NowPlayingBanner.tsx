@@ -5,6 +5,7 @@ import {
   nowPlaying,
   startingNow,
 } from "@/lib/stage-schedule";
+import { LiveWave } from "./LiveWave";
 
 /**
  * 一番上の帯。演奏中のブロックと、時間になったがまだ始まっていないブロックを並べる
@@ -25,9 +26,10 @@ export function NowPlayingBanner({
         {playing.map(({ section, block, current, next }) => (
           <div
             key={block.id}
-            // 赤い枠を白い光がゆっくり左から右へ流れる(globals.css の rim-glint)
-            className="rim-glint rounded-md p-3 text-white"
+            // 赤い枠の上をギザギザの波形が回る(LiveWave)
+            className="relative rounded-md border-2 border-[#e54141] bg-black p-3 text-white"
           >
+            <LiveWave />
             <div className="flex items-center gap-2 text-sm">
               <span className="rounded-md bg-[#e54141] px-2 py-0.5 font-bold">
                 LIVE
