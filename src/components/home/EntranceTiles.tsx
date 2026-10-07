@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { NAV_ENTRANCES } from "@/lib/navigation";
+import { TILE_ENTRANCES } from "@/lib/navigation";
 
 /** 各ページへの入口。親指で押しやすい大きさの 2×2 */
 export function EntranceTiles() {
   return (
     <nav className="grid w-full max-w-md grid-cols-2 gap-3">
-      {NAV_ENTRANCES.map(({ label, href, icon: Icon }) => (
+      {TILE_ENTRANCES.map(({ label, href, icon: Icon }) => (
         <Link
           key={href}
           href={href}
