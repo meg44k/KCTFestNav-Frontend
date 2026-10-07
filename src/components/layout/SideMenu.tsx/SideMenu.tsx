@@ -1,6 +1,6 @@
 "use client";
 
-import { Map as MapIcon, Menu, MicVocal, Store, Utensils } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -12,6 +12,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Marker } from "@/components/ui/marker";
+import { NAV_ENTRANCES, NAV_HOME } from "@/lib/navigation";
 
 export default function SideMenu() {
   return (
@@ -36,30 +37,14 @@ export default function SideMenu() {
         </DrawerHeader>
         <div className="p-4">
           <Marker variant="border" className="border-black" />
-          <DrawerLabel href="/main">
-            <div className="flex items-center gap-1 ">
-              <MapIcon size={20} strokeWidth={1.5} />
-              <span className="-translate-y-0.5">マップ</span>
-            </div>
-          </DrawerLabel>
-          <DrawerLabel href="/class-booth">
-            <div className="flex items-center gap-1">
-              <Store size={20} strokeWidth={1.5} />
-              <span className="-translate-y-0.5">クラス展示</span>
-            </div>
-          </DrawerLabel>
-          <DrawerLabel href="/bazaar">
-            <div className="flex items-center gap-1">
-              <Utensils size={20} strokeWidth={1.5} />
-              <span className="-translate-y-0.5">クラブバザー</span>
-            </div>
-          </DrawerLabel>
-          <DrawerLabel href="stage-event">
-            <div className="flex items-center gap-1">
-              <MicVocal size={20} strokeWidth={1.5} />
-              <span className="-translate-y-0.5">ステージイベント</span>
-            </div>
-          </DrawerLabel>
+          {[NAV_HOME, ...NAV_ENTRANCES].map(({ label, href, icon: Icon }) => (
+            <DrawerLabel key={href} href={href}>
+              <div className="flex items-center gap-1">
+                <Icon size={20} strokeWidth={1.5} />
+                <span className="-translate-y-0.5">{label}</span>
+              </div>
+            </DrawerLabel>
+          ))}
           <Marker variant="border" className="border-black" />
         </div>
         <DrawerFooter className="text-center">

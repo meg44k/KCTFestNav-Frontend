@@ -3,7 +3,6 @@ import { RefreshEvery } from "@/components/RefreshEvery";
 import { BulletinBoard } from "@/components/ui/bulletinBoard";
 import { apiFetch } from "@/lib/api/client";
 import { announcementOrDefault } from "@/lib/live-schedule";
-import { MapTypeToggle } from "./MapTypeToggle";
 
 export default async function Main() {
   let content: string | undefined;
@@ -21,7 +20,6 @@ export default async function Main() {
     <div>
       <BulletinBoard content={announcementOrDefault(content)} />
       <SideMenu />
-      <MapTypeToggle />
       <RefreshEvery seconds={60} />
     </div>
   );
