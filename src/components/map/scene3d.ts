@@ -13,10 +13,11 @@ import {
 import type { MapPin } from "@/lib/map/map-booths";
 import { type MapFocus, type MapLocation, PIN_COLORS } from "./types";
 
-/** 3D の最初のカメラの向き(画面の奥の方角、北から時計回り)。校舎の並び(MAP_BEARING)から 45° ずらして斜めに */
-const CAMERA_BEARING = 13;
-/** 最初に正面に置く棟 */
-const CAMERA_FRONT = "１号館";
+/**
+ * 3D の最初のカメラの向き(画面の奥の方角、北から時計回り)。校舎の並びから 45° ずらした斜めで、
+ * 1 号館を手前に見ながら学校全体が入る向き(本人の希望)
+ */
+const CAMERA_BEARING = 193;
 
 export type Hit = { pin: number } | { building: string } | null;
 
@@ -144,17 +145,13 @@ export function createScene(
   controls.maxPolarAngle = Math.PI * 0.48;
   controls.enableDamping = true;
   controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
-  // 最初は 1 号館を正面に、校舎の並びに対して斜めから見下ろす(本人の希望)
-  const front = campus.buildings.find((b) => b.name === CAMERA_FRONT);
-  const home = front
-    ? toScene(front.center)
-    : toScene([(minX + maxX) / 2, (minY + maxY) / 2]);
+  const home = toScene([(minX + maxX) / 2, (minY + maxY) / 2]);
   controls.target.copy(home);
   const bearing = (CAMERA_BEARING * Math.PI) / 180;
-  const back = span * 1.05;
+  const back = span * 1.7;
   camera.position.set(
     home.x - Math.sin(bearing) * back,
-    span * 0.95,
+    span * 1.25,
     home.z + Math.cos(bearing) * back,
   );
   controls.update();
