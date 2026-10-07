@@ -26,8 +26,8 @@ export function NowPlayingBanner({
         {playing.map(({ section, block, current, next }) => (
           <div
             key={block.id}
-            // 赤い枠の上をギザギザの波形が回る(LiveWave)
-            className="relative rounded-md border-2 border-[#e54141] bg-black p-3 text-white"
+            // 枠は LiveWave が描く(赤い枠の一部がギザギザに変形しながら回る)。ここの枠は場所だけ
+            className="relative rounded-md border-2 border-transparent bg-black p-3 text-white"
           >
             <LiveWave />
             <div className="flex items-center gap-2 text-sm">

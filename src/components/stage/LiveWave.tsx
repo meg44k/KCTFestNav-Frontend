@@ -16,11 +16,13 @@ const MAX_AMP = 8;
 // 枠を回る速さ(px/秒)と、波形の長さ(周りの長さに対する割合)
 const SPEED = 110;
 const LENGTH = 0.3;
-const SAMPLES = 140;
+// 枠を描くときの細かさ(px)と色(赤い枠と同じ)
+const STEP = 1.5;
+const COLOR = "#e54141";
 
 /**
- * LIVE の帯の枠の上を、ギザギザの波形が回る。振幅は時間でかわる。
- * 親(position: relative、角丸 radius px、枠の太さ border px)の上に重ねて置く
+ * LIVE の帯の枠そのもの。赤い枠の一部がギザギザに変形しながら回り、振幅は時間でかわる。
+ * 親(position: relative、角丸 radius px、透明な枠 border px)の上に重ねて置く
  */
 export function LiveWave({
   radius = 6,
@@ -61,30 +63,33 @@ export function LiveWave({
       };
     };
 
+    // 枠の線そのものを描く。ふだんはまっすぐで、回っている一部だけがギザギザに変形する
     const draw = (now: number) => {
       const t = (now - started) / 1000;
       ctx.clearRect(0, 0, el.width, el.height);
       const p = perimeterLength(box);
       if (p <= 0) return;
-      const head = t * SPEED;
+      const tail = t * SPEED - p * LENGTH;
       const len = p * LENGTH;
       const amp = amplitudeAt(t) * MAX_AMP;
       const ox = MARGIN + border / 2;
+      const steps = Math.ceil(p / STEP);
       ctx.beginPath();
-      for (let i = 0; i <= SAMPLES; i++) {
-        const u = i / SAMPLES;
-        const at = pointOnRoundedRect(box, head - len * (1 - u));
-        const off = waveOffset(u, t, amp);
+      for (let i = 0; i <= steps; i++) {
+        const s = (i / steps) * p;
+        const at = pointOnRoundedRect(box, s);
+        // 波形の区間(tail〜tail+len)に入っている所だけずらす
+        const rel = (((s - tail) % p) + p) % p;
+        const off = rel < len ? waveOffset(rel / len, t, amp) : 0;
         const x = ox + at.x + at.nx * off;
         const y = ox + at.y + at.ny * off;
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
-      ctx.strokeStyle = "#ffffff";
-      ctx.lineWidth = 1.5;
+      ctx.closePath();
+      ctx.strokeStyle = COLOR;
+      ctx.lineWidth = border;
       ctx.lineJoin = "miter";
-      ctx.shadowColor = "#e54141";
-      ctx.shadowBlur = 8;
       ctx.stroke();
     };
 
