@@ -1,6 +1,6 @@
 "use client";
 
-import { Navigation2 } from "lucide-react";
+import { Maximize, Minus, Navigation2, Plus } from "lucide-react";
 import {
   type PointerEvent,
   useEffect,
@@ -13,18 +13,30 @@ import {
   floorLabel,
   fromScreen,
   MAP_BEARING,
+  shortName,
   toScreen,
   type XY,
 } from "@/lib/map/campus";
 import { cn } from "@/lib/utils";
 import { type MapProps, PIN_COLORS } from "./types";
 
-const MARGIN = 30;
+const MARGIN = 12;
+const MIN_ZOOM = 0.6;
+const MAX_ZOOM = 12;
+// これより拡大したら、ピンの横にブース名を出す(全体表示では重なるので出さない)
+const PIN_NAME_ZOOM = 2.2;
 
 // 地図の座標 → 画面の向き(MAP_BEARING が上)に回した座標。文字は回さずにすむ
 const S = (xy: XY) => toScreen(xy, MAP_BEARING);
 
-/** 平面図。黒地に校舎の形・棟の名前・ピン。指で拡大と移動ができる。上は MAP_BEARING の方角 */
+// 札の幅の目安(全角は 1 文字、半角は 0.6 文字)
+const textWidth = (text: string, size: number) =>
+  [...text].reduce((w, c) => w + (c.charCodeAt(0) > 0xff ? 1 : 0.6), 0) * size;
+
+/**
+ * 平面図。上は MAP_BEARING の方角。最初は名前のある棟が画面いっぱいになるように寄せる。
+ * 指で拡大・移動、ダブルタップで拡大、右下のボタンで拡大・縮小・全体に戻す
+ */
 export function Map2D({
   campus,
   pins,
@@ -36,10 +48,17 @@ export function Map2D({
   onPickNothing,
   onPickPoint,
   className,
-}: MapProps & { onPickPoint?: (xy: XY) => void; className?: string }) {
-  // 回した後の建物全体の範囲
+  controlsClassName = "right-3 bottom-3",
+}: MapProps & {
+  onPickPoint?: (xy: XY) => void;
+  className?: string;
+  /** 拡大・縮小ボタンの位置(地図の上に他のボタンがあるときにずらす) */
+  controlsClassName?: string;
+}) {
+  // 最初に見せる範囲 = 名前のある棟(回した後)。無ければ全部
   const vb = useMemo(() => {
-    const pts = campus.buildings.flatMap((b) =>
+    const named = campus.buildings.filter((b) => b.name);
+    const pts = (named.length > 0 ? named : campus.buildings).flatMap((b) =>
       b.parts.flatMap((p) => p.polygons.flatMap(([outer]) => outer.map(S))),
     );
     const xs = pts.map(([x]) => x);
@@ -86,13 +105,16 @@ export function Map2D({
 
   const zoomAt = (sx: number, sy: number, factor: number) =>
     setView((v) => {
-      const k = Math.min(Math.max(v.k * factor, 1), 12);
+      const k = Math.min(Math.max(v.k * factor, MIN_ZOOM), MAX_ZOOM);
       const f = k / v.k;
       return { k, tx: sx - (sx - v.tx) * f, ty: sy - (sy - v.ty) * f };
     });
+  const zoomCenter = (factor: number) =>
+    zoomAt(vb.x + vb.w / 2, vb.y + vb.h / 2, factor);
 
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const gesture = useRef<{ moved: number; dist?: number }>({ moved: 0 });
+  const lastTap = useRef<{ at: number; x: number; y: number } | null>(null);
 
   const onDown = (e: PointerEvent<SVGSVGElement>) => {
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -126,13 +148,23 @@ export function Map2D({
     const was = pointers.current.size;
     pointers.current.delete(e.pointerId);
     if (was !== 1 || gesture.current.moved > 6) return;
+    const s = toSvg(e.clientX, e.clientY);
+    if (onPickPoint) return onPickPoint(toMap(s.x, s.y));
+    // ダブルタップは拡大(1 回目の選択はそのまま)
+    const now = performance.now();
+    const prev = lastTap.current;
+    if (
+      prev &&
+      now - prev.at < 300 &&
+      Math.hypot(e.clientX - prev.x, e.clientY - prev.y) < 25
+    ) {
+      lastTap.current = null;
+      return zoomAt(s.x, s.y, 2);
+    }
+    lastTap.current = { at: now, x: e.clientX, y: e.clientY };
     // ポインターを捕まえているので e.target は svg になる。指の下の要素を見る
     const target = document.elementFromPoint(e.clientX, e.clientY);
     if (!target) return onPickNothing();
-    if (onPickPoint) {
-      const s = toSvg(e.clientX, e.clientY);
-      return onPickPoint(toMap(s.x, s.y));
-    }
     const pin = target.closest("[data-pin]")?.getAttribute("data-pin");
     if (pin) return onPickPin(Number(pin));
     const building = target
@@ -156,6 +188,7 @@ export function Map2D({
     return { x, y: -y };
   };
   const me = location ? at(location.xy) : null;
+  const showPinNames = view.k >= PIN_NAME_ZOOM && !onPickPoint;
 
   return (
     <div className={cn("relative h-full w-full", className)}>
@@ -184,11 +217,15 @@ export function Map2D({
                       .map((poly) => poly.map(ring).join(""))
                       .join("")}
                     fillRule="evenodd"
+                    // 名前のある棟は明るく、渡り廊下などは背景に引かせる
                     fill={
-                      focused ? "#3d8bff55" : b.name ? "#3a4049" : "#22262b"
+                      focused ? "#3d8bff66" : b.name ? "#5b6472" : "#1c2025"
                     }
-                    stroke={focused ? "#3d8bff" : "#8a93a0"}
-                    strokeWidth={px}
+                    stroke={
+                      focused ? "#7fb2ff" : b.name ? "#d1d5db" : "#3a4048"
+                    }
+                    strokeWidth={(focused ? 2.5 : b.name ? 1.5 : 1) * px}
+                    strokeLinejoin="round"
                   />
                 ))}
               </g>
@@ -196,20 +233,39 @@ export function Map2D({
           })}
           {campus.buildings
             .filter((b) => b.name)
-            .map((b) => (
-              <text
-                key={b.id}
-                x={at(b.center).x}
-                y={at(b.center).y}
-                fontSize={11 * px}
-                fill="#e5e7eb"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                pointerEvents="none"
-              >
-                {b.name}
-              </text>
-            ))}
+            .map((b) => {
+              const name = shortName(b.name as string);
+              const size = 12 * px;
+              const w = textWidth(name, size) + 10 * px;
+              const h = 20 * px;
+              const c = at(b.center);
+              const focused = focus?.buildingId === b.id;
+              return (
+                <g key={b.id} pointerEvents="none">
+                  <rect
+                    x={c.x - w / 2}
+                    y={c.y - h / 2}
+                    width={w}
+                    height={h}
+                    rx={h / 2}
+                    fill={focused ? "#3d8bff" : "#0b0d10"}
+                    stroke="#ffffffb3"
+                    strokeWidth={px}
+                  />
+                  <text
+                    x={c.x}
+                    y={c.y}
+                    fontSize={size}
+                    fontWeight="bold"
+                    fill="#fff"
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                  >
+                    {name}
+                  </text>
+                </g>
+              );
+            })}
           {location && me && (
             <g pointerEvents="none">
               <circle
@@ -220,7 +276,7 @@ export function Map2D({
               />
               {location.heading !== undefined && (
                 <path
-                  d={`M0,0 L${-5 * px},${-16 * px} L${5 * px},${-16 * px} Z`}
+                  d={`M0,0 L${-6 * px},${-20 * px} L${6 * px},${-20 * px} Z`}
                   // 向きは北から時計回り。画面では北が -MAP_BEARING の向きにある
                   transform={`translate(${me.x} ${me.y}) rotate(${location.heading - MAP_BEARING})`}
                   fill="#4f8cff88"
@@ -229,37 +285,48 @@ export function Map2D({
               <circle
                 cx={me.x}
                 cy={me.y}
-                r={6 * px}
+                r={7 * px}
                 fill="#4f8cff"
                 stroke="#fff"
-                strokeWidth={2 * px}
+                strokeWidth={2.5 * px}
               />
             </g>
           )}
           {pins.map((pin) => {
             const big = pin.id === selectedPinId;
-            const r = (big ? 10 : 7) * px;
+            const r = (big ? 13 : 9) * px;
+            const p = at(pin.xy);
+            const label = [
+              showPinNames || big ? pin.name : "",
+              pin.floor > 0 ? floorLabel(pin.floor) : "",
+            ]
+              .filter(Boolean)
+              .join(" ");
             return (
               <g
                 key={pin.id}
                 data-pin={pin.id}
-                transform={`translate(${at(pin.xy).x} ${at(pin.xy).y})`}
+                transform={`translate(${p.x} ${p.y})`}
               >
                 <circle
                   r={r}
                   fill={PIN_COLORS[pin.kind]}
                   stroke="#fff"
-                  strokeWidth={2 * px}
+                  strokeWidth={2.5 * px}
                 />
-                {pin.floor > 0 && (
+                {label && (
                   <text
-                    x={r + 2 * px}
+                    x={r + 3 * px}
                     y={0}
-                    fontSize={10 * px}
+                    fontSize={12 * px}
+                    fontWeight="bold"
                     fill="#fff"
-                    dominantBaseline="middle"
+                    stroke="#000"
+                    strokeWidth={3 * px}
+                    paintOrder="stroke"
+                    dominantBaseline="central"
                   >
-                    {floorLabel(pin.floor)}
+                    {label}
                   </text>
                 )}
               </g>
@@ -275,6 +342,32 @@ export function Map2D({
         style={{ transform: `rotate(${-MAP_BEARING}deg)` }}
       >
         <Navigation2 size={14} fill="currentColor" />N
+      </div>
+      <div
+        className={cn(
+          "absolute flex flex-col overflow-hidden rounded-xl border border-white/40 bg-black/80",
+          controlsClassName,
+        )}
+      >
+        {[
+          { label: "拡大", icon: Plus, onClick: () => zoomCenter(1.6) },
+          { label: "縮小", icon: Minus, onClick: () => zoomCenter(1 / 1.6) },
+          {
+            label: "全体を表示",
+            icon: Maximize,
+            onClick: () => setView({ k: 1, tx: 0, ty: 0 }),
+          },
+        ].map(({ label, icon: Icon, onClick }) => (
+          <button
+            key={label}
+            type="button"
+            aria-label={label}
+            onClick={onClick}
+            className="flex h-10 w-10 items-center justify-center text-white active:bg-white/20"
+          >
+            <Icon size={18} />
+          </button>
+        ))}
       </div>
     </div>
   );

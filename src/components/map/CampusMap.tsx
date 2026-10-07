@@ -122,7 +122,11 @@ export function CampusMap({
 
   return (
     <div className="fixed inset-0 bg-black">
-      {state.view === "3d" ? <Map3D {...props} /> : <Map2D {...props} />}
+      {state.view === "3d" ? (
+        <Map3D {...props} />
+      ) : (
+        <Map2D {...props} controlsClassName="right-4 bottom-[140px]" />
+      )}
 
       {/* 絞り込み(右上はメニューのボタンがあるので空ける) */}
       <div className="absolute top-3 left-3 right-16 z-40 flex gap-2 overflow-x-auto">

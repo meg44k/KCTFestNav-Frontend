@@ -9,6 +9,7 @@ import {
   floorBand,
   floorLabel,
   type Part,
+  shortName,
 } from "@/lib/map/campus";
 import type { MapPin } from "@/lib/map/map-booths";
 import { type MapFocus, type MapLocation, PIN_COLORS } from "./types";
@@ -202,8 +203,8 @@ export function createScene(
       if (b.name) {
         const text =
           focused && focus.floor > 0
-            ? `${b.name} ${floorLabel(focus.floor)}`
-            : b.name;
+            ? `${shortName(b.name)} ${floorLabel(focus.floor)}`
+            : shortName(b.name);
         const tag = label(
           text,
           focused ? "map3d-label map3d-label-focus" : "map3d-label",

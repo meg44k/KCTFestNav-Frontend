@@ -289,3 +289,7 @@ export function fromScreen([sx, sy]: XY, bearing: number): XY {
     -sx * Math.sin(r) + sy * Math.cos(r),
   ];
 }
+
+/** 地図の札に出す短い名前。括弧の中(「(第1工場)」など)を省く */
+export const shortName = (name: string) =>
+  name.replace(/[（(].*?[)）]/g, "").trim();

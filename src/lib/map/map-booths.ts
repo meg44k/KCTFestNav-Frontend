@@ -8,6 +8,8 @@ export type MapQuery = { type: MapType; view?: MapView; boothId?: number };
 export type MapState = { type: MapType; view: MapView; boothId: number | null };
 export type MapPin = {
   id: number;
+  /** 拡大したときにピンの横に出す名前 */
+  name: string;
   xy: XY;
   elevation: number;
   floor: number;
@@ -73,6 +75,7 @@ export function mapPins(
       const place = placeOnFloor(campus, xy, b.floor);
       return {
         id: b.id,
+        name: b.name,
         xy,
         elevation: place.elevation,
         floor: place.floor,

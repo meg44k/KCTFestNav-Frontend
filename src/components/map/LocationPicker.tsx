@@ -85,7 +85,16 @@ export function LocationPicker({
           campus={campus}
           pins={
             xy
-              ? [{ id: 0, xy, elevation: 0, floor: floorValue, kind: "class" }]
+              ? [
+                  {
+                    id: 0,
+                    name: "",
+                    xy,
+                    elevation: 0,
+                    floor: floorValue,
+                    kind: "class",
+                  },
+                ]
               : []
           }
           selectedPinId={0}

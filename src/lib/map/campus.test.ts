@@ -11,6 +11,7 @@ import {
   MAP_BEARING,
   nearCampus,
   placeOnFloor,
+  shortName,
   toScreen,
 } from "./campus";
 
@@ -279,5 +280,13 @@ describe("地図の向き", () => {
         : b,
     );
     expect(lowest.name).toBe("福利施設");
+  });
+});
+
+describe("shortName", () => {
+  it("括弧の中を省いて地図の札を短くする", () => {
+    expect(shortName("ものづくりセンター(第1工場)")).toBe("ものづくりセンター");
+    expect(shortName("体育館（ステージイベント）")).toBe("体育館");
+    expect(shortName("3号館")).toBe("3号館");
   });
 });
