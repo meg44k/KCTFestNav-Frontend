@@ -331,7 +331,7 @@ export function createScene(
     pinGroup.clear();
     for (const pin of pins) {
       const big = pin.id === selected;
-      const color = new THREE.Color(PIN_COLORS[pin.kind]);
+      const color = new THREE.Color(PIN_COLORS[pin.congestion]);
       const stickMat = new THREE.MeshBasicMaterial({ color, depthTest: false });
       const headMat = new THREE.MeshBasicMaterial({ color, depthTest: false });
       const stick = new THREE.Mesh(

@@ -310,7 +310,7 @@ export function Map2D({
               >
                 <circle
                   r={r}
-                  fill={PIN_COLORS[pin.kind]}
+                  fill={PIN_COLORS[pin.congestion]}
                   stroke="#fff"
                   strokeWidth={2.5 * px}
                 />

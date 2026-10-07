@@ -18,4 +18,9 @@ export type MapProps = {
   onPickNothing(): void;
 };
 
-export const PIN_COLORS = { class: "#00B894", club: "#FDCB6E" } as const;
+/** ピンの色。ブースのカードと同じ混雑度の色(クラス展示とクラブバザーで分けない) */
+export const PIN_COLORS = {
+  empty: "#00B894",
+  clouded: "#FDCB6E",
+  veryClouded: "#e54141",
+} as const;

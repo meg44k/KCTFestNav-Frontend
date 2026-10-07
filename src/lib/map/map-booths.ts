@@ -1,4 +1,4 @@
-import type { Booth } from "@/lib/api/booths";
+import type { Booth, CongestionStatus } from "@/lib/api/booths";
 import { parseGrade } from "@/lib/booth-grade";
 import { type Campus, placeOnFloor, type XY } from "./campus";
 
@@ -14,6 +14,8 @@ export type MapPin = {
   elevation: number;
   floor: number;
   kind: "class" | "club";
+  /** ピンの色に使う */
+  congestion: CongestionStatus;
   buildingId?: string;
 };
 
@@ -84,6 +86,7 @@ export function mapPins(
         elevation: place.elevation,
         floor: place.floor,
         kind: boothKind(b),
+        congestion: b.congestionStatus,
         buildingId: place.building?.id,
       };
     });
