@@ -85,13 +85,23 @@ export function StageOps({
           key={`${row.block.id}-${inTime(row.block, serverNow)}`}
           row={row}
           live={inTime(row.block, serverNow)}
+          // 押し忘れ対策で、終了から30分たつと来場者には演奏中と出なくなる(バックエンドと同じ)
+          expired={serverNow >= ms(row.block.end_time) + 30 * 60_000}
         />
       ))}
     </section>
   );
 }
 
-function BlockControl({ row, live }: { row: Row; live: boolean }) {
+function BlockControl({
+  row,
+  live,
+  expired,
+}: {
+  row: Row;
+  live: boolean;
+  expired: boolean;
+}) {
   const { section, block, label } = row;
   const [open, setOpen] = useState(live);
   const [error, setError] = useState<string>();
@@ -168,9 +178,9 @@ function BlockControl({ row, live }: { row: Row; live: boolean }) {
               このブロックは終了しました
             </p>
           )}
-          {!live && (
+          {block.performers[current - 1] && expired && (
             <p className="text-gray-500 text-sm">
-              時間外なので、来場者には演奏中と表示されません。
+              終了時刻から30分たったので、来場者には演奏中と表示されません。
             </p>
           )}
           <div className="grid grid-cols-[1fr_2fr] gap-2">

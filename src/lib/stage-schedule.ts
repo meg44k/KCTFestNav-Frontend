@@ -159,12 +159,12 @@ export function nextUp(
   return found;
 }
 
-/** 全ブロックの終了時刻を過ぎたか */
+/** 全ブロックの終了時刻を過ぎたか。延びて演奏中のブロックがあれば終わっていない */
 export function sectionFinished(
   section: StageSectionResponse,
   nowMs: number,
 ): boolean {
-  return section.blocks.every((b) => ms(b.end_time) <= nowMs);
+  return section.blocks.every((b) => ms(b.end_time) <= nowMs && !b.now_playing);
 }
 
 export function blockTimeRange(block: StageBlockResponse): string {

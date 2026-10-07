@@ -244,3 +244,15 @@ describe("startingNow", () => {
     expect(startingNow([s], now).map((x) => x.block.id)).toEqual([1]);
   });
 });
+
+describe("sectionFinished(延長)", () => {
+  it("終了時刻を過ぎても、演奏中のブロックがあればたたまない", () => {
+    const s = section(1, [
+      block(1, "2026-10-31T13:00:00+09:00", "2026-10-31T13:50:00+09:00", {
+        current_order: 2,
+        now_playing: true,
+      }),
+    ]);
+    expect(sectionFinished(s, ms("2026-10-31T14:00:00+09:00"))).toBe(false);
+  });
+});
