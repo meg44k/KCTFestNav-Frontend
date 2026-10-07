@@ -1,11 +1,15 @@
+import { ViewTransition } from "react";
 import { EntranceTiles } from "@/components/home/EntranceTiles";
+import {
+  FestivalTitle,
+  INTRO_TRANSITION,
+} from "@/components/home/FestivalTitle";
 import { StageHeadlineCard } from "@/components/home/StageHeadlineCard";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
 import { RefreshEvery } from "@/components/RefreshEvery";
 import { BulletinBoard } from "@/components/ui/bulletinBoard";
 import { apiFetch } from "@/lib/api/client";
 import type { StageSectionResponse } from "@/lib/api/stage";
-import { eventYear } from "@/lib/constants";
 import { announcementOrDefault } from "@/lib/live-schedule";
 import { stageHeadline } from "@/lib/stage-schedule";
 
@@ -32,16 +36,26 @@ export default async function Main() {
 
   return (
     <div>
-      <BulletinBoard content={announcementOrDefault(content)} />
+      {/* タイトル画面から来たときだけ、見出しのまわりがふわっと現れる */}
+      <ViewTransition
+        enter={{ [INTRO_TRANSITION]: "intro-rise", default: "none" }}
+        default="none"
+      >
+        <BulletinBoard content={announcementOrDefault(content)} />
+      </ViewTransition>
       <SideMenu />
       <RefreshEvery seconds={60} />
       <div className="flex flex-col items-center gap-4 px-4 pb-10">
-        <h1 className="pt-10 pb-2 text-center">
-          <span className="block">{eventYear} 北九州高専</span>
-          <span className="block font-extrabold text-5xl">高専祭</span>
-        </h1>
-        <StageHeadlineCard headline={stageHeadline(sections, Date.now())} />
-        <EntranceTiles />
+        <FestivalTitle className="pt-10 pb-2 text-center" />
+        <ViewTransition
+          enter={{ [INTRO_TRANSITION]: "intro-rise", default: "none" }}
+          default="none"
+        >
+          <div className="flex w-full flex-col items-center gap-4">
+            <StageHeadlineCard headline={stageHeadline(sections, Date.now())} />
+            <EntranceTiles />
+          </div>
+        </ViewTransition>
       </div>
     </div>
   );

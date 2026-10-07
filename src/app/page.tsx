@@ -1,8 +1,11 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import {
+  FestivalTitle,
+  INTRO_TRANSITION,
+} from "@/components/home/FestivalTitle";
 import { IntroRedirect } from "@/components/home/IntroRedirect";
-import { eventYear } from "@/lib/constants";
 import { INTRO_COOKIE, introSeen } from "@/lib/intro";
 
 export default async function Home() {
@@ -13,11 +16,11 @@ export default async function Home() {
     <Link
       href="/main"
       replace
+      transitionTypes={[INTRO_TRANSITION]}
       className="flex h-dvh flex-col items-center justify-center text-center"
     >
-      <div>{eventYear} 北九州高専</div>
-      <div className="text-5xl">高専祭</div>
-      <IntroRedirect to="/main" afterMs={2000} />
+      <FestivalTitle />
+      <IntroRedirect to="/main" afterMs={1000} />
     </Link>
   );
 }

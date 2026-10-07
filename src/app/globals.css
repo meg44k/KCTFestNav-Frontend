@@ -164,3 +164,35 @@
     width: 100%;
   }
 }
+
+/* タイトル画面 → 入口ページ。見出しは位置と大きさを変えて上へ、残りは少し遅れて下から現れる */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-group(.intro-morph) {
+    animation-duration: 700ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  ::view-transition-new(.intro-rise) {
+    animation: intro-rise 500ms cubic-bezier(0.22, 1, 0.36, 1) 250ms both;
+  }
+}
+
+@keyframes intro-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 動きを減らす設定の人には、アニメーションせずに切り替える */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
+}
