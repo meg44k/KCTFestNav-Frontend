@@ -12,10 +12,10 @@ import {
 // 波形がはみ出せる余白(px)
 const MARGIN = 12;
 // いちばん大きいときの振れ幅(px)
-const MAX_AMP = 8;
+const MAX_AMP = 12;
 // 枠を回る速さ(px/秒)と、波形の長さ(周りの長さに対する割合)
 const SPEED = 110;
-const LENGTH = 0.3;
+const LENGTH = 0.12;
 // 枠を描くときの細かさ(px)と色(赤い枠と同じ)
 const STEP = 1.5;
 const COLOR = "#e54141";

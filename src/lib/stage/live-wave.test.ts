@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   amplitudeAt,
+  envelope,
   perimeterLength,
   pointOnRoundedRect,
+  TEETH,
   waveOffset,
 } from "./live-wave";
 
@@ -50,11 +52,25 @@ describe("波形", () => {
   });
 
   it("まん中はギザギザ(隣どうしで向きが入れ替わる)", () => {
-    const step = 1 / 40;
+    const step = 1 / (TEETH * 2);
     const vals = Array.from({ length: 6 }, (_, i) =>
       waveOffset(0.4 + i * step, 0, 1),
     );
     const signs = vals.map(Math.sign).filter((s) => s !== 0);
     expect(new Set(signs).size).toBe(2);
+  });
+
+  it("まん中だけが膨らまない(端の近くまで同じ強さ)", () => {
+    expect(envelope(0.2)).toBeCloseTo(1);
+    expect(envelope(0.5)).toBeCloseTo(1);
+    expect(envelope(0.8)).toBeCloseTo(1);
+    expect(envelope(0.02)).toBeLessThan(0.5);
+  });
+
+  it("歯の高さはばらばら(大きい歯と小さい歯がある)", () => {
+    const peaks = Array.from({ length: TEETH }, (_, k) =>
+      Math.abs(waveOffset((k + 0.5) / TEETH, 0, 1)),
+    ).slice(3, -3);
+    expect(Math.max(...peaks) - Math.min(...peaks)).toBeGreaterThan(0.5);
   });
 });

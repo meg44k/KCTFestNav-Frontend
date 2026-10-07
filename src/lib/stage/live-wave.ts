@@ -61,18 +61,29 @@ const hash = (n: number) => {
   return x - Math.floor(x);
 };
 
-/** 波形の 1 周期あたりの歯の数(波形全体で) */
-const TEETH = 20;
+/** 波形全体の歯の数 */
+export const TEETH = 18;
+
+// 両端のすぼまる幅(波形の長さに対する割合)
+const EDGE = 0.08;
 
 /**
- * 波形の中の位置 u(0〜1)での、枠からの外向きのずれ(amp 倍)。
- * 両端はすぼめて枠になじませ、まん中はギザギザ(三角波)。歯ごとの高さは時間でかわる
+ * 波形の強さの包み。両端だけ短くすぼめて枠になじませ、それ以外は同じ強さ
+ * (まん中だけが膨らんで見えないように)
+ */
+export function envelope(u: number): number {
+  const x = Math.min(1, Math.max(0, Math.min(u, 1 - u) / EDGE));
+  return x * x * (3 - 2 * x);
+}
+
+/**
+ * 波形の中の位置 u(0〜1)での、枠からのずれ(amp 倍、外向きが正)。
+ * ギザギザ(三角波)で、歯ごとの高さはばらばら。高さは時間とともに入れ替わる
  */
 export function waveOffset(u: number, t: number, amp: number): number {
-  const taper = Math.sin(Math.PI * Math.min(1, Math.max(0, u))) ** 1.5;
   const x = u * TEETH;
   const frac = x - Math.floor(x);
   const tri = 1 - 4 * Math.abs(frac - 0.5);
-  const tooth = 0.45 + 0.55 * hash(Math.floor(x) + Math.floor(t * 10) * 31);
-  return amp * taper * tri * tooth;
+  const tooth = 0.15 + 0.85 * hash(Math.floor(x) + Math.floor(t * 12) * 31);
+  return amp * envelope(u) * tri * tooth;
 }
