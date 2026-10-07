@@ -225,3 +225,29 @@
   font-size: 13px;
   font-weight: bold;
 }
+
+/* 地図の下から出るカードや棟の一覧。出したい位置より少し上まで行って戻る、ゴムのような動き */
+@keyframes pop-up {
+  0% {
+    transform: translateY(100%);
+  }
+  65% {
+    transform: translateY(-10px);
+  }
+  85% {
+    transform: translateY(3px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.pop-up {
+  animation: pop-up 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pop-up {
+    animation: none;
+  }
+}

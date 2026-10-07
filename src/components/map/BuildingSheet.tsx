@@ -15,7 +15,7 @@ export function BuildingSheet({
   onClose(): void;
 }) {
   return (
-    <div className="max-h-[45dvh] overflow-y-auto rounded-t-xl border border-amber-300 bg-amber-400 p-4 text-black">
+    <div className="pop-up max-h-[45dvh] overflow-y-auto rounded-t-xl border border-amber-300 bg-amber-400 p-4 text-black">
       <div className="flex items-center justify-between pb-2">
         <h2 className="font-bold text-lg">{name}</h2>
         <button

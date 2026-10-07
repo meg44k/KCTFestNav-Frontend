@@ -218,7 +218,8 @@ export function CampusMap({
 
       <div className="absolute inset-x-0 bottom-0 z-30 mx-auto max-w-md pr-16 pl-3">
         {selectedBooth && (
-          <div className="relative pb-4">
+          // ブースが変わるたびに作り直して、下からぴょこっと出す
+          <div key={selectedBooth.id} className="pop-up relative pb-4">
             <button
               type="button"
               aria-label="選択を外す"
@@ -242,6 +243,8 @@ export function CampusMap({
         )}
         {!selectedBooth && building && (
           <BuildingSheet
+            // 棟が変わるたびに作り直して、下からぴょこっと出す
+            key={building.id}
             name={building.name ?? "建物"}
             groups={boothsByFloor(pins, booths, building.id)}
             onPick={(id) => props.onPickPin(id)}
