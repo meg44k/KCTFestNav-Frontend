@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   CONGESTION_LEVELS,
+  levelLabel,
   STALE_MINUTES,
   serverClockNow,
   updatedAgo,
@@ -61,6 +62,14 @@ describe("CONGESTION_LEVELS", () => {
       label: "準備中",
       color: "#9CA3AF",
     });
+  });
+});
+
+describe("levelLabel", () => {
+  it("管理画面のボタンも、バザーの空きは「すぐ買える」", () => {
+    expect(levelLabel(0, "1-1")).toBe("すぐ入れる");
+    expect(levelLabel(0, "軽音部")).toBe("すぐ買える");
+    expect(levelLabel(3, "軽音部")).toBe("準備中");
   });
 });
 

@@ -27,7 +27,7 @@ const TITLES: Record<BoothType, string> = {
 // 「空いている○○だけ」の切り替えの文言
 const EMPTY_LABELS: Record<BoothType, string> = {
   class: "すぐ入れる展示",
-  club: "すぐ入れるバザー",
+  club: "すぐ買えるバザー",
 };
 
 const chip = (active: boolean) =>

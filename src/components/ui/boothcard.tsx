@@ -9,16 +9,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { CONGESTION_LABELS, type CongestionStatus } from "@/lib/api/booths";
+import {
+  CONGESTION_LABELS,
+  type CongestionStatus,
+  congestionLabel,
+} from "@/lib/api/booths";
 import { cn } from "@/lib/utils";
 import { NaviButton } from "./naviButton";
 
-function congestionMessageOf(congestionStatus?: string): string {
-  // 知らない値や未指定は準備中(「すぐ入れる」と言わない)
-  return (
-    CONGESTION_LABELS[congestionStatus as CongestionStatus] ??
-    CONGESTION_LABELS.preparing
-  );
+function congestionMessageOf(
+  congestionStatus: string | undefined,
+  organizer: string | undefined,
+): string {
+  // 知らない値や未指定は準備中(「すぐ入れる」と言わない)。バザーの空きは「すぐ買える」
+  const status = (
+    congestionStatus && congestionStatus in CONGESTION_LABELS
+      ? congestionStatus
+      : "preparing"
+  ) as CongestionStatus;
+  return congestionLabel(status, organizer);
 }
 
 function BoothCard({
@@ -53,7 +62,10 @@ function BoothCard({
   /** 地図でこのブースを開くリンク。位置が無いブースや地図の上では渡さない */
   mapHref?: string;
 }) {
-  const congestionStatusMessage = congestionMessageOf(congestionStatus);
+  const congestionStatusMessage = congestionMessageOf(
+    congestionStatus,
+    organizer,
+  );
   const congestionColor = {
     "bg-[#00B894] border-l border-[#00ffcc]": congestionStatus === "empty",
     "bg-[#FDCB6E] border-l border-[#ffe3af]": congestionStatus === "clouded",

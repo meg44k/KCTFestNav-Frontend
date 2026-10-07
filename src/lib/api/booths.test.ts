@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   type BoothResponse,
   CONGESTION_LABELS,
+  congestionLabel,
   toBooth,
   toCongestionStatus,
 } from "./booths";
@@ -43,6 +44,15 @@ describe("CONGESTION_LABELS", () => {
       clouded: "少し待つ",
       veryClouded: "かなり待つ",
     });
+  });
+});
+
+describe("congestionLabel", () => {
+  it("クラブバザーは「すぐ買える」、クラス展示は「すぐ入れる」。ほかは同じ", () => {
+    expect(congestionLabel("empty", "1-1")).toBe("すぐ入れる");
+    expect(congestionLabel("empty", "天文部")).toBe("すぐ買える");
+    expect(congestionLabel("clouded", "天文部")).toBe("少し待つ");
+    expect(congestionLabel("preparing", "1-1")).toBe("準備中");
   });
 });
 

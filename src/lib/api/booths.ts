@@ -1,3 +1,4 @@
+import { parseGrade } from "@/lib/booth-grade";
 import { apiFetch } from "./client";
 
 /** バックエンドが返す生のブース。docs/openapi.yaml の Booth に対応する */
@@ -34,6 +35,18 @@ export const CONGESTION_LABELS: Record<CongestionStatus, string> = {
   clouded: "少し待つ",
   veryClouded: "かなり待つ",
 };
+
+/**
+ * ブースに合わせた混雑度のことば。クラブバザー(主催者が「学年-組」でない)の空きは
+ * 「すぐ買える」、クラス展示は「すぐ入れる」。ほかは同じ
+ */
+export function congestionLabel(
+  status: CongestionStatus,
+  organizer = "",
+): string {
+  if (status === "empty" && parseGrade(organizer) === null) return "すぐ買える";
+  return CONGESTION_LABELS[status];
+}
 
 /** 画面側で扱うブース。BoothCard にそのまま渡せる形にしてある */
 export type Booth = {

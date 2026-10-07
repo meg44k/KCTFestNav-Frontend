@@ -4,7 +4,11 @@ import { useEffect, useState, useTransition } from "react";
 import { setBoothCongestion } from "@/app/actions/ops";
 import { UpdatedAgo } from "@/components/manage/UpdatedAgo";
 import type { BoothResponse } from "@/lib/api/booths";
-import { CONGESTION_LEVELS, updatedAgo } from "@/lib/manage/congestion";
+import {
+  CONGESTION_LEVELS,
+  levelLabel,
+  updatedAgo,
+} from "@/lib/manage/congestion";
 import { MONITOR_SORTS, type MonitorSort, sortBooths } from "@/lib/manage/ops";
 import { cn } from "@/lib/utils";
 
@@ -133,7 +137,7 @@ function BoothRow({
                 selected ? "ring-2 ring-black" : "opacity-40",
               )}
             >
-              {level.label}
+              {levelLabel(level.value, booth.organizer)}
             </button>
           );
         })}
