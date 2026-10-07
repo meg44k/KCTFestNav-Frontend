@@ -9,7 +9,7 @@ import {
 } from "react";
 
 // 少し行き過ぎて戻る(ゴムのような)動き
-const BOUNCE = { duration: 450, easing: "ease-out" } as const;
+const BOUNCE = { duration: 320, easing: "ease-out" } as const;
 const bounceFrom = (startPx: number) => [
   { transform: `translateY(${startPx}px)` },
   { transform: "translateY(-10px)", offset: 0.65 },
@@ -64,7 +64,7 @@ export function BottomPanel({
           { transform: "translateY(0)" },
           { transform: `translateY(${before}px)` },
         ],
-        { duration: 250, easing: "ease-in", fill: "forwards" },
+        { duration: 180, easing: "ease-in", fill: "forwards" },
       );
       anim.onfinish = () => setPresent(false);
       return () => anim.cancel();
