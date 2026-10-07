@@ -105,7 +105,9 @@ export function Map2D({
     const was = pointers.current.size;
     pointers.current.delete(e.pointerId);
     if (was !== 1 || gesture.current.moved > 6) return;
-    const target = e.target as Element;
+    // ポインターを捕まえているので e.target は svg になる。指の下の要素を見る
+    const target = document.elementFromPoint(e.clientX, e.clientY);
+    if (!target) return onPickNothing();
     if (onPickPoint) {
       const s = toSvg(e.clientX, e.clientY);
       return onPickPoint(toMap(s.x, s.y));
