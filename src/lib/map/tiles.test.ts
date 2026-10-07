@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import realData from "@/data/campus.json";
 import { type CampusData, loadCampus } from "./campus";
-import { groundTiles, tileUrl } from "./tiles";
+import { darkenPale, groundTiles, paleTileUrl, tileUrl } from "./tiles";
 
 const campus = loadCampus(realData as unknown as CampusData);
 
@@ -29,5 +29,27 @@ describe("groundTiles", () => {
     expect(tileUrl(18, 230000, 104000)).toBe(
       "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/18/230000/104000.jpg",
     );
+  });
+});
+
+describe("2D の淡色地図", () => {
+  it("地理院の淡色地図のタイル", () => {
+    expect(paleTileUrl(18, 230000, 104000)).toBe(
+      "https://cyberjapandata.gsi.go.jp/xyz/pale/18/230000/104000.png",
+    );
+  });
+
+  it("明るい地図を暗い色に置き換える(明るさの順は保つ)", () => {
+    const px = new Uint8ClampedArray([
+      255, 255, 255, 255, 200, 200, 200, 255, 170, 210, 240, 255,
+    ]);
+    darkenPale(px);
+    // 道路(白) > 地面(灰) の明るさの順はそのまま、全体は暗い
+    expect(px[0]).toBeGreaterThan(px[4]);
+    expect(px[0]).toBeLessThan(90);
+    // 水(青っぽい)は青みが残る
+    expect(px[10]).toBeGreaterThan(px[8]);
+    // 透明度は変えない
+    expect(px[3]).toBe(255);
   });
 });

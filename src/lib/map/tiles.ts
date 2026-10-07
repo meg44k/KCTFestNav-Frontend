@@ -46,3 +46,19 @@ export function groundTiles(campus: Campus, marginM: number, z: number) {
   const [x1, y0] = campus.toXY(seLon, seLat);
   return { z, tx0, ty0, tx1, ty1, rect: { x0, x1, y0, y1 } };
 }
+
+/** 2D の背景に敷く地理院の淡色地図(写真ではなく、道路や建物を単純な色で描いた地図) */
+export const paleTileUrl = (z: number, x: number, y: number) =>
+  `https://cyberjapandata.gsi.go.jp/xyz/pale/${z}/${x}/${y}.png`;
+
+/**
+ * 淡色地図の画素(RGBA の並び)を、サイトの黒基調に合う暗い色に置き換える。
+ * 明るさの順(道路 > 地面 > 建物)と色み(水の青など)は保ったまま、全体を暗く沈める
+ */
+export function darkenPale(px: Uint8ClampedArray) {
+  for (let i = 0; i < px.length; i += 4) {
+    px[i] = 6 + px[i] * 0.17;
+    px[i + 1] = 8 + px[i + 1] * 0.17;
+    px[i + 2] = 11 + px[i + 2] * 0.18;
+  }
+}

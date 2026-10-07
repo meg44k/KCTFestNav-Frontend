@@ -18,6 +18,7 @@ import {
   type XY,
 } from "@/lib/map/campus";
 import { cn } from "@/lib/utils";
+import { loadPaleBackground, type PaleBackground } from "./paleBackground";
 import { type MapProps, PIN_COLORS } from "./types";
 
 const MARGIN = 12;
@@ -73,6 +74,17 @@ export function Map2D({
     };
   }, [campus]);
   const svg = useRef<SVGSVGElement>(null);
+  // 背景の淡色地図(読めるまでは黒地のまま)
+  const [background, setBackground] = useState<PaleBackground | null>(null);
+  useEffect(() => {
+    let alive = true;
+    loadPaleBackground(campus).then((bg) => {
+      if (alive) setBackground(bg);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [campus]);
   const [view, setView] = useState({ k: 1, tx: 0, ty: 0 });
   // 画面の 1px が viewBox の何単位か(文字やピンの大きさを画面上で一定にする)
   const [unit, setUnit] = useState(1);
@@ -205,6 +217,19 @@ export function Map2D({
         onWheel={onWheel}
       >
         <g transform={`translate(${view.tx} ${view.ty}) scale(${view.k})`}>
+          {background && (
+            // 地図のタイルは北が上なので、画面の向き(MAP_BEARING が上)に回して置く
+            <g transform={`rotate(${-MAP_BEARING})`} pointerEvents="none">
+              <image
+                href={background.url}
+                x={background.rect.x0}
+                y={-background.rect.y1}
+                width={background.rect.x1 - background.rect.x0}
+                height={background.rect.y1 - background.rect.y0}
+                preserveAspectRatio="none"
+              />
+            </g>
+          )}
           {campus.buildings.map((b) => {
             const focused = focus?.buildingId === b.id;
             return (

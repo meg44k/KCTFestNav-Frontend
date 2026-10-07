@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 import { BuildingSheet } from "./BuildingSheet";
 import { LocationButton } from "./LocationButton";
 import { Map2D } from "./Map2D";
-import type { MapFocus, MapLocation } from "./types";
+import { type MapFocus, type MapLocation, PIN_COLORS } from "./types";
 
 const Map3D = dynamic(() => import("./Map3D"), {
   ssr: false,
@@ -29,6 +29,12 @@ const Map3D = dynamic(() => import("./Map3D"), {
     <p className="p-6 text-center text-gray-400">地図を読み込んでいます…</p>
   ),
 });
+
+const CONGESTION_LEGEND = [
+  { status: "empty", label: "空いています" },
+  { status: "clouded", label: "少し混んでいます" },
+  { status: "veryClouded", label: "混んでいます" },
+] as const;
 
 const TYPES: { value: MapType; label: string }[] = [
   { value: "all", label: "すべて" },
@@ -156,16 +162,32 @@ export function CampusMap({
         ))}
       </div>
 
-      {state.view === "3d" && (
-        // 地理院タイルの利用規約による出典の表示
-        <a
-          href={TILE_CREDIT_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="absolute bottom-1 left-2 z-40 text-[10px] text-gray-300 underline"
+      {/* 地理院タイルの利用規約による出典の表示(3D は航空写真、2D は淡色地図) */}
+      <a
+        href={TILE_CREDIT_URL}
+        target="_blank"
+        rel="noreferrer"
+        className="absolute bottom-1 left-2 z-40 text-[10px] text-gray-300 underline"
+      >
+        {TILE_CREDIT}
+      </a>
+
+      {/* ピンの色の凡例。カードや棟の一覧と重ならないよう、出している間は隠す */}
+      {!selectedBooth && !building && (
+        <ul
+          aria-label="ピンの色(混雑度)"
+          className="absolute bottom-6 left-3 z-40 flex flex-col gap-1 rounded-lg bg-black/75 px-2.5 py-2 text-[11px] text-gray-200"
         >
-          {TILE_CREDIT}
-        </a>
+          {CONGESTION_LEGEND.map(({ status, label }) => (
+            <li key={status} className="flex items-center gap-1.5">
+              <span
+                className="h-2.5 w-2.5 rounded-full border border-white"
+                style={{ background: PIN_COLORS[status] }}
+              />
+              {label}
+            </li>
+          ))}
+        </ul>
       )}
 
       {loadFailed && (
