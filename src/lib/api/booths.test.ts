@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { type BoothResponse, toBooth, toCongestionStatus } from "./booths";
+import {
+  type BoothResponse,
+  CONGESTION_LABELS,
+  toBooth,
+  toCongestionStatus,
+} from "./booths";
 
 const baseResponse: BoothResponse = {
   id: 1,
@@ -21,11 +26,23 @@ describe("toCongestionStatus", () => {
     expect(toCongestionStatus(0)).toBe("empty");
     expect(toCongestionStatus(1)).toBe("clouded");
     expect(toCongestionStatus(2)).toBe("veryClouded");
+    expect(toCongestionStatus(3)).toBe("preparing");
   });
 
-  it("想定外の値は空き扱いにフォールバックする", () => {
-    expect(toCongestionStatus(99)).toBe("empty");
-    expect(toCongestionStatus(-1)).toBe("empty");
+  it("想定外の値は準備中扱いにする(分からないときに「空いています」と言わない)", () => {
+    expect(toCongestionStatus(99)).toBe("preparing");
+    expect(toCongestionStatus(-1)).toBe("preparing");
+  });
+});
+
+describe("CONGESTION_LABELS", () => {
+  it("来場者にも運営にも同じことばで出す", () => {
+    expect(CONGESTION_LABELS).toEqual({
+      preparing: "準備中",
+      empty: "すぐ入れる",
+      clouded: "少し待つ",
+      veryClouded: "かなり待つ",
+    });
   });
 });
 

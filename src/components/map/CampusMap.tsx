@@ -7,7 +7,7 @@ import { useMemo, useState } from "react";
 import { BoothCard } from "@/components/ui/boothcard";
 import campusData from "@/data/campus.json";
 import { useCurrentLocation } from "@/hooks/useCurrentLocation";
-import type { Booth } from "@/lib/api/booths";
+import { type Booth, CONGESTION_LABELS } from "@/lib/api/booths";
 import { type CampusData, loadCampus, nearCampus } from "@/lib/map/campus";
 import {
   boothsByFloor,
@@ -32,9 +32,10 @@ const Map3D = dynamic(() => import("./Map3D"), {
 });
 
 const CONGESTION_LEGEND = [
-  { status: "empty", label: "空いています" },
-  { status: "clouded", label: "少し混んでいます" },
-  { status: "veryClouded", label: "混んでいます" },
+  { status: "empty", label: CONGESTION_LABELS.empty },
+  { status: "clouded", label: CONGESTION_LABELS.clouded },
+  { status: "veryClouded", label: CONGESTION_LABELS.veryClouded },
+  { status: "preparing", label: CONGESTION_LABELS.preparing },
 ] as const;
 
 const TYPES: { value: MapType; label: string }[] = [

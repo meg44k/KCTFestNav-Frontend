@@ -1,11 +1,14 @@
+import { CONGESTION_LABELS } from "@/lib/api/booths";
+
 /** これ以上更新が無いと「更新してください」と促す(担当者画面と学生会の監視で共通) */
 export const STALE_MINUTES = 30;
 
-/** 混雑度の 3 段階。色は来場者画面と同じ */
+/** 混雑度。色は来場者画面と同じ。ボタンは開場の流れの順(準備中 → 空き → …) */
 export const CONGESTION_LEVELS = [
-  { value: 0, label: "空き", color: "#00B894" },
-  { value: 1, label: "少し混雑", color: "#FDCB6E" },
-  { value: 2, label: "非常に混雑", color: "#e54141" },
+  { value: 3, label: CONGESTION_LABELS.preparing, color: "#9CA3AF" },
+  { value: 0, label: CONGESTION_LABELS.empty, color: "#00B894" },
+  { value: 1, label: CONGESTION_LABELS.clouded, color: "#FDCB6E" },
+  { value: 2, label: CONGESTION_LABELS.veryClouded, color: "#e54141" },
 ] as const;
 
 /**
@@ -22,7 +25,19 @@ export function serverClockNow(
 
 const NEVER = { label: "まだ更新されていません", stale: true };
 
+// 準備中(3)のブースは開いていないので、更新が止まっていても促さない
+const PREPARING = 3;
+
 export function updatedAgo(
+  updatedAt: string | null | undefined,
+  now: Date,
+  status?: number,
+): { label: string; stale: boolean } {
+  const result = elapsed(updatedAt, now);
+  return status === PREPARING ? { ...result, stale: false } : result;
+}
+
+function elapsed(
   updatedAt: string | null | undefined,
   now: Date,
 ): { label: string; stale: boolean } {

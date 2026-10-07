@@ -13,9 +13,9 @@ import {
   BOOTH_TYPES,
   type BoothFilters,
   type BoothType,
+  cardUpdatedLabel,
   filtersToQuery,
   gradeCounts,
-  updatedLabel,
 } from "@/lib/booth-browser";
 import { cn } from "@/lib/utils";
 
@@ -26,8 +26,8 @@ const TITLES: Record<BoothType, string> = {
 
 // 「空いている○○だけ」の切り替えの文言
 const EMPTY_LABELS: Record<BoothType, string> = {
-  class: "空いている展示",
-  club: "空いているバザー",
+  class: "すぐ入れる展示",
+  club: "すぐ入れるバザー",
 };
 
 const chip = (active: boolean) =>
@@ -169,7 +169,7 @@ export function BoothBrowser({
                 aria-label="ブースを探す"
                 className="h-11 w-full rounded-md border border-white/30 bg-black px-3 text-base text-white placeholder:text-gray-500"
               />
-              {/* 並び順 2 つと「空いている展示/バザー」は必ず 1 行に並べる */}
+              {/* 並び順 2 つと「すぐ入れる展示/バザー」は必ず 1 行に並べる */}
               <div className="grid grid-cols-[auto_auto_1fr] gap-2">
                 {BOOTH_SORTS.map((s) => (
                   <button
@@ -223,10 +223,7 @@ export function BoothBrowser({
                   congestionStatus={booth.congestionStatus}
                   latitude={booth.latitude}
                   longitude={booth.longitude}
-                  updatedLabel={updatedLabel(
-                    booth.congestionUpdatedAt,
-                    serverNow,
-                  )}
+                  updatedLabel={cardUpdatedLabel(booth, serverNow)}
                   mapHref={
                     booth.latitude !== undefined
                       ? `/map?booth=${booth.id}`

@@ -7,12 +7,14 @@ import {
   type ManageFailure,
   manageRequest,
 } from "@/lib/api/manage";
+import { CONGESTION_LEVELS } from "@/lib/manage/congestion";
 
 export type AnnouncementState = { error?: string; saved?: boolean } | undefined;
 
 // 当日運営の画面(混雑度・お知らせなど)をまとめて更新する
 const OPS = "/manage/ops";
-const isLevel = (n: number) => [0, 1, 2].includes(n);
+// 0〜3(準備中・すぐ入れる・少し待つ・かなり待つ)
+const isLevel = (n: number) => CONGESTION_LEVELS.some((l) => l.value === n);
 
 // 認証切れはログインし直し、それ以外は画面に出す文言にする
 function failed(reason: ManageFailure): string {

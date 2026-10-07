@@ -11,6 +11,12 @@ const ago = (minutes: number) =>
   new Date(now.getTime() - minutes * 60_000).toISOString();
 
 describe("updatedAgo", () => {
+  it("準備中(3)のブースは、未更新や古くても更新を促さない", () => {
+    expect(updatedAgo(null, now, 3).stale).toBe(false);
+    expect(updatedAgo("2026-10-31T01:00:00Z", now, 3).stale).toBe(false);
+    expect(updatedAgo(null, now, 0).stale).toBe(true);
+  });
+
   it("未更新は更新を促す", () => {
     expect(updatedAgo(null, now)).toEqual({
       label: "まだ更新されていません",
@@ -49,8 +55,12 @@ describe("updatedAgo", () => {
 });
 
 describe("CONGESTION_LEVELS", () => {
-  it("来場者画面と同じ 3 段階", () => {
-    expect(CONGESTION_LEVELS.map((l) => l.value)).toEqual([0, 1, 2]);
+  it("来場者画面と同じ 4 段階。ボタンは開場の流れの順(準備中 → 空き → 少し混雑 → 混雑)", () => {
+    expect(CONGESTION_LEVELS.map((l) => l.value)).toEqual([3, 0, 1, 2]);
+    expect(CONGESTION_LEVELS[0]).toMatchObject({
+      label: "準備中",
+      color: "#9CA3AF",
+    });
   });
 });
 

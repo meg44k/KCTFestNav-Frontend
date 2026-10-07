@@ -6,9 +6,17 @@ const updatedMs = (b: BoothResponse) =>
     ? new Date(b.congestion_updated_at).getTime()
     : Number.NEGATIVE_INFINITY;
 
-/** 混雑度の監視用。更新が止まっているブースほど上に来る */
+// 準備中(3)は開いていないので、更新を確かめる対象の後ろに回す
+const isPreparing = (b: BoothResponse) => b.congestion_status === 3;
+
+/** 混雑度の監視用。更新が止まっているブースほど上に来る(準備中は最後) */
 export function sortForMonitor(booths: BoothResponse[]): BoothResponse[] {
-  return [...booths].sort((a, b) => updatedMs(a) - updatedMs(b) || a.id - b.id);
+  return [...booths].sort(
+    (a, b) =>
+      Number(isPreparing(a)) - Number(isPreparing(b)) ||
+      updatedMs(a) - updatedMs(b) ||
+      a.id - b.id,
+  );
 }
 
 /** 混雑度の画面の並び順 */
@@ -23,6 +31,10 @@ export const MONITOR_SORTS: { value: MonitorSort; label: string }[] = [
 
 // 1-2 が 1-10 より前に来るよう、数字は数として比べる
 const byOrganizer = new Intl.Collator("ja", { numeric: true }).compare;
+
+// 「混んでいる順」の並び。混雑 → 少し混雑 → 空き → 準備中(知らない値は最後)
+const CROWD_ORDER: Record<number, number> = { 2: 0, 1: 1, 0: 2, 3: 3 };
+const crowdOrder = (status: number) => CROWD_ORDER[status] ?? 4;
 
 export function sortBooths(
   booths: BoothResponse[],
@@ -39,7 +51,7 @@ export function sortBooths(
       // 混んでいる順。同じ混雑度なら更新が古い方(確かめたい方)を先に
       return [...booths].sort(
         (a, b) =>
-          b.congestion_status - a.congestion_status ||
+          crowdOrder(a.congestion_status) - crowdOrder(b.congestion_status) ||
           updatedMs(a) - updatedMs(b) ||
           a.id - b.id,
       );

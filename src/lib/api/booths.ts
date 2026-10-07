@@ -20,7 +20,20 @@ export type BoothResponse = {
   floor?: number;
 };
 
-export type CongestionStatus = "empty" | "clouded" | "veryClouded";
+/** すぐ入れる / 少し待つ / かなり待つ / 準備中(まだ一度も設定していないブースもこれ) */
+export type CongestionStatus =
+  | "empty"
+  | "clouded"
+  | "veryClouded"
+  | "preparing";
+
+/** 混雑度のことば。来場者の画面にも運営の画面にも同じことばで出す */
+export const CONGESTION_LABELS: Record<CongestionStatus, string> = {
+  preparing: "準備中",
+  empty: "すぐ入れる",
+  clouded: "少し待つ",
+  veryClouded: "かなり待つ",
+};
 
 /** 画面側で扱うブース。BoothCard にそのまま渡せる形にしてある */
 export type Booth = {
@@ -45,11 +58,12 @@ const CONGESTION_STATUS_MAP: Record<number, CongestionStatus> = {
   0: "empty",
   1: "clouded",
   2: "veryClouded",
+  3: "preparing",
 };
 
 export function toCongestionStatus(raw: number): CongestionStatus {
-  // 想定外の値が来ても画面を壊さないよう、空き扱いにフォールバックする
-  return CONGESTION_STATUS_MAP[raw] ?? "empty";
+  // 想定外の値は準備中扱いにする(分からないときに「すぐ入れる」と言わない)
+  return CONGESTION_STATUS_MAP[raw] ?? "preparing";
 }
 
 export function toBooth(res: BoothResponse): Booth {

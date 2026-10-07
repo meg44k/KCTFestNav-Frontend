@@ -12,9 +12,12 @@ import { serverClockNow, updatedAgo } from "@/lib/manage/congestion";
 export function UpdatedAgo({
   updatedAt,
   serverNow,
+  status,
   compact = false,
 }: {
   updatedAt?: string | null;
+  /** 今の混雑度。準備中(3)なら更新を促さない */
+  status?: number;
   /** ページを描画したときのサーバーの時刻(ミリ秒) */
   serverNow: number;
   /** 一覧の行など狭い場所用。「N分前」だけを出す */
@@ -30,7 +33,7 @@ export function UpdatedAgo({
     return () => clearInterval(timer);
   }, [serverNow]);
 
-  const { label, stale } = updatedAgo(updatedAt, now);
+  const { label, stale } = updatedAgo(updatedAt, now, status);
   if (compact) {
     return (
       <span className={stale ? "font-bold text-[#e54141]" : "text-gray-500"}>

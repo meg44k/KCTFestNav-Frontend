@@ -9,13 +9,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { CONGESTION_LABELS, type CongestionStatus } from "@/lib/api/booths";
 import { cn } from "@/lib/utils";
 import { NaviButton } from "./naviButton";
 
 function congestionMessageOf(congestionStatus?: string): string {
-  if (congestionStatus === "clouded") return "少し混んでいます";
-  if (congestionStatus === "veryClouded") return "非常に混んでいます";
-  return "空いています";
+  // 知らない値や未指定は準備中(「すぐ入れる」と言わない)
+  return (
+    CONGESTION_LABELS[congestionStatus as CongestionStatus] ??
+    CONGESTION_LABELS.preparing
+  );
 }
 
 function BoothCard({
@@ -56,6 +59,7 @@ function BoothCard({
     "bg-[#FDCB6E] border-l border-[#ffe3af]": congestionStatus === "clouded",
     "bg-[#e54141] border-l border-[#ff7d7d]":
       congestionStatus === "veryClouded",
+    "bg-[#9CA3AF] border-l border-[#d1d5db]": congestionStatus === "preparing",
   };
 
   return (

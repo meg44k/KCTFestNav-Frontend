@@ -10,6 +10,7 @@ import {
   requireRole,
 } from "@/lib/api/manage";
 import { parseDetailForm } from "@/lib/manage/booth-form";
+import { CONGESTION_LEVELS } from "@/lib/manage/congestion";
 
 export type DetailState = { error?: string; saved?: boolean } | undefined;
 
@@ -47,7 +48,8 @@ export async function setCongestion(
   boothId: number,
   status: number,
 ): Promise<{ error?: string }> {
-  if (![0, 1, 2].includes(status)) {
+  // 0〜3(準備中・すぐ入れる・少し待つ・かなり待つ)
+  if (!CONGESTION_LEVELS.some((l) => l.value === status)) {
     return { error: "混雑度を選び直してください" };
   }
   // 担当ブース以外はバックエンドが 403 を返す

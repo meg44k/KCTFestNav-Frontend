@@ -37,7 +37,12 @@ export function CongestionMonitor({
   };
   const sorted = sortBooths(booths, sort);
   const staleCount = booths.filter(
-    (b) => updatedAgo(b.congestion_updated_at, new Date(serverNow)).stale,
+    (b) =>
+      updatedAgo(
+        b.congestion_updated_at,
+        new Date(serverNow),
+        b.congestion_status,
+      ).stale,
   ).length;
 
   return (
@@ -105,13 +110,14 @@ function BoothRow({
             <UpdatedAgo
               key={booth.congestion_updated_at ?? "never"}
               updatedAt={booth.congestion_updated_at}
+              status={booth.congestion_status}
               serverNow={serverNow}
               compact
             />
           )}
         </span>
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-4 gap-2">
         {CONGESTION_LEVELS.map((level) => {
           const selected = booth.congestion_status === level.value;
           return (
