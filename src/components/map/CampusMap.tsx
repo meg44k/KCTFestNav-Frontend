@@ -16,6 +16,7 @@ import {
   mapPins,
   mapQuery,
 } from "@/lib/map/map-booths";
+import { TILE_CREDIT, TILE_CREDIT_URL } from "@/lib/map/tiles";
 import { cn } from "@/lib/utils";
 import { BuildingSheet } from "./BuildingSheet";
 import { LocationButton } from "./LocationButton";
@@ -154,6 +155,18 @@ export function CampusMap({
           </button>
         ))}
       </div>
+
+      {state.view === "3d" && (
+        // 地理院タイルの利用規約による出典の表示
+        <a
+          href={TILE_CREDIT_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="absolute bottom-1 left-2 z-40 text-[10px] text-gray-300 underline"
+        >
+          {TILE_CREDIT}
+        </a>
+      )}
 
       {loadFailed && (
         <p className="absolute top-14 left-3 right-3 z-40 rounded-md bg-black/80 p-2 text-center text-gray-300 text-sm">

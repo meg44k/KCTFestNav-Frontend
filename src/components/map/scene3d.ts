@@ -12,6 +12,7 @@ import {
   shortName,
 } from "@/lib/map/campus";
 import type { MapPin } from "@/lib/map/map-booths";
+import { groundTiles, tileUrl } from "@/lib/map/tiles";
 import { type MapFocus, type MapLocation, PIN_COLORS } from "./types";
 
 /**
@@ -19,6 +20,74 @@ import { type MapFocus, type MapLocation, PIN_COLORS } from "./types";
  * 1 号館を手前に見ながら学校全体が入る向き(本人の希望)
  */
 const CAMERA_BEARING = 193;
+
+// 地面の航空写真は 2 枚重ねる。外側は粗く広く(カメラの足もとまで覆う)、内側は学校のまわりを細かく
+const AERIAL_LAYERS = [
+  // 外側: 端を背景の色へ溶かす
+  { zoom: 17, marginM: 600, fade: 0.25, edge: "opaque", y: -0.08 },
+  // 内側: 端を透明にして、下の粗い写真になじませる
+  { zoom: 18, marginM: 120, fade: 0.12, edge: "transparent", y: -0.04 },
+] as const;
+// 写真を暗くする掛け算の色と、外側の端を溶かす色(= 背景 #0b0d10 ÷ 0.55)
+const AERIAL_TINT = "#8c8c8c";
+const AERIAL_EDGE = "#14181d";
+
+type AerialLayer = (typeof AERIAL_LAYERS)[number];
+
+/** 地理院タイルの航空写真を 1 枚の絵にまとめ、端を溶かす。1 枚も読めなければ null */
+async function loadAerial(campus: Campus, layer: AerialLayer) {
+  if (typeof document === "undefined") return null;
+  const g = groundTiles(campus, layer.marginM, layer.zoom);
+  const canvas = document.createElement("canvas");
+  canvas.width = (g.tx1 - g.tx0 + 1) * 256;
+  canvas.height = (g.ty1 - g.ty0 + 1) * 256;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  const jobs: Promise<boolean>[] = [];
+  for (let tx = g.tx0; tx <= g.tx1; tx++) {
+    for (let ty = g.ty0; ty <= g.ty1; ty++) {
+      jobs.push(
+        new Promise((resolve) => {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => {
+            ctx.drawImage(img, (tx - g.tx0) * 256, (ty - g.ty0) * 256);
+            resolve(true);
+          };
+          img.onerror = () => resolve(false);
+          img.src = tileUrl(layer.zoom, tx, ty);
+        }),
+      );
+    }
+  }
+  if (!(await Promise.all(jobs)).some(Boolean)) return null;
+  // 上下左右の端をだんだん溶かす。外側は背景の色へ(掛け算で暗くした後に背景と同じ色になるよう、
+  // その分明るい AERIAL_EDGE へ)、内側は透明へ
+  const transparent = layer.edge === "transparent";
+  if (transparent) ctx.globalCompositeOperation = "destination-out";
+  const color = transparent ? "#000000" : AERIAL_EDGE;
+  const fade = (x0: number, y0: number, x1: number, y1: number) => {
+    const grad = ctx.createLinearGradient(x0, y0, x1, y1);
+    grad.addColorStop(0, color);
+    grad.addColorStop(1, `${color}00`);
+    return grad;
+  };
+  const w = canvas.width;
+  const h = canvas.height;
+  const fw = w * layer.fade;
+  const fh = h * layer.fade;
+  ctx.fillStyle = fade(0, 0, fw, 0);
+  ctx.fillRect(0, 0, fw, h);
+  ctx.fillStyle = fade(w, 0, w - fw, 0);
+  ctx.fillRect(w - fw, 0, fw, h);
+  ctx.fillStyle = fade(0, 0, 0, fh);
+  ctx.fillRect(0, 0, w, fh);
+  ctx.fillStyle = fade(0, h, 0, h - fh);
+  ctx.fillRect(0, h - fh, w, fh);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return { texture, rect: g.rect };
+}
 
 export type Hit = { pin: number } | { building: string } | null;
 
@@ -93,6 +162,7 @@ function dispose(obj: THREE.Object3D) {
       o.geometry.dispose();
       // 描き直すたびに材質も作るので、一緒に解放する
       for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
+        if ("map" in m && m.map instanceof THREE.Texture) m.map.dispose();
         m.dispose();
       }
     }
@@ -128,13 +198,45 @@ export function createScene(
 
   const { minX, maxX, minY, maxY } = campus.bounds;
   const span = Math.max(maxX - minX, maxY - minY);
-  const ground = new THREE.Mesh(
+  const ground = new THREE.Mesh<THREE.PlaneGeometry, THREE.Material>(
     new THREE.PlaneGeometry(span * 1.6, span * 1.6),
     new THREE.MeshLambertMaterial({ color: COLOR.ground }),
   );
   ground.rotation.x = -Math.PI / 2;
   ground.position.set((minX + maxX) / 2, -0.05, -(minY + maxY) / 2);
   scene.add(ground);
+  let disposed = false;
+  const aerialGroup = new THREE.Group();
+  scene.add(aerialGroup);
+  for (const layer of AERIAL_LAYERS) {
+    loadAerial(campus, layer).then((aerial) => {
+      // 読めなかったとき・閉じた後は無地の地面のまま
+      if (!aerial || disposed) return aerial?.texture.dispose();
+      const { texture, rect } = aerial;
+      texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      // 写真のままだと明るくて建物とピンが埋もれるので、暗くしてサイトの黒基調に合わせる。
+      // 光の当たり方で明るさが変わると端の色が背景とずれるので、光を受けない材質にする
+      const mesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(rect.x1 - rect.x0, rect.y1 - rect.y0),
+        new THREE.MeshBasicMaterial({
+          map: texture,
+          color: AERIAL_TINT,
+          transparent: layer.edge === "transparent",
+          depthWrite: layer.edge !== "transparent",
+        }),
+      );
+      mesh.rotation.x = -Math.PI / 2;
+      mesh.position.set(
+        (rect.x0 + rect.x1) / 2,
+        layer.y,
+        -(rect.y0 + rect.y1) / 2,
+      );
+      mesh.renderOrder = layer.edge === "transparent" ? 1 : 0;
+      aerialGroup.add(mesh);
+      // 外側の写真が敷けたら無地の地面は隠す(内側だけでは周りが黒くなるので残す)
+      if (layer.edge === "opaque") ground.visible = false;
+    });
+  }
 
   const camera = new THREE.PerspectiveCamera(
     45,
@@ -143,7 +245,8 @@ export function createScene(
     5000,
   );
   const controls = new OrbitControls(camera, renderer.domElement);
-  controls.maxPolarAngle = Math.PI * 0.48;
+  // 真横まで倒すと地平線(写真の外)が見えるので、少し上から見下ろす角度まで
+  controls.maxPolarAngle = Math.PI * 0.42;
   controls.enableDamping = true;
   controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
   const home = toScene([(minX + maxX) / 2, (minY + maxY) / 2]);
@@ -156,6 +259,12 @@ export function createScene(
     home.z + Math.cos(bearing) * back,
   );
   controls.update();
+  // 引きすぎて学校を見失わないよう、最初の距離の 1.4 倍まで。
+  // その外側を背景の色にかすませて、写真の端と地平線の境目を目立たせない
+  const reach = camera.position.distanceTo(home);
+  controls.maxDistance = reach * 1.4;
+  controls.minDistance = 25;
+  scene.fog = new THREE.Fog(COLOR.bg, reach * 1.7, reach * 3.2);
 
   const buildingGroup = new THREE.Group();
   const pinGroup = new THREE.Group();
@@ -358,6 +467,7 @@ export function createScene(
     setLocation,
     focusOn,
     dispose() {
+      disposed = true;
       renderer.setAnimationLoop(null);
       resize.disconnect();
       renderer.domElement.removeEventListener("pointerdown", onDown);
