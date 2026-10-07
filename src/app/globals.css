@@ -225,3 +225,39 @@
   font-size: 13px;
   font-weight: bold;
 }
+
+/* ステージイベントの演奏中の枠。赤い枠の上を、光の反射のような白い線がゆっくり左から右へ流れる */
+.rim-glint {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(#000, #000) padding-box,
+    linear-gradient(115deg, #e54141 42%, #fff 50%, #e54141 58%) border-box;
+  background-size:
+    100% 100%,
+    300% 100%;
+  animation: rim-glint 6s ease-in-out infinite;
+}
+
+@keyframes rim-glint {
+  /* 左の外から右の外へ流れたあと、少し間をおく */
+  0% {
+    background-position:
+      0 0,
+      100% 0;
+  }
+  70%,
+  100% {
+    background-position:
+      0 0,
+      0% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rim-glint {
+    animation: none;
+    background-position:
+      0 0,
+      30% 0;
+  }
+}

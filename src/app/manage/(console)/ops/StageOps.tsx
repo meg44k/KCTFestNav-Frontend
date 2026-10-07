@@ -180,7 +180,7 @@ function BlockControl({
           )}
           {block.performers[current - 1] && expired && (
             <p className="text-gray-500 text-sm">
-              終了時刻から30分たったので、来場者には演奏中と表示されません。
+              終了時刻から30分たったので、来場者には「LIVE」と表示されません。
             </p>
           )}
           <div className="grid grid-cols-[1fr_2fr] gap-2">

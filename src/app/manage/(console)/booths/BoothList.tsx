@@ -3,6 +3,7 @@
 import {
   type BoothResponse,
   CONGESTION_LABELS,
+  congestionLabel,
   toCongestionStatus,
 } from "@/lib/api/booths";
 import { BoothFormDialog } from "./BoothFormDialog";
@@ -16,8 +17,15 @@ const CONGESTION = {
   veryClouded: { label: CONGESTION_LABELS.veryClouded, color: "bg-[#e54141]" },
 } as const;
 
-function Congestion({ status }: { status: number }) {
-  const c = CONGESTION[toCongestionStatus(status)];
+function Congestion({
+  status,
+  organizer,
+}: {
+  status: number;
+  organizer: string;
+}) {
+  const s = toCongestionStatus(status);
+  const c = { ...CONGESTION[s], label: congestionLabel(s, organizer) };
   return (
     <span
       className={`rounded px-2 py-0.5 text-xs font-bold whitespace-nowrap text-black/70 ${c.color}`}
@@ -70,7 +78,10 @@ export function BoothList({
               <td className="pr-4">{b.organizer}</td>
               <td className="pr-4">{b.location}</td>
               <td className="pr-4">
-                <Congestion status={b.congestion_status} />
+                <Congestion
+                  status={b.congestion_status}
+                  organizer={b.organizer}
+                />
               </td>
               <td className={`pr-4 ${hasStaff(b.id) ? "" : "text-gray-500"}`}>
                 {hasStaff(b.id) ? "あり" : "なし"}
@@ -90,7 +101,10 @@ export function BoothList({
           >
             <div className="flex items-center justify-between gap-2">
               <span className="font-bold">{b.name}</span>
-              <Congestion status={b.congestion_status} />
+              <Congestion
+                status={b.congestion_status}
+                organizer={b.organizer}
+              />
             </div>
             <div className="text-gray-500 text-sm">
               {b.organizer} / {b.location || "場所未設定"} / 担当

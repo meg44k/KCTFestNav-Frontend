@@ -13,7 +13,11 @@ export default async function MyBoothCongestionPage() {
   return (
     <section className="flex flex-col gap-3">
       <h2 className="font-bold">いまの混雑度</h2>
-      <CongestionButtons boothId={booth.id} current={booth.congestion_status} />
+      <CongestionButtons
+        boothId={booth.id}
+        current={booth.congestion_status}
+        organizer={booth.organizer}
+      />
       <UpdatedAgo
         key={booth.congestion_updated_at ?? "never"}
         updatedAt={booth.congestion_updated_at}

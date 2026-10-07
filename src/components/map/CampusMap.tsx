@@ -31,12 +31,19 @@ const Map3D = dynamic(() => import("./Map3D"), {
   ),
 });
 
-const CONGESTION_LEGEND = [
-  { status: "empty", label: CONGESTION_LABELS.empty },
-  { status: "clouded", label: CONGESTION_LABELS.clouded },
-  { status: "veryClouded", label: CONGESTION_LABELS.veryClouded },
-  { status: "preparing", label: CONGESTION_LABELS.preparing },
-] as const;
+// 凡例。空きは、クラス展示は「すぐ入れる」、バザーは「すぐ買える」、すべてなら両方
+const EMPTY_LEGEND: Record<MapType, string> = {
+  all: "すぐ入れる・すぐ買える",
+  class: "すぐ入れる",
+  club: "すぐ買える",
+};
+const congestionLegend = (type: MapType) =>
+  [
+    { status: "empty", label: EMPTY_LEGEND[type] },
+    { status: "clouded", label: CONGESTION_LABELS.clouded },
+    { status: "veryClouded", label: CONGESTION_LABELS.veryClouded },
+    { status: "preparing", label: CONGESTION_LABELS.preparing },
+  ] as const;
 
 const TYPES: { value: MapType; label: string }[] = [
   { value: "all", label: "すべて" },
@@ -182,7 +189,7 @@ export function CampusMap({
           aria-label="ピンの色(混雑度)"
           className="absolute bottom-6 left-3 z-40 flex flex-col gap-1 rounded-lg bg-black/75 px-2.5 py-2 text-[11px] text-gray-200"
         >
-          {CONGESTION_LEGEND.map(({ status, label }) => (
+          {congestionLegend(state.type).map(({ status, label }) => (
             <li key={status} className="flex items-center gap-1.5">
               <span
                 className="h-2.5 w-2.5 rounded-full border border-white"

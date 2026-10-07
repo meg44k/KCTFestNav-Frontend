@@ -1,3 +1,10 @@
+import { BackButton } from "@/components/layout/BackButton";
+
 export default function Credit() {
-  return <div>クレジット</div>;
+  return (
+    <div>
+      <BackButton />
+      クレジット
+    </div>
+  );
 }

@@ -1,9 +1,17 @@
-import { CONGESTION_LABELS } from "@/lib/api/booths";
+import {
+  CONGESTION_LABELS,
+  congestionLabel,
+  toCongestionStatus,
+} from "@/lib/api/booths";
 
 /** これ以上更新が無いと「更新してください」と促す(担当者画面と学生会の監視で共通) */
 export const STALE_MINUTES = 30;
 
 /** 混雑度。色は来場者画面と同じ。ボタンは開場の流れの順(準備中 → 空き → …) */
+/** 管理画面のボタンのことば。バザーの「空き」は「すぐ買える」 */
+export const levelLabel = (value: number, organizer: string) =>
+  congestionLabel(toCongestionStatus(value), organizer);
+
 export const CONGESTION_LEVELS = [
   { value: 3, label: CONGESTION_LABELS.preparing, color: "#9CA3AF" },
   { value: 0, label: CONGESTION_LABELS.empty, color: "#00B894" },

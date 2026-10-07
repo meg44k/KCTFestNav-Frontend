@@ -1,6 +1,7 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { blockTimeRange, type StageHeadline } from "@/lib/stage-schedule";
+import { cn } from "@/lib/utils";
 
 const place = (location: string) => (location ? `（${location}）` : "");
 
@@ -11,14 +12,18 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
   return (
     <Link
       href="/stage-event"
-      className="flex w-full max-w-md items-center gap-2 rounded-xl border border-white/30 p-3 active:bg-white/10"
+      // LIVE があるときは、ステージイベントの帯と同じ赤の細い枠
+      className={cn(
+        "flex w-full max-w-md items-center gap-2 rounded-xl border p-3 active:bg-white/10",
+        playing.length > 0 ? "border-[#e54141]" : "border-white/30",
+      )}
     >
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         {playing.map(({ section, block, current, next: after }) => (
           <div key={block.id}>
             <div className="flex items-center gap-2 text-xs">
               <span className="rounded bg-[#e54141] px-1.5 py-0.5 font-bold text-white">
-                演奏中
+                LIVE
               </span>
               <span className="truncate text-gray-300">
                 {section.name}

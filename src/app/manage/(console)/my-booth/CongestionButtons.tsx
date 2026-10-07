@@ -2,7 +2,7 @@
 
 import { useOptimistic, useState, useTransition } from "react";
 import { setCongestion } from "@/app/actions/my-booth";
-import { CONGESTION_LEVELS } from "@/lib/manage/congestion";
+import { CONGESTION_LEVELS, levelLabel } from "@/lib/manage/congestion";
 import { cn } from "@/lib/utils";
 
 /**
@@ -12,9 +12,12 @@ import { cn } from "@/lib/utils";
 export function CongestionButtons({
   boothId,
   current,
+  organizer,
 }: {
   boothId: number;
   current: number;
+  /** バザーなら「空き」を「すぐ買える」と出す */
+  organizer: string;
 }) {
   const [optimistic, setOptimistic] = useOptimistic(current);
   const [error, setError] = useState<string>();
@@ -45,7 +48,7 @@ export function CongestionButtons({
             )}
           >
             {selected && "✓ "}
-            {level.label}
+            {levelLabel(level.value, organizer)}
             {selected && <span className="ml-2 text-base">（現在）</span>}
           </button>
         );

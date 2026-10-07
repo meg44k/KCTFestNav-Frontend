@@ -36,7 +36,7 @@ export function PerformerRow({
         <span className="flex-1">{performer.name}</span>
         {mark === "playing" && (
           <span className="shrink-0 rounded-md bg-[#e54141] px-2 py-0.5 text-white text-xs">
-            演奏中
+            LIVE
           </span>
         )}
       </DialogTrigger>

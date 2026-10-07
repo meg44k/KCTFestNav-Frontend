@@ -8,9 +8,9 @@ const dotGothic = DotGothic16({
 
 function BulletinBoard({ content }: { content: string }) {
   return (
-    <div className="border-y-1 border-orange-400">
+    <div className="border-y-1 border-amber-400">
       <Marquee className={dotGothic.className}>
-        <span className="text-orange-400">{content}</span>
+        <span className="text-amber-400">{content}</span>
       </Marquee>
     </div>
   );
