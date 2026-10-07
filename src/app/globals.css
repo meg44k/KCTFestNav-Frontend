@@ -205,3 +205,19 @@
     animation: none;
   }
 }
+
+/* 3D 地図の棟の名前 */
+.map3d-label {
+  background: #1d2733d9;
+  color: #fff;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 9px;
+  white-space: nowrap;
+}
+
+.map3d-label-focus {
+  background: #3d8bff;
+  font-size: 13px;
+  font-weight: bold;
+}
