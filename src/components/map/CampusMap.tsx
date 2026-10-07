@@ -218,7 +218,15 @@ export function CampusMap({
       </div>
 
       <div className="absolute inset-x-0 bottom-0 z-30 mx-auto max-w-md pr-16 pl-3">
-        <BottomPanel>
+        <BottomPanel
+          contentKey={
+            selectedBooth
+              ? `booth-${selectedBooth.id}`
+              : building
+                ? `building-${building.id}`
+                : null
+          }
+        >
           {selectedBooth ? (
             // 右上の × がはみ出さないよう、上に少し余白をとる
             <div className="relative pt-4 pb-4">
