@@ -111,7 +111,7 @@ function BoothRow({
           )}
         </span>
       </div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-4 gap-2">
         {CONGESTION_LEVELS.map((level) => {
           const selected = booth.congestion_status === level.value;
           return (

@@ -148,8 +148,15 @@ describe("pins", () => {
     expect(mapPins(campus, booths, "club").map((p) => p.id)).toEqual([3]);
     // 拡大したときにピンの横に出す名前
     expect(all[0].name).toBe("ブース1");
-    // ピンの色は混雑度
+    // ピンの色は混雑度(準備中もそのまま渡す)
     expect(all[0].congestion).toBe("empty");
+    expect(
+      mapPins(
+        campus,
+        [{ ...booths[0], congestionStatus: "preparing" }],
+        "all",
+      )[0].congestion,
+    ).toBe("preparing");
   });
 
   it("棟のブースを階ごとに", () => {

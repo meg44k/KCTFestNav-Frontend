@@ -1,14 +1,19 @@
 "use client";
 
-import { type BoothResponse, toCongestionStatus } from "@/lib/api/booths";
+import {
+  type BoothResponse,
+  CONGESTION_LABELS,
+  toCongestionStatus,
+} from "@/lib/api/booths";
 import { BoothFormDialog } from "./BoothFormDialog";
 import { DeleteBoothButton } from "./DeleteBoothButton";
 
 // 来場者画面と同じ色
 const CONGESTION = {
-  empty: { label: "空き", color: "bg-[#00B894]" },
-  clouded: { label: "少し混雑", color: "bg-[#FDCB6E]" },
-  veryClouded: { label: "非常に混雑", color: "bg-[#e54141]" },
+  preparing: { label: CONGESTION_LABELS.preparing, color: "bg-[#9CA3AF]" },
+  empty: { label: CONGESTION_LABELS.empty, color: "bg-[#00B894]" },
+  clouded: { label: CONGESTION_LABELS.clouded, color: "bg-[#FDCB6E]" },
+  veryClouded: { label: CONGESTION_LABELS.veryClouded, color: "bg-[#e54141]" },
 } as const;
 
 function Congestion({ status }: { status: number }) {

@@ -23,4 +23,5 @@ export const PIN_COLORS = {
   empty: "#00B894",
   clouded: "#FDCB6E",
   veryClouded: "#e54141",
+  preparing: "#9CA3AF",
 } as const;

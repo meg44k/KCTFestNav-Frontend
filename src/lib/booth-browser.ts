@@ -23,7 +23,7 @@ export const BOOTH_TYPES: { value: BoothType; label: string }[] = [
 export const BOOTH_SORTS: { value: BoothSort; label: string }[] = [
   { value: "class", label: "クラス順" },
   // 空いているものから先に並べる
-  { value: "empty", label: "混雑度順" },
+  { value: "empty", label: "すぐ入れる順" },
 ];
 
 // 1-2 が 1-10 より前に来るよう、数字は数として比べる

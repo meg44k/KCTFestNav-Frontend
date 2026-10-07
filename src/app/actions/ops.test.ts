@@ -35,8 +35,18 @@ describe("setBoothCongestion", () => {
     expect(revalidatePath).toHaveBeenCalledWith("/manage/ops", "layout");
   });
 
-  it("0/1/2 以外は送らない", async () => {
-    expect(await setBoothCongestion(5, 3)).toEqual({
+  it("準備中(3)も送れる", async () => {
+    manageRequest.mockResolvedValue({ ok: true, data: undefined });
+    expect(await setBoothCongestion(5, 3)).toEqual({});
+    expect(manageRequest).toHaveBeenCalledWith("/manage/booths/5/congestion", {
+      method: "PATCH",
+      body: JSON.stringify({ congestion_status: 3 }),
+    });
+  });
+
+  it("0〜3 以外は送らない", async () => {
+    manageRequest.mockReset();
+    expect(await setBoothCongestion(5, 4)).toEqual({
       error: "混雑度を選び直してください",
     });
     expect(manageRequest).not.toHaveBeenCalled();

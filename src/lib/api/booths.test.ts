@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { type BoothResponse, toBooth, toCongestionStatus } from "./booths";
+import {
+  type BoothResponse,
+  CONGESTION_LABELS,
+  toBooth,
+  toCongestionStatus,
+} from "./booths";
 
 const baseResponse: BoothResponse = {
   id: 1,
@@ -27,6 +32,17 @@ describe("toCongestionStatus", () => {
   it("想定外の値は準備中扱いにする(分からないときに「空いています」と言わない)", () => {
     expect(toCongestionStatus(99)).toBe("preparing");
     expect(toCongestionStatus(-1)).toBe("preparing");
+  });
+});
+
+describe("CONGESTION_LABELS", () => {
+  it("来場者にも運営にも同じことばで出す", () => {
+    expect(CONGESTION_LABELS).toEqual({
+      preparing: "準備中",
+      empty: "すぐ入れる",
+      clouded: "少し待つ",
+      veryClouded: "かなり待つ",
+    });
   });
 });
 
