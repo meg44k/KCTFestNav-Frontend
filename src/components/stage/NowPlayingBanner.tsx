@@ -25,7 +25,8 @@ export function NowPlayingBanner({
         {playing.map(({ section, block, current, next }) => (
           <div
             key={block.id}
-            className="rounded-md border-2 border-amber-400 bg-black p-3 text-white"
+            // 黄色の枠を白い光がゆっくり右から左へ流れる(globals.css の rim-glint)
+            className="rim-glint rounded-md p-3 text-white"
           >
             <div className="flex items-center gap-2 text-sm">
               <span className="rounded-md bg-amber-400 px-2 py-0.5 font-bold text-black">
