@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import realData from "@/data/campus.json";
 import { type CampusData, loadCampus } from "./campus";
-import { FLAT_COLORS, flattenPhoto, groundTiles, tileUrl } from "./tiles";
+import { groundTiles, tileUrl } from "./tiles";
 
 const campus = loadCampus(realData as unknown as CampusData);
 
@@ -29,36 +29,5 @@ describe("groundTiles", () => {
     expect(tileUrl(18, 230000, 104000)).toBe(
       "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/18/230000/104000.jpg",
     );
-  });
-});
-
-describe("2D のデフォルメした地面", () => {
-  const rgb = (hex: string) =>
-    [1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16));
-  // 3×3 の同じ色の画素で、航空写真の 1 か所を表す
-  const kindOf = (r: number, g: number, b: number) => {
-    const px = new Uint8ClampedArray(9 * 4);
-    for (let i = 0; i < 9; i++) px.set([r, g, b, 255], i * 4);
-    flattenPhoto(px, 3, 3);
-    const got = [px[16], px[17], px[18]].join(",");
-    return Object.entries(FLAT_COLORS).find(
-      ([, hex]) => rgb(hex).join(",") === got,
-    )?.[0];
-  };
-
-  it("草木は緑、道路や舗装は灰色、グラウンドの土は茶色、水は青", () => {
-    expect(kindOf(70, 110, 60)).toBe("green");
-    expect(kindOf(40, 60, 35)).toBe("green");
-    expect(kindOf(120, 122, 125)).toBe("paved");
-    expect(kindOf(190, 170, 140)).toBe("soil");
-    expect(kindOf(50, 80, 120)).toBe("water");
-  });
-
-  it("まわりと違う 1 画素だけの点は、まわりの色にならす", () => {
-    const px = new Uint8ClampedArray(9 * 4);
-    for (let i = 0; i < 9; i++) px.set([70, 110, 60, 255], i * 4);
-    px.set([120, 122, 125, 255], 4 * 4); // 真ん中だけ灰色
-    flattenPhoto(px, 3, 3);
-    expect([px[16], px[17], px[18]]).toEqual(rgb(FLAT_COLORS.green));
   });
 });

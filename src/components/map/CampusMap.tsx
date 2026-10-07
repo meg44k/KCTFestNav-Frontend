@@ -162,15 +162,17 @@ export function CampusMap({
         ))}
       </div>
 
-      {/* 地理院タイルの利用規約による出典の表示(3D は航空写真、2D はそれを塗り分けたもの) */}
-      <a
-        href={TILE_CREDIT_URL}
-        target="_blank"
-        rel="noreferrer"
-        className="absolute bottom-1 left-2 z-40 text-[10px] text-gray-300 underline"
-      >
-        {TILE_CREDIT}
-      </a>
+      {state.view === "3d" && (
+        // 地理院タイルの利用規約による出典の表示(3D の地面の航空写真)
+        <a
+          href={TILE_CREDIT_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="absolute bottom-1 left-2 z-40 text-[10px] text-gray-300 underline"
+        >
+          {TILE_CREDIT}
+        </a>
+      )}
 
       {/* ピンの色の凡例。カードや棟の一覧と重ならないよう、出している間は隠す */}
       {!selectedBooth && !building && (
