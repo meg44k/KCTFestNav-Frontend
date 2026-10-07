@@ -82,12 +82,13 @@ describe("parseMapQuery", () => {
 });
 
 describe("resolveInitial", () => {
-  it("指定が無ければ 3D・全部。クラブバザーなら 2D", () => {
+  it("指定が無ければ 2D・全部(本人の希望)。3D の指定はそのまま", () => {
     expect(resolveInitial({ type: "all" }, booths)).toEqual({
       type: "all",
-      view: "3d",
+      view: "2d",
       boothId: null,
     });
+    expect(resolveInitial({ type: "class" }, booths).view).toBe("2d");
     expect(resolveInitial({ type: "club" }, booths)).toEqual({
       type: "club",
       view: "2d",
@@ -120,7 +121,10 @@ describe("resolveInitial", () => {
 
 describe("mapQuery", () => {
   it("既定値は書かない", () => {
-    expect(mapQuery({ type: "all", view: "3d", boothId: null })).toBe("");
+    expect(mapQuery({ type: "all", view: "2d", boothId: null })).toBe("");
+    expect(mapQuery({ type: "all", view: "3d", boothId: null })).toBe(
+      "?view=3d",
+    );
     expect(mapQuery({ type: "club", view: "2d", boothId: 3 })).toBe(
       "?type=club&view=2d&booth=3",
     );

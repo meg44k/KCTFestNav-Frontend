@@ -40,20 +40,24 @@ export function parseMapQuery(
 const hasLocation = (b: Booth) =>
   b.latitude !== undefined && b.longitude !== undefined;
 
-/** 開いたときの状態。指定されたブースが選べなければ選ばずに全体を出す */
+/**
+ * 開いたときの状態。指定されたブースが選べなければ選ばずに全体を出す。
+ * 既定は 2D(本人の希望)。建物の中のブースを指定されたときだけ、階が分かる 3D で開く
+ */
 export function resolveInitial(q: MapQuery, booths: Booth[]): MapState {
   const booth = booths.find((b) => b.id === q.boothId && hasLocation(b));
-  const view =
-    q.view ??
-    (booth ? (booth.floor > 0 ? "3d" : "2d") : q.type === "club" ? "2d" : "3d");
+  const view = q.view ?? (booth && booth.floor > 0 ? "3d" : "2d");
   return { type: q.type, view, boothId: booth?.id ?? null };
 }
 
-/** URL の ?以降。既定値(全部・3D・選択なし)は書かない */
+/**
+ * URL の ?以降。既定値(全部・2D・選択なし)は書かない。
+ * ブースを選んでいるときは 2D でも書く(書かないと、開き直したとき建物の中のブースは 3D になる)
+ */
 export function mapQuery(s: MapState): string {
   const p = new URLSearchParams();
   if (s.type !== "all") p.set("type", s.type);
-  if (s.view !== "3d") p.set("view", s.view);
+  if (s.view !== "2d" || s.boothId !== null) p.set("view", s.view);
   if (s.boothId !== null) p.set("booth", String(s.boothId));
   const q = p.toString();
   return q ? `?${q}` : "";
