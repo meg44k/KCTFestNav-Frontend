@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import type { Booth } from "@/lib/api/booths";
 import { floorLabel } from "@/lib/map/campus";
 
-/** 棟を押したときに下から出る、その棟のブースの一覧(階ごと) */
+/** 棟を押したときに下から出る、その棟のブースの一覧(階ごと)。メニューと同じ黄色に黒い文字 */
 export function BuildingSheet({
   name,
   groups,
@@ -15,34 +15,36 @@ export function BuildingSheet({
   onClose(): void;
 }) {
   return (
-    <div className="max-h-[45dvh] overflow-y-auto rounded-t-xl border border-white/20 bg-black/95 p-4">
+    <div className="max-h-[45dvh] overflow-y-auto rounded-t-xl border border-amber-300 bg-amber-400 p-4 text-black">
       <div className="flex items-center justify-between pb-2">
         <h2 className="font-bold text-lg">{name}</h2>
         <button
           type="button"
           aria-label="閉じる"
           onClick={onClose}
-          className="p-1 text-gray-400"
+          className="p-1 text-black/60"
         >
           <X size={20} />
         </button>
       </div>
       {groups.length === 0 ? (
-        <p className="text-gray-400 text-sm">この棟のブースはありません。</p>
+        <p className="text-black/70 text-sm">この棟のブースはありません。</p>
       ) : (
         groups.map((g) => (
           <section key={g.floor} className="pb-2">
-            <h3 className="text-gray-400 text-xs">{floorLabel(g.floor)}</h3>
+            <h3 className="font-bold text-black/60 text-xs">
+              {floorLabel(g.floor)}
+            </h3>
             <ul>
               {g.booths.map((b) => (
                 <li key={b.id}>
                   <button
                     type="button"
                     onClick={() => onPick(b.id)}
-                    className="w-full py-2 text-left"
+                    className="w-full border-black/10 border-b py-2 text-left font-bold"
                   >
                     {b.name}
-                    <span className="pl-2 text-gray-400 text-xs">
+                    <span className="pl-2 font-normal text-black/60 text-xs">
                       {b.organizer}
                     </span>
                   </button>

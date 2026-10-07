@@ -97,8 +97,9 @@ const COLOR = {
   named: "#aab3bf",
   unnamed: "#59616c",
   dim: "#3a4049",
-  focus: "#3d8bff",
-  band: "#ffd166",
+  // 選んだ棟はメニューや棟の一覧と同じ黄色、その階の床は白
+  focus: "#fbbf24",
+  band: "#ffffff",
   me: "#4f8cff",
 };
 
