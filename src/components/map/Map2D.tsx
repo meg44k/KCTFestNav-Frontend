@@ -18,7 +18,7 @@ import {
   type XY,
 } from "@/lib/map/campus";
 import { cn } from "@/lib/utils";
-import { loadPaleBackground, type PaleBackground } from "./paleBackground";
+import { type FlatBackground, loadFlatBackground } from "./flatBackground";
 import { type MapProps, PIN_COLORS } from "./types";
 
 const MARGIN = 12;
@@ -74,11 +74,11 @@ export function Map2D({
     };
   }, [campus]);
   const svg = useRef<SVGSVGElement>(null);
-  // 背景の淡色地図(読めるまでは黒地のまま)
-  const [background, setBackground] = useState<PaleBackground | null>(null);
+  // 背景のデフォルメした地面(読めるまでは黒地のまま)
+  const [background, setBackground] = useState<FlatBackground | null>(null);
   useEffect(() => {
     let alive = true;
-    loadPaleBackground(campus).then((bg) => {
+    loadFlatBackground(campus).then((bg) => {
       if (alive) setBackground(bg);
     });
     return () => {

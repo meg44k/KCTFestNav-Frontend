@@ -162,7 +162,7 @@ export function CampusMap({
         ))}
       </div>
 
-      {/* 地理院タイルの利用規約による出典の表示(3D は航空写真、2D は淡色地図) */}
+      {/* 地理院タイルの利用規約による出典の表示(3D は航空写真、2D はそれを塗り分けたもの) */}
       <a
         href={TILE_CREDIT_URL}
         target="_blank"

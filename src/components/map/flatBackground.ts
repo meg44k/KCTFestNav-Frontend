@@ -1,21 +1,26 @@
 import type { Campus } from "@/lib/map/campus";
-import { darkenPale, groundTiles, paleTileUrl } from "@/lib/map/tiles";
+import { flattenPhoto, groundTiles, tileUrl } from "@/lib/map/tiles";
 
 const ZOOM = 18;
+// 1 枚(256px)を半分の大きさで並べる。細かすぎない方がデフォルメらしく、処理も軽い
+const TILE_PX = 128;
 const MARGIN_M = 250;
 // 端をこの割合だけ透明にして、地図の黒い背景になじませる
 const FADE = 0.15;
 
-export type PaleBackground = {
+export type FlatBackground = {
   url: string;
   /** 地図の座標(メートル)での範囲。x0 が西、y1 が北 */
   rect: { x0: number; x1: number; y0: number; y1: number };
 };
 
-let cache: Promise<PaleBackground | null> | null = null;
+let cache: Promise<FlatBackground | null> | null = null;
 
-/** 2D の背景(暗くした淡色地図)を 1 枚の画像にする。何度呼んでも読むのは最初の 1 回 */
-export function loadPaleBackground(campus: Campus) {
+/**
+ * 2D の背景を 1 枚の画像にする。地理院の航空写真を、草木は緑・道路は灰色…と種類ごとに
+ * 1 色で塗ったデフォルメにする。何度呼んでも読むのは最初の 1 回
+ */
+export function loadFlatBackground(campus: Campus) {
   if (!cache) {
     cache = build(campus).then((bg) => {
       // 読めなかったときは、次に開いたときにもう一度試す
@@ -26,11 +31,11 @@ export function loadPaleBackground(campus: Campus) {
   return cache;
 }
 
-async function build(campus: Campus): Promise<PaleBackground | null> {
+async function build(campus: Campus): Promise<FlatBackground | null> {
   const g = groundTiles(campus, MARGIN_M, ZOOM);
   const canvas = document.createElement("canvas");
-  canvas.width = (g.tx1 - g.tx0 + 1) * 256;
-  canvas.height = (g.ty1 - g.ty0 + 1) * 256;
+  canvas.width = (g.tx1 - g.tx0 + 1) * TILE_PX;
+  canvas.height = (g.ty1 - g.ty0 + 1) * TILE_PX;
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
   if (!ctx) return null;
   const jobs: Promise<boolean>[] = [];
@@ -41,11 +46,17 @@ async function build(campus: Campus): Promise<PaleBackground | null> {
           const img = new Image();
           img.crossOrigin = "anonymous";
           img.onload = () => {
-            ctx.drawImage(img, (tx - g.tx0) * 256, (ty - g.ty0) * 256);
+            ctx.drawImage(
+              img,
+              (tx - g.tx0) * TILE_PX,
+              (ty - g.ty0) * TILE_PX,
+              TILE_PX,
+              TILE_PX,
+            );
             resolve(true);
           };
           img.onerror = () => resolve(false);
-          img.src = paleTileUrl(ZOOM, tx, ty);
+          img.src = tileUrl(ZOOM, tx, ty);
         }),
       );
     }
@@ -54,7 +65,7 @@ async function build(campus: Campus): Promise<PaleBackground | null> {
   const w = canvas.width;
   const h = canvas.height;
   const data = ctx.getImageData(0, 0, w, h);
-  darkenPale(data.data);
+  flattenPhoto(data.data, w, h);
   ctx.putImageData(data, 0, 0);
   // 上下左右の端を透明へ溶かす
   ctx.globalCompositeOperation = "destination-out";
