@@ -6,8 +6,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { BoothCard } from "@/components/ui/boothcard";
 import campusData from "@/data/campus.json";
+import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import type { Booth } from "@/lib/api/booths";
-import { type CampusData, loadCampus } from "@/lib/map/campus";
+import { type CampusData, loadCampus, nearCampus } from "@/lib/map/campus";
 import {
   boothsByFloor,
   type MapState,
@@ -17,6 +18,7 @@ import {
 } from "@/lib/map/map-booths";
 import { cn } from "@/lib/utils";
 import { BuildingSheet } from "./BuildingSheet";
+import { LocationButton } from "./LocationButton";
 import { Map2D } from "./Map2D";
 import type { MapFocus, MapLocation } from "./types";
 
@@ -37,21 +39,36 @@ export function CampusMap({
   booths,
   initial,
   loadFailed,
-  location = null,
-  locationControl,
 }: {
   booths: Booth[];
   initial: MapState;
   loadFailed: boolean;
-  /** 現在地(Task 8 で渡す) */
-  location?: MapLocation;
-  locationControl?: React.ReactNode;
 }) {
   const router = useRouter();
   const pathname = usePathname();
   const campus = useMemo(
     () => loadCampus(campusData as unknown as CampusData),
     [],
+  );
+  const { location: current, start } = useCurrentLocation();
+  // 位置の値が変わったときだけ作り直す(地図が毎回描き直さないように)
+  const active = current.status === "active" ? current : null;
+  const lat = active?.latitude;
+  const lon = active?.longitude;
+  const accuracy = active?.accuracy;
+  const heading = active?.heading;
+  const here = useMemo(
+    () =>
+      lat !== undefined && lon !== undefined ? campus.toXY(lon, lat) : null,
+    [campus, lat, lon],
+  );
+  const outside = here !== null && !nearCampus(campus, here);
+  const location: MapLocation = useMemo(
+    () =>
+      here && !outside && accuracy !== undefined
+        ? { xy: here, accuracy, heading }
+        : null,
+    [here, outside, accuracy, heading],
   );
   const [state, setState] = useState(initial);
   const [buildingId, setBuildingId] = useState<string | null>(null);
@@ -141,7 +158,11 @@ export function CampusMap({
       )}
 
       <div className="absolute right-4 bottom-6 z-40 flex flex-col items-end gap-3">
-        {locationControl}
+        <LocationButton
+          status={current.status}
+          outside={outside}
+          onStart={start}
+        />
         <button
           type="button"
           onClick={() => update({ view: state.view === "3d" ? "2d" : "3d" })}
