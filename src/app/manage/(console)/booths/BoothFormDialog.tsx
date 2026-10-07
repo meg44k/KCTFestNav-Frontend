@@ -8,6 +8,7 @@ import {
   useTransition,
 } from "react";
 import { type ActionState, saveBooth } from "@/app/actions/manage-booths";
+import { LocationPicker } from "@/components/map/LocationPicker";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -69,7 +70,6 @@ function BoothForm({
     start(() => action(formData));
   };
 
-  const coord = (v?: number) => (v ? String(v) : "");
   return (
     <form onSubmit={submit} className="flex flex-col gap-3">
       <Field
@@ -105,20 +105,11 @@ function BoothForm({
         defaultValue={current?.image_url}
         placeholder="https://..."
       />
-      <div className="grid grid-cols-2 gap-3">
-        <Field
-          label="緯度"
-          name="latitude"
-          defaultValue={coord(current?.latitude)}
-          inputMode="decimal"
-        />
-        <Field
-          label="経度"
-          name="longitude"
-          defaultValue={coord(current?.longitude)}
-          inputMode="decimal"
-        />
-      </div>
+      <LocationPicker
+        latitude={current?.latitude}
+        longitude={current?.longitude}
+        floor={current?.floor}
+      />
       {state?.error && (
         <p role="alert" className="text-[#e54141]">
           {state.error}
