@@ -27,9 +27,10 @@
 | MySQL | Cloud SQL for MySQL 8.4(いちばん小さい台) | `asia-northeast1` |
 | Redis | Upstash(TLS) | 東京 |
 | 写真 | Cloudflare R2 | — |
-| ドメイン・DNS | Cloudflare で `kctfest.jp` を取る | — |
+| ドメイン | `kctfest.jp` を .jp を扱う登録業者(お名前.com など)で取る。Cloudflare では .jp を取れない | — |
+| DNS | Cloudflare(登録業者でネームサーバーを Cloudflare に向ける) | — |
 
-- 費用の目安は文化祭の前後 1 か月で月 1,500〜2,000 円(ほぼ Cloud SQL)。予算アラートを月 3,000 円で作る
+- 費用の目安: 動かす 1 か月で 1,500〜2,000 円(ほぼ Cloud SQL)+ ドメイン年 3,000〜4,000 円。合計 5,000〜6,000 円ほど。予算アラートを月 3,000 円で作る
 - IaC は Terraform。GCP と Cloudflare(DNS・R2)を書く。Vercel と Upstash は画面で設定し、手順を README に書く
 - Terraform はバックエンドのリポジトリの `infra/` に置く。状態ファイルは GCS のバケットに置く
 - 環境は本番だけ。確かめるのは手元の docker compose
