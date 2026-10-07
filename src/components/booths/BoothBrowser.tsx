@@ -227,6 +227,11 @@ export function BoothBrowser({
                     booth.congestionUpdatedAt,
                     serverNow,
                   )}
+                  mapHref={
+                    booth.latitude !== undefined
+                      ? `/map?booth=${booth.id}`
+                      : undefined
+                  }
                 />
               ))
             )}
