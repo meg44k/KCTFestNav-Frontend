@@ -6,9 +6,12 @@ import {
   floorBand,
   floorLabel,
   floorRange,
+  fromScreen,
   loadCampus,
+  MAP_BEARING,
   nearCampus,
   placeOnFloor,
+  toScreen,
 } from "./campus";
 
 const LAT = 33.816;
@@ -250,5 +253,31 @@ describe("本物のデータ", () => {
     const gym = named.find((b) => b.name?.startsWith("体育館"));
     expect(gym?.floors).toBe(1);
     expect(gym?.parts[0].height).toBeCloseTo(11.7);
+  });
+});
+
+describe("地図の向き", () => {
+  it("画面の上を向ける方角(北から時計回り)で回し、元に戻せる", () => {
+    // 東を上にすると、東の点は真上、北の点は左
+    expect(toScreen([1, 0], 90).map((v) => Math.round(v * 1e9) / 1e9)).toEqual([
+      0, 1,
+    ]);
+    expect(toScreen([0, 1], 90).map((v) => Math.round(v * 1e9) / 1e9)).toEqual([
+      -1, 0,
+    ]);
+    const [x, y] = fromScreen(toScreen([12, -7], MAP_BEARING), MAP_BEARING);
+    expect(x).toBeCloseTo(12);
+    expect(y).toBeCloseTo(-7);
+  });
+
+  it("本物のデータで、福利施設が一番下に来る", () => {
+    const real = loadCampus(realData as unknown as CampusData);
+    const named = real.buildings.filter((b) => b.name);
+    const lowest = named.reduce((a, b) =>
+      toScreen(a.center, MAP_BEARING)[1] < toScreen(b.center, MAP_BEARING)[1]
+        ? a
+        : b,
+    );
+    expect(lowest.name).toBe("福利施設");
   });
 });

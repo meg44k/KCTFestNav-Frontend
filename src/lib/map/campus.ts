@@ -268,3 +268,24 @@ export function nearCampus(campus: Campus, [x, y]: XY, marginM = 100): boolean {
 }
 
 export const floorLabel = (floor: number) => (floor > 0 ? `${floor}F` : "屋外");
+
+/**
+ * 地図の画面の上に向ける方角(北から時計回りの度)。校舎の並びが画面にまっすぐで、
+ * 福利施設が下に来る向き(本人の希望)。2D の図と 3D の最初のカメラで使う
+ */
+export const MAP_BEARING = 238;
+
+/** 地図の座標(東・北) → 画面の向きに回した座標(右・上) */
+export function toScreen([x, y]: XY, bearing: number): XY {
+  const r = (bearing * Math.PI) / 180;
+  return [x * Math.cos(r) - y * Math.sin(r), x * Math.sin(r) + y * Math.cos(r)];
+}
+
+/** toScreen の逆 */
+export function fromScreen([sx, sy]: XY, bearing: number): XY {
+  const r = (bearing * Math.PI) / 180;
+  return [
+    sx * Math.cos(r) + sy * Math.sin(r),
+    -sx * Math.sin(r) + sy * Math.cos(r),
+  ];
+}
