@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import {
   amplitudeAt,
   type Box,
-  BURST_ATTACK,
   burstStrength,
   centerOnTopOrBottom,
   perimeterLength,
@@ -19,9 +18,7 @@ const MAX_AMP = 14;
 // ギザギザの長さ(周りの長さに対する割合)、一度に出る数、出ている長さと次が出るまでの間(秒)
 const LENGTH = 0.06;
 const BURSTS = 2;
-// 暴れている長さと、静まるまでの長さ(秒)
-const HOLD = [0.6, 1.2] as const;
-const FALL = [0.2, 0.4] as const;
+const DURATION = [0.25, 0.5] as const;
 const GAP = [0.15, 0.7] as const;
 // 枠を描くときの細かさ(px)と色(赤い枠と同じ)
 const STEP = 1.5;
@@ -30,14 +27,8 @@ const COLOR = "#e54141";
 const between = ([min, max]: readonly [number, number]) =>
   min + Math.random() * (max - min);
 
-// 枠の上のギザギザ 1 つ。center は上下の辺のどこか(0〜1、前半が上・後半が下)、start・hold・fall は秒
-type Burst = {
-  center: number;
-  start: number;
-  hold: number;
-  fall: number;
-  seed: number;
-};
+// 枠の上のギザギザ 1 つ。center は上下の辺のどこか(0〜1、前半が上・後半が下)、start と duration は秒
+type Burst = { center: number; start: number; duration: number; seed: number };
 
 /**
  * LIVE の帯の枠そのもの。赤い枠の上か下の辺のどこか(ランダム)が急にギザギザになって震え、静まると別の所に出る。
@@ -81,21 +72,19 @@ export function LiveWave({
       bursts.push({
         center: pickCenter(bursts),
         start: 0.1 + k * between([0.4, 0.8]),
-        hold: between(HOLD),
-        fall: between(FALL),
+        duration: between(DURATION),
         seed: Math.random() * 100,
       });
     }
     // 静まったものは、少し間をあけて別の所に出す
     const renew = (t: number) => {
       bursts.forEach((b, i) => {
-        if (t < b.start + BURST_ATTACK + b.hold + b.fall) return;
+        if (t < b.start + b.duration) return;
         const others = bursts.filter((_, j) => j !== i);
         bursts[i] = {
           center: pickCenter([b, ...others]),
           start: t + between(GAP),
-          hold: between(HOLD),
-          fall: between(FALL),
+          duration: between(DURATION),
           seed: Math.random() * 100,
         };
       });
@@ -129,7 +118,7 @@ export function LiveWave({
       const waves = still
         ? []
         : bursts.flatMap((b) => {
-            const strength = burstStrength(t - b.start, b.hold, b.fall);
+            const strength = burstStrength(t - b.start, b.duration);
             if (strength <= 0) return [];
             const tt = t + b.seed;
             return [
