@@ -30,6 +30,12 @@ describe("toCongestionStatus", () => {
 });
 
 describe("toBooth", () => {
+  it("階を受け取る。古いバックエンド(floor なし)は 0", () => {
+    expect(toBooth({ ...baseResponse, floor: 2 }).floor).toBe(2);
+    const { floor: _floor, ...old } = { ...baseResponse, floor: 1 };
+    expect(toBooth(old).floor).toBe(0);
+  });
+
   it("バックエンドのフィールド名を画面側の名前に移し替える", () => {
     expect(toBooth(baseResponse)).toEqual({
       id: 1,
@@ -41,6 +47,7 @@ describe("toBooth", () => {
       congestionStatus: "empty",
       latitude: 33.816853,
       longitude: 130.871808,
+      floor: 0,
     });
   });
 

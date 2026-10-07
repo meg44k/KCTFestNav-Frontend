@@ -14,6 +14,7 @@ function booth(name: string, organizer: string): Booth {
     organizer,
     location: "",
     congestionStatus: "empty",
+    floor: 0,
   };
 }
 

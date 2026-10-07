@@ -16,6 +16,8 @@ export type BoothResponse = {
   longitude: number;
   /** 混雑度を最後に更新した時刻(ISO 8601)。未更新は null。古いバックエンドでは無い */
   congestion_updated_at?: string | null;
+  /** 階。0 は屋外(または未設定)。古いバックエンドでは無い */
+  floor?: number;
 };
 
 export type CongestionStatus = "empty" | "clouded" | "veryClouded";
@@ -35,6 +37,8 @@ export type Booth = {
   longitude?: number;
   /** 混雑度を最後に更新した時刻(ISO 8601)。未更新は undefined */
   congestionUpdatedAt?: string;
+  /** 階。0 は屋外(または未設定) */
+  floor: number;
 };
 
 const CONGESTION_STATUS_MAP: Record<number, CongestionStatus> = {
@@ -64,6 +68,7 @@ export function toBooth(res: BoothResponse): Booth {
     latitude: hasLocation ? res.latitude : undefined,
     longitude: hasLocation ? res.longitude : undefined,
     congestionUpdatedAt: res.congestion_updated_at ?? undefined,
+    floor: res.floor ?? 0,
   };
 }
 

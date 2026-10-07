@@ -1,5 +1,6 @@
-import { XIcon } from "lucide-react";
+import { MapPin, XIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Dialog,
   DialogClose,
@@ -28,6 +29,7 @@ function BoothCard({
   latitude,
   longitude,
   updatedLabel,
+  mapHref,
 }: {
   name: string;
   description: string;
@@ -45,6 +47,8 @@ function BoothCard({
   longitude?: number;
   /** 混雑度タブの横に出す「○分前に更新」。未更新なら出さない */
   updatedLabel?: string;
+  /** 地図でこのブースを開くリンク。位置が無いブースや地図の上では渡さない */
+  mapHref?: string;
 }) {
   const congestionStatusMessage = congestionMessageOf(congestionStatus);
   const congestionColor = {
@@ -168,14 +172,26 @@ function BoothCard({
                 <DialogDescription className="text-black text-sm">
                   {description}
                 </DialogDescription>
-                {latitude !== undefined && longitude !== undefined && (
+                {(mapHref ||
+                  (latitude !== undefined && longitude !== undefined)) && (
                   // 説明文と重ならないよう、絶対配置ではなく最後の行として右に寄せる
-                  <div className="flex justify-end">
-                    <NaviButton
-                      latitude={latitude}
-                      longitude={longitude}
-                      name={name}
-                    />
+                  <div className="flex items-center justify-end">
+                    {mapHref && (
+                      <Link
+                        href={mapHref}
+                        className="mr-auto flex items-center gap-1 rounded-full border border-black/20 px-3 py-1 text-sm"
+                      >
+                        <MapPin size={16} />
+                        場所を見る
+                      </Link>
+                    )}
+                    {latitude !== undefined && longitude !== undefined && (
+                      <NaviButton
+                        latitude={latitude}
+                        longitude={longitude}
+                        name={name}
+                      />
+                    )}
                   </div>
                 )}
               </div>

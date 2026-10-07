@@ -205,3 +205,22 @@
     animation: none;
   }
 }
+
+/* 3D 地図の棟の名前 */
+.map3d-label {
+  /* 明るい建物の上でも読めるよう、濃い地に白い縁取り */
+  background: #0b0d10;
+  border: 1px solid #ffffffb3;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 1px 7px;
+  border-radius: 9px;
+  white-space: nowrap;
+}
+
+.map3d-label-focus {
+  background: #3d8bff;
+  font-size: 13px;
+  font-weight: bold;
+}

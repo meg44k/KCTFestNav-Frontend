@@ -21,6 +21,7 @@ const booth = (
   organizer,
   location: "",
   congestionStatus,
+  floor: 0,
   ...extra,
 });
 

@@ -36,6 +36,12 @@ export function parseBoothForm(
     return { ok: false, error: "緯度・経度は数字で入力してください" };
   }
 
+  const floorText = text(formData, "floor");
+  const floor = floorText === "" ? 0 : Number(floorText);
+  if (!Number.isInteger(floor) || floor < 0) {
+    return { ok: false, error: "階は 0 以上の整数で入力してください" };
+  }
+
   return {
     ok: true,
     payload: {
@@ -46,6 +52,7 @@ export function parseBoothForm(
       image_url: imageUrl,
       latitude,
       longitude,
+      floor,
       // x/y/z は使っていないが DB では必須。編集では今の値を保つ
       x: current?.x ?? 0,
       y: current?.y ?? 0,

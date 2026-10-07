@@ -18,6 +18,31 @@ const base = {
 };
 
 describe("parseBoothForm", () => {
+  it("階を読む。空は 0、負や小数は断る", () => {
+    const form = (floor: string) => {
+      const f = new FormData();
+      f.set("name", "3-1 展示");
+      f.set("floor", floor);
+      return f;
+    };
+    expect(parseBoothForm(form("2"))).toMatchObject({
+      ok: true,
+      payload: { floor: 2 },
+    });
+    expect(parseBoothForm(form(""))).toMatchObject({
+      ok: true,
+      payload: { floor: 0 },
+    });
+    expect(parseBoothForm(form("-1"))).toEqual({
+      ok: false,
+      error: "階は 0 以上の整数で入力してください",
+    });
+    expect(parseBoothForm(form("1.5"))).toEqual({
+      ok: false,
+      error: "階は 0 以上の整数で入力してください",
+    });
+  });
+
   it("前後の空白を取り、緯度経度を数値にし、新規の x/y/z は 0", () => {
     expect(parseBoothForm(fd(base))).toEqual({
       ok: true,
@@ -29,6 +54,7 @@ describe("parseBoothForm", () => {
         image_url: "",
         latitude: 33.8168,
         longitude: 130.8718,
+        floor: 0,
         x: 0,
         y: 0,
         z: 0,
