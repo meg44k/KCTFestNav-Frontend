@@ -226,12 +226,12 @@
   font-weight: bold;
 }
 
-/* ステージイベントの演奏中の枠。黄色の枠の上を、光の反射のような白い線がゆっくり左から右へ流れる */
+/* ステージイベントの演奏中の枠。赤い枠の上を、光の反射のような白い線がゆっくり左から右へ流れる */
 .rim-glint {
   border: 2px solid transparent;
   background:
     linear-gradient(#000, #000) padding-box,
-    linear-gradient(115deg, #fbbf24 42%, #fff 50%, #fbbf24 58%) border-box;
+    linear-gradient(115deg, #e54141 42%, #fff 50%, #e54141 58%) border-box;
   background-size:
     100% 100%,
     300% 100%;

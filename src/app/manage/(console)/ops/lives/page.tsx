@@ -34,7 +34,7 @@ export default async function LivesPage() {
         )}
       </div>
       <p className="text-gray-600 text-sm">
-        バンドが替わったら「次のバンドへ」を押してください。来場者の画面に演奏中として表示されます。
+        バンドが替わったら「次のバンドへ」を押してください。来場者の画面に「LIVE」として表示されます。
       </p>
       <StageOps sections={stage.data.sections} serverNow={Date.now()} />
     </>

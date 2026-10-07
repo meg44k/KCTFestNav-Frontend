@@ -17,8 +17,8 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
         {playing.map(({ section, block, current, next: after }) => (
           <div key={block.id}>
             <div className="flex items-center gap-2 text-xs">
-              <span className="rounded bg-amber-400 px-1.5 py-0.5 font-bold text-black">
-                演奏中
+              <span className="rounded bg-[#e54141] px-1.5 py-0.5 font-bold text-white">
+                LIVE
               </span>
               <span className="truncate text-gray-300">
                 {section.name}
