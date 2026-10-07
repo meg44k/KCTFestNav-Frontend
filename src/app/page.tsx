@@ -1,10 +1,7 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import {
-  FestivalTitle,
-  INTRO_TRANSITION,
-} from "@/components/home/FestivalTitle";
+import { FestivalTitle } from "@/components/home/FestivalTitle";
 import { IntroRedirect } from "@/components/home/IntroRedirect";
 import { INTRO_COOKIE, introSeen } from "@/lib/intro";
 
@@ -16,7 +13,6 @@ export default async function Home() {
     <Link
       href="/main"
       replace
-      transitionTypes={[INTRO_TRANSITION]}
       className="flex h-dvh flex-col items-center justify-center text-center"
     >
       <FestivalTitle />

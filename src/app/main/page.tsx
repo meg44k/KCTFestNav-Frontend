@@ -1,9 +1,5 @@
-import { ViewTransition } from "react";
 import { EntranceTiles } from "@/components/home/EntranceTiles";
-import {
-  FestivalTitle,
-  INTRO_TRANSITION,
-} from "@/components/home/FestivalTitle";
+import { FestivalTitle } from "@/components/home/FestivalTitle";
 import { StageHeadlineCard } from "@/components/home/StageHeadlineCard";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
 import { RefreshEvery } from "@/components/RefreshEvery";
@@ -36,26 +32,18 @@ export default async function Main() {
 
   return (
     <div>
-      {/* タイトル画面から来たときだけ、見出しのまわりがふわっと現れる */}
-      <ViewTransition
-        enter={{ [INTRO_TRANSITION]: "intro-rise", default: "none" }}
-        default="none"
-      >
+      {/* intro-* はタイトル画面から来たときだけ、見出しのまわりをふわっと出す目印(globals.css) */}
+      <div className="intro-bulletin">
         <BulletinBoard content={announcementOrDefault(content)} />
-      </ViewTransition>
+      </div>
       <SideMenu />
       <RefreshEvery seconds={60} />
       <div className="flex flex-col items-center gap-4 px-4 pb-10">
         <FestivalTitle className="pt-10 pb-2 text-center" />
-        <ViewTransition
-          enter={{ [INTRO_TRANSITION]: "intro-rise", default: "none" }}
-          default="none"
-        >
-          <div className="flex w-full flex-col items-center gap-4">
-            <StageHeadlineCard headline={stageHeadline(sections, Date.now())} />
-            <EntranceTiles />
-          </div>
-        </ViewTransition>
+        <div className="intro-content flex w-full flex-col items-center gap-4">
+          <StageHeadlineCard headline={stageHeadline(sections, Date.now())} />
+          <EntranceTiles />
+        </div>
       </div>
     </div>
   );
