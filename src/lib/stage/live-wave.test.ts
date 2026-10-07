@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   amplitudeAt,
+  BURST_ATTACK,
   burstStrength,
   centerOnTopOrBottom,
   envelope,
@@ -78,20 +79,35 @@ describe("波形", () => {
 });
 
 describe("ランダムに出るギザギザの強さ", () => {
-  it("出始めと終わりは 0、途中で強くなる", () => {
-    expect(burstStrength(0, 1)).toBeCloseTo(0);
-    expect(burstStrength(1, 1)).toBeCloseTo(0);
-    expect(burstStrength(0.25, 1)).toBeGreaterThan(0.8);
+  // 立ち上がり BURST_ATTACK 秒 → 1 秒そのまま → 0.3 秒で静まる
+  const hold = 1;
+  const fall = 0.3;
+  const end = BURST_ATTACK + hold + fall;
+
+  it("出始めと終わりは 0", () => {
+    expect(burstStrength(0, hold, fall)).toBeCloseTo(0);
+    expect(burstStrength(end, hold, fall)).toBeCloseTo(0);
   });
 
-  it("急に立ち上がって、ゆっくり静まる", () => {
-    // 出てから 1 割の時点は、終わる 1 割前より強い
-    expect(burstStrength(0.1, 1)).toBeGreaterThan(burstStrength(0.9, 1));
+  it("立ち上がってから hold 秒の間は強いまま", () => {
+    for (const age of [BURST_ATTACK, BURST_ATTACK + 0.5, BURST_ATTACK + hold]) {
+      expect(burstStrength(age, hold, fall)).toBeCloseTo(1);
+    }
+  });
+
+  it("そのあと fall 秒で静まる", () => {
+    const mid = burstStrength(BURST_ATTACK + hold + fall / 2, hold, fall);
+    expect(mid).toBeGreaterThan(0);
+    expect(mid).toBeLessThan(1);
+  });
+
+  it("立ち上がりはすぐ(0.1 秒以内)", () => {
+    expect(BURST_ATTACK).toBeLessThanOrEqual(0.1);
   });
 
   it("時間の外は 0", () => {
-    expect(burstStrength(-0.1, 1)).toBe(0);
-    expect(burstStrength(1.2, 1)).toBe(0);
+    expect(burstStrength(-0.1, hold, fall)).toBe(0);
+    expect(burstStrength(end + 0.1, hold, fall)).toBe(0);
   });
 });
 

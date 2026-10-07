@@ -88,18 +88,20 @@ export function waveOffset(u: number, t: number, amp: number): number {
   return amp * envelope(u) * tri * tooth;
 }
 
-// 立ち上がりにかける割合(残りで静まる)
-const ATTACK = 0.2;
+// 立ち上がりにかける時間(秒)
+export const BURST_ATTACK = 0.06;
 
 /**
- * ランダムな場所に出たギザギザの強さ 0〜1。出てからの時間 age(秒)、出ている長さ duration(秒)。
- * 急に立ち上がって、ゆっくり静まる
+ * ランダムな場所に出たギザギザの強さ 0〜1。出てからの時間 age(秒)。
+ * 急に立ち上がり、hold 秒そのまま暴れて、fall 秒で静まる
  */
-export function burstStrength(age: number, duration: number): number {
-  const x = age / duration;
-  if (!(x >= 0 && x <= 1)) return 0;
-  if (x < ATTACK) return Math.sin((Math.PI / 2) * (x / ATTACK));
-  return ((1 - x) / (1 - ATTACK)) ** 1.5;
+export function burstStrength(age: number, hold: number, fall: number): number {
+  if (!(age >= 0)) return 0;
+  if (age < BURST_ATTACK) return Math.sin((Math.PI / 2) * (age / BURST_ATTACK));
+  const x = (age - BURST_ATTACK - hold) / fall;
+  if (x <= 0) return 1;
+  if (x > 1) return 0;
+  return (1 - x) ** 1.5;
 }
 
 /**
