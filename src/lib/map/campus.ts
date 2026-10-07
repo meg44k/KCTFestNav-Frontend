@@ -99,21 +99,48 @@ export function loadCampus(data: CampusData): Campus {
     lat0 + y / ky,
   ];
 
+  type Props = CampusData["features"][number]["properties"];
+  const storeysOf = (p: Props) =>
+    Math.max(1, p.storeysManual ?? p.storeys ?? 1);
+  const measured = (p: Props) =>
+    p.height != null && p.height > 0 ? p.height : undefined;
+  // 1 階分の高さ。名前のある 2 階建て以上の棟の(実測 ÷ 階数)の中央値。
+  // 渡り廊下を「2 階から」浮かせるとき、棟の 2 階の床とそろえるのに使う
+  const perFloor = data.features
+    .map((f) => f.properties)
+    .filter(
+      (p) =>
+        p.buildingName &&
+        p.baseHeight === 0 &&
+        measured(p) &&
+        storeysOf(p) >= 2,
+    )
+    .map((p) => (measured(p) as number) / storeysOf(p))
+    .sort((x, y) => x - y);
+  const floorHeight =
+    perFloor.length > 0 ? perFloor[Math.floor((perFloor.length - 1) / 2)] : 3.5;
+
   const byId = new Map<string, { name?: string; parts: Part[] }>();
   for (const f of data.features) {
     const p = f.properties;
+    const storeys = storeysOf(p);
+    const baseFloor = p.baseFloor ?? 1;
     const floating = p.baseHeight > 0;
-    // 浮いた部分の実測は地面からの値なので使わない。実測の無い部分は viewer の高さ
-    const height =
-      !floating && p.height != null && p.height > 0 ? p.height : p.heightUsed;
+    // 浮いた部分は棟の階にそろえる。名前のある棟は実測(体育館など天井の高い建物を低くしない)。
+    // 名前の無い部分(渡り廊下・倉庫など)は viewer で入れた高さ(実測は屋根などを含んで高すぎることがある)
+    const height = floating
+      ? storeys * floorHeight
+      : p.buildingName
+        ? (measured(p) ?? p.heightUsed)
+        : p.heightUsed;
     const part: Part = {
       polygons: polygonsOf(f.geometry).map((poly) =>
         poly.map((ring) => ring.map(([lon, lat]) => toXY(lon, lat))),
       ),
-      bottom: p.baseHeight,
+      bottom: floating ? (baseFloor - 1) * floorHeight : 0,
       height,
-      storeys: Math.max(1, p.storeysManual ?? p.storeys ?? 1),
-      baseFloor: p.baseFloor ?? 1,
+      storeys,
+      baseFloor,
     };
     const entry = byId.get(p.buildingId) ?? {
       name: p.buildingName ?? undefined,
@@ -198,7 +225,8 @@ export function floorBand(
 
 /**
  * ブースを置く高さ。建物の中ならその階の床、外(または階 0)なら地面。
- * その点の部分にその階が無いとき(統合した棟の低い部分など)は、その点の部分の最上階の床
+ * その点の部分にその階が無いとき(統合した棟の低い部分など)は棟の他の部分のその階、
+ * 棟のどこにも無ければその点の部分の最上階の床
  */
 export function placeOnFloor(
   campus: Campus,
@@ -207,13 +235,25 @@ export function placeOnFloor(
 ): { elevation: number; building?: Building; floor: number } {
   const hit = floor > 0 ? buildingAt(campus, xy) : undefined;
   if (!hit) return { elevation: 0, building: undefined, floor: 0 };
-  for (const part of hit.parts) {
+  // その点の部分 → 棟の他の部分(統合した棟の低い部分の上など) の順に、その階を探す
+  for (const part of [...hit.parts, ...hit.building.parts]) {
     const band = floorBand(part, floor);
     if (band) return { elevation: band.bottom, building: hit.building, floor };
   }
   const top = hit.parts[hit.parts.length - 1];
   const band = floorBand(top, top.baseFloor + top.storeys - 1);
   return { elevation: band?.bottom ?? 0, building: hit.building, floor };
+}
+
+/**
+ * 管理画面で選べる階 [最低, 最高]。下は押した点の部分の一番下の階(渡り廊下の下なら 2 階から)、
+ * 上は棟の最上階(統合した棟の低い部分でも、高い部分の階を選べる)
+ */
+export function floorRange(hit: {
+  building: Building;
+  parts: Part[];
+}): [number, number] {
+  return [Math.min(...hit.parts.map((p) => p.baseFloor)), hit.building.floors];
 }
 
 /** 建物全体の範囲 + margin の内側か */

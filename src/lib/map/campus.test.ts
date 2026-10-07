@@ -5,6 +5,7 @@ import {
   type CampusData,
   floorBand,
   floorLabel,
+  floorRange,
   loadCampus,
   nearCampus,
   placeOnFloor,
@@ -124,6 +125,43 @@ describe("loadCampus", () => {
   });
 });
 
+describe("渡り廊下など名前の無い部分の高さ", () => {
+  // 1 階 4.5m の 4 階建てと、その間の渡り廊下
+  const linked = loadCampus({
+    features: [
+      feature("B", rect(0, 0, 20, 20), {
+        buildingName: "B館",
+        height: 18,
+        storeysManual: 4,
+      }),
+      // viewer で 1 階分と入れた地面の廊下(PLATEAU の実測は屋根まで含んで高い)
+      feature("C", rect(20, 5, 10, 3), {
+        height: 14.4,
+        storeysManual: 1,
+        heightUsed: 3.5,
+      }),
+      // 2 階から 1 階分浮いた渡り廊下
+      feature("D", rect(20, 12, 10, 3), {
+        height: 13.3,
+        storeysManual: 1,
+        baseFloor: 2,
+        baseHeight: 3.5,
+        heightUsed: 3.5,
+      }),
+    ],
+  } as unknown as CampusData);
+  const part = (id: string) =>
+    linked.buildings.find((b) => b.id === id)?.parts[0];
+
+  it("名前の無い部分は viewer で入れた高さ(実測は使わない)", () => {
+    expect(part("C")?.height).toBe(3.5);
+  });
+
+  it("浮いた部分は、名前のある棟の 1 階分の高さ(中央値)で階に合わせる", () => {
+    expect(part("D")).toMatchObject({ bottom: 4.5, height: 4.5 });
+  });
+});
+
 describe("buildingAt", () => {
   it("点を含む棟。穴(中庭)と外は undefined", () => {
     expect(buildingAt(campus, at(5, 5))?.building.id).toBe("A");
@@ -158,10 +196,14 @@ describe("floorBand / placeOnFloor", () => {
     });
   });
 
-  it("統合した棟で、その点の部分に無い階は部分の最上階に置く", () => {
-    // 2 階建ての部分の上に 3 階のブース
-    expect(placeOnFloor(campus, at(15, 45), 3).elevation).toBeCloseTo(3.5);
+  it("統合した棟で、その点の部分に無い階は、その階がある部分の高さに置く", () => {
+    // 2 階建ての部分の上に 3 階のブース → 3 階建ての部分の 3 階の床
+    expect(placeOnFloor(campus, at(15, 45), 3).elevation).toBeCloseTo(7);
     expect(placeOnFloor(campus, at(5, 45), 3).elevation).toBeCloseTo(7);
+  });
+
+  it("棟のどこにも無い階は、その点の部分の最上階", () => {
+    expect(placeOnFloor(campus, at(15, 45), 9).elevation).toBeCloseTo(3.5);
   });
 
   it("建物の外で階が付いていても地面", () => {
@@ -170,6 +212,20 @@ describe("floorBand / placeOnFloor", () => {
       building: undefined,
       floor: 0,
     });
+  });
+});
+
+describe("floorRange(管理画面で選べる階)", () => {
+  it("その点の部分の一番下の階から、棟の最上階まで", () => {
+    const range = (x: number, y: number) => {
+      const hit = buildingAt(campus, at(x, y));
+      return hit && floorRange(hit);
+    };
+    expect(range(5, 5)).toEqual([1, 4]);
+    // 渡り廊下(2 階だけ)の下
+    expect(range(30, 6)).toEqual([2, 2]);
+    // 統合した棟の低い部分でも 3 階を選べる
+    expect(range(15, 45)).toEqual([1, 3]);
   });
 });
 

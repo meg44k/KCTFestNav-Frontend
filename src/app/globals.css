@@ -208,10 +208,13 @@
 
 /* 3D 地図の棟の名前 */
 .map3d-label {
-  background: #1d2733d9;
+  /* 明るい建物の上でも読めるよう、濃い地に白い縁取り */
+  background: #0b0d10;
+  border: 1px solid #ffffffb3;
   color: #fff;
-  font-size: 11px;
-  padding: 1px 6px;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 1px 7px;
   border-radius: 9px;
   white-space: nowrap;
 }

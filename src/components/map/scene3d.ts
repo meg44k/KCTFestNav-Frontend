@@ -18,7 +18,7 @@ export type Hit = { pin: number } | { building: string } | null;
 const COLOR = {
   bg: "#0b0d10",
   ground: "#16191e",
-  named: "#d9dde3",
+  named: "#aab3bf",
   unnamed: "#59616c",
   dim: "#3a4049",
   focus: "#3d8bff",
@@ -84,6 +84,10 @@ function dispose(obj: THREE.Object3D) {
       o instanceof THREE.Line
     ) {
       o.geometry.dispose();
+      // 描き直すたびに材質も作るので、一緒に解放する
+      for (const m of Array.isArray(o.material) ? o.material : [o.material]) {
+        m.dispose();
+      }
     }
     if (o instanceof CSS2DObject) o.element.remove();
   });
@@ -220,7 +224,14 @@ export function createScene(
       head.position.copy(toScene(pin.xy, pin.elevation + 4.5));
       head.userData.pinId = pin.id;
       stick.renderOrder = head.renderOrder = big ? 21 : 20;
-      pinGroup.add(stick, head);
+      // 遠くから見るとピンは数 px しかないので、見えない大きな球で押しやすくする
+      const hit = new THREE.Mesh(
+        new THREE.SphereGeometry(6, 8, 6),
+        new THREE.MeshBasicMaterial({ visible: false }),
+      );
+      hit.position.copy(head.position);
+      hit.userData.pinId = pin.id;
+      pinGroup.add(stick, head, hit);
     }
   }
 

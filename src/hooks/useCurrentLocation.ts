@@ -32,8 +32,14 @@ export function useCurrentLocation() {
 
   const onOrientation = useCallback((e: DeviceOrientationEvent) => {
     const compass = (e as CompassOrientationEvent).webkitCompassHeading;
-    if (compass !== undefined) setHeading(compass);
-    else if (e.alpha !== null) setHeading((360 - e.alpha) % 360);
+    const raw =
+      compass !== undefined
+        ? compass
+        : e.alpha !== null
+          ? (360 - e.alpha) % 360
+          : undefined;
+    // センサーは 1 秒に何十回も来るので 5° 刻みにする(同じ値なら描き直さない)
+    if (raw !== undefined) setHeading((Math.round(raw / 5) * 5) % 360);
   }, []);
 
   const start = useCallback(async () => {
@@ -45,11 +51,23 @@ export function useCurrentLocation() {
         ? (DeviceOrientationEvent as OrientationWithPermission)
         : undefined;
     try {
-      if (typeof O?.requestPermission === "function") {
-        if ((await O.requestPermission()) === "granted")
-          window.addEventListener("deviceorientation", onOrientation);
-      } else if (O) {
-        window.addEventListener("deviceorientation", onOrientation);
+      const granted =
+        typeof O?.requestPermission === "function"
+          ? (await O.requestPermission()) === "granted"
+          : !!O;
+      if (granted) {
+        // Android の deviceorientation は端末の向き基準なので、北基準の absolute を優先する(useCompass と同じ)
+        if ("ondeviceorientationabsolute" in window) {
+          window.addEventListener(
+            "deviceorientationabsolute",
+            onOrientation as EventListener,
+          );
+        } else {
+          (window as Window).addEventListener(
+            "deviceorientation",
+            onOrientation,
+          );
+        }
       }
     } catch {
       // 向きが取れなくても位置だけは出す
@@ -76,6 +94,10 @@ export function useCurrentLocation() {
     () => () => {
       if (watchId.current !== null)
         navigator.geolocation.clearWatch(watchId.current);
+      window.removeEventListener(
+        "deviceorientationabsolute",
+        onOrientation as EventListener,
+      );
       window.removeEventListener("deviceorientation", onOrientation);
     },
     [onOrientation],

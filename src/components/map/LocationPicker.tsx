@@ -6,6 +6,7 @@ import campusData from "@/data/campus.json";
 import {
   buildingAt,
   type CampusData,
+  floorRange,
   loadCampus,
   type XY,
 } from "@/lib/map/campus";
@@ -50,14 +51,18 @@ export function LocationPicker({
       ? campus.toXY(Number(lon), Number(lat))
       : null;
   const hit = xy ? buildingAt(campus, xy) : undefined;
+  const [lowest, highest] = hit ? floorRange(hit) : [0, 0];
 
   const place = (p: XY) => {
     const [lo, la] = campus.toLonLat(...p);
     setLat(fmt(la));
     setLon(fmt(lo));
-    const b = buildingAt(campus, p)?.building;
+    const at = buildingAt(campus, p);
+    const range = at && floorRange(at);
     // 建物の中なら今の階(範囲外なら 1 階)、外なら屋外
-    setFloorValue((f) => (b ? Math.min(Math.max(f, 1), b.floors) : 0));
+    setFloorValue((f) =>
+      range ? Math.min(Math.max(f, range[0]), range[1]) : 0,
+    );
   };
 
   const useHere = () => {
@@ -108,13 +113,14 @@ export function LocationPicker({
             onChange={(e) => setFloorValue(Number(e.target.value))}
             className="h-9 rounded-md border px-2"
           >
-            {Array.from({ length: hit.building.floors }, (_, i) => i + 1).map(
-              (n) => (
-                <option key={n} value={n}>
-                  {n}階
-                </option>
-              ),
-            )}
+            {Array.from(
+              { length: highest - lowest + 1 },
+              (_, i) => lowest + i,
+            ).map((n) => (
+              <option key={n} value={n}>
+                {n}階
+              </option>
+            ))}
           </select>
         </label>
       ) : (
