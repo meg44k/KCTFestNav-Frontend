@@ -87,3 +87,17 @@ export function waveOffset(u: number, t: number, amp: number): number {
   const tooth = 0.15 + 0.85 * hash(Math.floor(x) + Math.floor(t * 12) * 31);
   return amp * envelope(u) * tri * tooth;
 }
+
+// 立ち上がりにかける割合(残りで静まる)
+const ATTACK = 0.2;
+
+/**
+ * ランダムな場所に出たギザギザの強さ 0〜1。出てからの時間 age(秒)、出ている長さ duration(秒)。
+ * 急に立ち上がって、ゆっくり静まる
+ */
+export function burstStrength(age: number, duration: number): number {
+  const x = age / duration;
+  if (!(x >= 0 && x <= 1)) return 0;
+  if (x < ATTACK) return Math.sin((Math.PI / 2) * (x / ATTACK));
+  return ((1 - x) / (1 - ATTACK)) ** 1.5;
+}

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   amplitudeAt,
+  burstStrength,
   envelope,
   perimeterLength,
   pointOnRoundedRect,
@@ -72,5 +73,23 @@ describe("波形", () => {
       Math.abs(waveOffset((k + 0.5) / TEETH, 0, 1)),
     ).slice(3, -3);
     expect(Math.max(...peaks) - Math.min(...peaks)).toBeGreaterThan(0.5);
+  });
+});
+
+describe("ランダムに出るギザギザの強さ", () => {
+  it("出始めと終わりは 0、途中で強くなる", () => {
+    expect(burstStrength(0, 1)).toBeCloseTo(0);
+    expect(burstStrength(1, 1)).toBeCloseTo(0);
+    expect(burstStrength(0.25, 1)).toBeGreaterThan(0.8);
+  });
+
+  it("急に立ち上がって、ゆっくり静まる", () => {
+    // 出てから 1 割の時点は、終わる 1 割前より強い
+    expect(burstStrength(0.1, 1)).toBeGreaterThan(burstStrength(0.9, 1));
+  });
+
+  it("時間の外は 0", () => {
+    expect(burstStrength(-0.1, 1)).toBe(0);
+    expect(burstStrength(1.2, 1)).toBe(0);
   });
 });

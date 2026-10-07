@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import {
   amplitudeAt,
   type Box,
+  burstStrength,
   perimeterLength,
   pointOnRoundedRect,
   waveOffset,
@@ -13,15 +14,23 @@ import {
 const MARGIN = 12;
 // いちばん大きいときの振れ幅(px)
 const MAX_AMP = 10;
-// 枠を回る速さ(px/秒)と、波形の長さ(周りの長さに対する割合)
-const SPEED = 110;
+// ギザギザの長さ(周りの長さに対する割合)、一度に出る数、出ている長さと次が出るまでの間(秒)
 const LENGTH = 0.12;
+const BURSTS = 2;
+const DURATION = [0.6, 1.3] as const;
+const GAP = [0.15, 0.7] as const;
 // 枠を描くときの細かさ(px)と色(赤い枠と同じ)
 const STEP = 1.5;
 const COLOR = "#e54141";
 
+const between = ([min, max]: readonly [number, number]) =>
+  min + Math.random() * (max - min);
+
+// 枠の上のギザギザ 1 つ。center は周りの上の位置(0〜1)、start と duration は秒
+type Burst = { center: number; start: number; duration: number; seed: number };
+
 /**
- * LIVE の帯の枠そのもの。赤い枠の一部がギザギザに変形しながら回り、振幅は時間でかわる。
+ * LIVE の帯の枠そのもの。赤い枠のどこか(ランダム)が急にギザギザになって震え、静まると別の所に出る。
  * 親(position: relative、角丸 radius px、赤い枠 border px)の上に重ねて置く。
  * 描けるまでは親の普通の赤い枠が見え、描けたら親の枠を透明にして入れ替える
  */
@@ -46,6 +55,41 @@ export function LiveWave({
     let visible = true;
     let frame = 0;
     const started = performance.now();
+    // 前のと近すぎない所を選ぶ
+    const pickCenter = (others: Burst[]) => {
+      let c = Math.random();
+      for (let i = 0; i < 8; i++) {
+        const near = others.some((o) => {
+          const d = Math.abs(o.center - c);
+          return Math.min(d, 1 - d) < LENGTH * 1.5;
+        });
+        if (!near) break;
+        c = Math.random();
+      }
+      return c;
+    };
+    const bursts: Burst[] = [];
+    for (let k = 0; k < BURSTS; k++) {
+      bursts.push({
+        center: pickCenter(bursts),
+        start: 0.1 + k * between([0.4, 0.8]),
+        duration: between(DURATION),
+        seed: Math.random() * 100,
+      });
+    }
+    // 静まったものは、少し間をあけて別の所に出す
+    const renew = (t: number) => {
+      bursts.forEach((b, i) => {
+        if (t < b.start + b.duration) return;
+        const others = bursts.filter((_, j) => j !== i);
+        bursts[i] = {
+          center: pickCenter([b, ...others]),
+          start: t + between(GAP),
+          duration: between(DURATION),
+          seed: Math.random() * 100,
+        };
+      });
+    };
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -64,19 +108,28 @@ export function LiveWave({
       };
     };
 
-    // 枠の線そのものを描く。ふだんはまっすぐで、回っている一部だけがギザギザに変形する
-    const draw = (now: number) => {
+    // 枠の線そのものを描く。ふだんはまっすぐで、出ているギザギザの所だけ変形する
+    const draw = (now: number, still = false) => {
       const t = (now - started) / 1000;
       ctx.clearRect(0, 0, el.width, el.height);
       const p = perimeterLength(box);
       if (p <= 0) return;
       const len = p * LENGTH;
-      // ギザギザは対角に 2 つ(周りの半分ずらす)。振れ幅と歯の形はそれぞれ別に変える
-      const waves = [0, 1].map((k) => ({
-        tail: t * SPEED - len + (p / 2) * k,
-        t: t + k * 7.3,
-        amp: amplitudeAt(t + k * 7.3) * MAX_AMP,
-      }));
+      if (!still) renew(t);
+      const waves = still
+        ? []
+        : bursts.flatMap((b) => {
+            const strength = burstStrength(t - b.start, b.duration);
+            if (strength <= 0) return [];
+            const tt = t + b.seed;
+            return [
+              {
+                tail: b.center * p - len / 2,
+                t: tt,
+                amp: amplitudeAt(tt) * MAX_AMP * strength,
+              },
+            ];
+          });
       const ox = MARGIN + border / 2;
       const steps = Math.ceil(p / STEP);
       ctx.beginPath();
@@ -109,7 +162,7 @@ export function LiveWave({
     };
     const start = () => {
       cancelAnimationFrame(frame);
-      if (reduce) draw(started + 1500);
+      if (reduce) draw(started, true);
       else frame = requestAnimationFrame(loop);
     };
 
@@ -117,7 +170,7 @@ export function LiveWave({
     start();
     const ro = new ResizeObserver(() => {
       resize();
-      if (reduce) draw(started + 1500);
+      if (reduce) draw(started, true);
     });
     ro.observe(host);
     // 画面の外や裏にあるときは止める
