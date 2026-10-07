@@ -25,7 +25,7 @@ export function PerformerRow({
       <DialogTrigger
         className={cn(
           "flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-2 text-left",
-          mark === "playing" && "bg-[#e54141]/10 font-bold",
+          mark === "playing" && "bg-amber-400/25 font-bold",
           mark === "done" && "text-gray-400",
         )}
         aria-label={`${performer.name}の紹介を見る`}
@@ -35,7 +35,7 @@ export function PerformerRow({
         </span>
         <span className="flex-1">{performer.name}</span>
         {mark === "playing" && (
-          <span className="shrink-0 rounded-md bg-[#e54141] px-2 py-0.5 text-white text-xs">
+          <span className="shrink-0 rounded-md bg-amber-400 px-2 py-0.5 font-bold text-black text-xs">
             演奏中
           </span>
         )}

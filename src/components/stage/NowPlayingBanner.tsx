@@ -25,10 +25,10 @@ export function NowPlayingBanner({
         {playing.map(({ section, block, current, next }) => (
           <div
             key={block.id}
-            className="rounded-md border-2 border-[#e54141] bg-black p-3 text-white"
+            className="rounded-md border-2 border-amber-400 bg-black p-3 text-white"
           >
             <div className="flex items-center gap-2 text-sm">
-              <span className="rounded-md bg-[#e54141] px-2 py-0.5 font-bold">
+              <span className="rounded-md bg-amber-400 px-2 py-0.5 font-bold text-black">
                 演奏中
               </span>
               <span className="text-gray-300">
