@@ -225,15 +225,3 @@
   font-size: 13px;
   font-weight: bold;
 }
-
-/* 地図の下から出るカードや棟の一覧の入れ物(BottomPanel)。高さを動かす */
-.bottom-panel {
-  transition-property: height;
-  transition-duration: 450ms;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .bottom-panel {
-    transition: none;
-  }
-}

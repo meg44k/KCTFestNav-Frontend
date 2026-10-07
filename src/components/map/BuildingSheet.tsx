@@ -15,9 +15,10 @@ export function BuildingSheet({
   onClose(): void;
 }) {
   const count = groups.reduce((n, g) => n + g.booths.length, 0);
-  // ぴょこっと上に行き過ぎたとき下に隙間が見えないよう、同じ黄色の影を下に 40px 伸ばしておく
+  // ぴょこっと上に行き過ぎたときや、前の高い中身の位置から動くときに下が見えないよう、
+  // 同じ黄色の板を下に長く付けておく(画面の外へはみ出す分は見えない)
   return (
-    <div className="flex max-h-[45dvh] flex-col rounded-t-xl border border-amber-300 bg-amber-400 text-black shadow-[0_40px_0_#fbbf24]">
+    <div className="relative flex max-h-[45dvh] flex-col rounded-t-xl border border-amber-300 bg-amber-400 text-black after:absolute after:inset-x-[-1px] after:top-full after:h-[600px] after:bg-amber-400 after:content-['']">
       {/* 棟の名前と × は、ブースが多くてスクロールしても上に残す */}
       <div className="flex shrink-0 items-center justify-between px-4 pt-4 pb-2">
         <h2 className="font-bold text-lg">
