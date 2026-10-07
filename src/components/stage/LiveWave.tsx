@@ -18,7 +18,7 @@ const MAX_AMP = 14;
 // ギザギザの長さ(周りの長さに対する割合)、一度に出る数、出ている長さと次が出るまでの間(秒)
 const LENGTH = 0.06;
 const BURSTS = 2;
-const DURATION = [0.6, 1.3] as const;
+const DURATION = [0.25, 0.5] as const;
 const GAP = [0.15, 0.7] as const;
 // 枠を描くときの細かさ(px)と色(赤い枠と同じ)
 const STEP = 1.5;
