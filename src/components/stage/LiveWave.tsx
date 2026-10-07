@@ -12,7 +12,7 @@ import {
 // 波形がはみ出せる余白(px)
 const MARGIN = 12;
 // いちばん大きいときの振れ幅(px)
-const MAX_AMP = 12;
+const MAX_AMP = 10;
 // 枠を回る速さ(px/秒)と、波形の長さ(周りの長さに対する割合)
 const SPEED = 110;
 const LENGTH = 0.12;
@@ -22,7 +22,8 @@ const COLOR = "#e54141";
 
 /**
  * LIVE の帯の枠そのもの。赤い枠の一部がギザギザに変形しながら回り、振幅は時間でかわる。
- * 親(position: relative、角丸 radius px、透明な枠 border px)の上に重ねて置く
+ * 親(position: relative、角丸 radius px、赤い枠 border px)の上に重ねて置く。
+ * 描けるまでは親の普通の赤い枠が見え、描けたら親の枠を透明にして入れ替える
  */
 export function LiveWave({
   radius = 6,
@@ -69,9 +70,13 @@ export function LiveWave({
       ctx.clearRect(0, 0, el.width, el.height);
       const p = perimeterLength(box);
       if (p <= 0) return;
-      const tail = t * SPEED - p * LENGTH;
       const len = p * LENGTH;
-      const amp = amplitudeAt(t) * MAX_AMP;
+      // ギザギザは対角に 2 つ(周りの半分ずらす)。振れ幅と歯の形はそれぞれ別に変える
+      const waves = [0, 1].map((k) => ({
+        tail: t * SPEED - len + (p / 2) * k,
+        t: t + k * 7.3,
+        amp: amplitudeAt(t + k * 7.3) * MAX_AMP,
+      }));
       const ox = MARGIN + border / 2;
       const steps = Math.ceil(p / STEP);
       ctx.beginPath();
@@ -79,8 +84,11 @@ export function LiveWave({
         const s = (i / steps) * p;
         const at = pointOnRoundedRect(box, s);
         // 波形の区間(tail〜tail+len)に入っている所だけずらす
-        const rel = (((s - tail) % p) + p) % p;
-        const off = rel < len ? waveOffset(rel / len, t, amp) : 0;
+        let off = 0;
+        for (const w of waves) {
+          const rel = (((s - w.tail) % p) + p) % p;
+          if (rel < len) off += waveOffset(rel / len, w.t, w.amp);
+        }
         const x = ox + at.x + at.nx * off;
         const y = ox + at.y + at.ny * off;
         if (i === 0) ctx.moveTo(x, y);
@@ -91,6 +99,8 @@ export function LiveWave({
       ctx.lineWidth = border;
       ctx.lineJoin = "miter";
       ctx.stroke();
+      // 描けたら、読み込み中に出していた普通の赤い枠を消して入れ替える
+      host.style.borderColor = "transparent";
     };
 
     const loop = (now: number) => {
@@ -121,6 +131,7 @@ export function LiveWave({
     };
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
+      host.style.borderColor = "";
       cancelAnimationFrame(frame);
       ro.disconnect();
       io.disconnect();
