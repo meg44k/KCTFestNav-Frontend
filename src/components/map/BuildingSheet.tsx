@@ -14,8 +14,9 @@ export function BuildingSheet({
   onPick(id: number): void;
   onClose(): void;
 }) {
+  // ぴょこっと上に行き過ぎたとき下に隙間が見えないよう、同じ黄色の影を下に 16px 伸ばしておく
   return (
-    <div className="pop-up max-h-[45dvh] overflow-y-auto rounded-t-xl border border-amber-300 bg-amber-400 p-4 text-black">
+    <div className="pop-up max-h-[45dvh] overflow-y-auto rounded-t-xl border border-amber-300 bg-amber-400 p-4 text-black shadow-[0_16px_0_#fbbf24]">
       <div className="flex items-center justify-between pb-2">
         <h2 className="font-bold text-lg">{name}</h2>
         <button
