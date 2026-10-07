@@ -27,7 +27,7 @@ export function IntroRedirect({
     return () => {
       clearTimeout(timer);
       // 入口ページが出てアニメーションが終わるまで待ってから外す
-      setTimeout(() => delete html.dataset.intro, 1500);
+      setTimeout(() => delete html.dataset.intro, 2500);
     };
   }, [router, to, afterMs]);
   return null;

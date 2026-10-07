@@ -168,7 +168,7 @@
 /* タイトル画面 → 入口ページ。見出しは位置と大きさを変えて上へ、残りは少し遅れて下から現れる */
 @media (prefers-reduced-motion: no-preference) {
   ::view-transition-group(.intro-morph) {
-    animation-duration: 700ms;
+    animation-duration: 1200ms;
     animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
@@ -182,7 +182,7 @@
 
   ::view-transition-new(intro-bulletin),
   ::view-transition-new(intro-content) {
-    animation: intro-rise 500ms cubic-bezier(0.22, 1, 0.36, 1) 250ms both;
+    animation: intro-rise 700ms cubic-bezier(0.22, 1, 0.36, 1) 600ms both;
   }
 }
 
