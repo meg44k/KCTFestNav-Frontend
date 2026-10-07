@@ -77,14 +77,15 @@
 どの状態で何を出すかは純粋関数 `stageHeadline(sections, nowMs)` にまとめ、vitest で確かめる。戻り値は次のどれか:
 
 ```ts
-type StageHeadline =
-  | { kind: "playing"; items: NowPlaying[] }
-  | { kind: "starting"; items: { section; block }[] }
-  | { kind: "next"; section; block }
-  | { kind: "none" };
+type StageHeadline = {
+  playing: NowPlaying[];                     // 日付に関係なく
+  starting: { section; block }[];            // 今日の分だけ
+  next?: { section; block };                 // 上の 2 つが空のときだけ。今日の分だけ
+};
 ```
 
-- 演奏中と「まもなく」が同時にあるときは、ステージイベント画面と同じく両方出す（`kind: "playing"` に `starting` も持たせる）
+- 演奏中と「まもなく」が同時にあるときは、ステージイベント画面と同じく両方出す
+- 3 つとも空なら帯を出さない
 
 ## 5. タイトル画面（/）
 
