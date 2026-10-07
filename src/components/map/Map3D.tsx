@@ -32,7 +32,8 @@ export default function Map3D(props: MapProps) {
 
   useEffect(() => {
     scene.current?.setBuildings(focus);
-    scene.current?.focusOn(focus);
+    // カメラはブースを選んだとき(階がある)だけ寄せる。棟を押したときや選択を外したときは色だけ変える
+    if (focus && focus.floor > 0) scene.current?.focusOn(focus);
   }, [focus]);
   useEffect(() => {
     scene.current?.setPins(pins, selectedPinId);
