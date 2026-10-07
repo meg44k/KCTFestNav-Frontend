@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   amplitudeAt,
   burstStrength,
+  centerOnTopOrBottom,
   envelope,
   perimeterLength,
   pointOnRoundedRect,
@@ -71,7 +72,7 @@ describe("波形", () => {
   it("歯の高さはばらばら(大きい歯と小さい歯がある)", () => {
     const peaks = Array.from({ length: TEETH }, (_, k) =>
       Math.abs(waveOffset((k + 0.5) / TEETH, 0, 1)),
-    ).slice(3, -3);
+    ).slice(1, -1);
     expect(Math.max(...peaks) - Math.min(...peaks)).toBeGreaterThan(0.5);
   });
 });
@@ -91,5 +92,27 @@ describe("ランダムに出るギザギザの強さ", () => {
   it("時間の外は 0", () => {
     expect(burstStrength(-0.1, 1)).toBe(0);
     expect(burstStrength(1.2, 1)).toBe(0);
+  });
+});
+
+describe("ギザギザを出す場所(上下の辺だけ)", () => {
+  const box = { w: 300, h: 100, r: 5 };
+  const len = 40;
+
+  it("前半は上の辺、後半は下の辺のまっすぐな所に、はみ出さずに収まる", () => {
+    for (let i = 0; i < 100; i++) {
+      const u = i / 100;
+      const s = centerOnTopOrBottom(box, u, len);
+      for (const d of [-len / 2, 0, len / 2]) {
+        const at = pointOnRoundedRect(box, s + d);
+        expect(at.nx).toBeCloseTo(0);
+        expect(at.ny).toBeCloseTo(u < 0.5 ? -1 : 1);
+      }
+    }
+  });
+
+  it("辺より長いときは辺のまん中に出す", () => {
+    const s = centerOnTopOrBottom({ w: 30, h: 100, r: 5 }, 0.2, 40);
+    expect(pointOnRoundedRect({ w: 30, h: 100, r: 5 }, s).x).toBeCloseTo(15);
   });
 });

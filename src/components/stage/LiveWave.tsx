@@ -5,6 +5,7 @@ import {
   amplitudeAt,
   type Box,
   burstStrength,
+  centerOnTopOrBottom,
   perimeterLength,
   pointOnRoundedRect,
   waveOffset,
@@ -13,9 +14,9 @@ import {
 // 波形がはみ出せる余白(px)
 const MARGIN = 12;
 // いちばん大きいときの振れ幅(px)
-const MAX_AMP = 10;
+const MAX_AMP = 14;
 // ギザギザの長さ(周りの長さに対する割合)、一度に出る数、出ている長さと次が出るまでの間(秒)
-const LENGTH = 0.12;
+const LENGTH = 0.06;
 const BURSTS = 2;
 const DURATION = [0.6, 1.3] as const;
 const GAP = [0.15, 0.7] as const;
@@ -26,11 +27,11 @@ const COLOR = "#e54141";
 const between = ([min, max]: readonly [number, number]) =>
   min + Math.random() * (max - min);
 
-// 枠の上のギザギザ 1 つ。center は周りの上の位置(0〜1)、start と duration は秒
+// 枠の上のギザギザ 1 つ。center は上下の辺のどこか(0〜1、前半が上・後半が下)、start と duration は秒
 type Burst = { center: number; start: number; duration: number; seed: number };
 
 /**
- * LIVE の帯の枠そのもの。赤い枠のどこか(ランダム)が急にギザギザになって震え、静まると別の所に出る。
+ * LIVE の帯の枠そのもの。赤い枠の上か下の辺のどこか(ランダム)が急にギザギザになって震え、静まると別の所に出る。
  * 親(position: relative、角丸 radius px、赤い枠 border px)の上に重ねて置く。
  * 描けるまでは親の普通の赤い枠が見え、描けたら親の枠を透明にして入れ替える
  */
@@ -59,10 +60,8 @@ export function LiveWave({
     const pickCenter = (others: Burst[]) => {
       let c = Math.random();
       for (let i = 0; i < 8; i++) {
-        const near = others.some((o) => {
-          const d = Math.abs(o.center - c);
-          return Math.min(d, 1 - d) < LENGTH * 1.5;
-        });
+        // 同じ辺の近い所(辺の 3 割以内)には出さない
+        const near = others.some((o) => Math.abs(o.center - c) < 0.15);
         if (!near) break;
         c = Math.random();
       }
@@ -124,7 +123,7 @@ export function LiveWave({
             const tt = t + b.seed;
             return [
               {
-                tail: b.center * p - len / 2,
+                tail: centerOnTopOrBottom(box, b.center, len) - len / 2,
                 t: tt,
                 amp: amplitudeAt(tt) * MAX_AMP * strength,
               },

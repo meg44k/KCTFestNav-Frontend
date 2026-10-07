@@ -62,7 +62,7 @@ const hash = (n: number) => {
 };
 
 /** 波形全体の歯の数 */
-export const TEETH = 18;
+export const TEETH = 10;
 
 // 両端のすぼまる幅(波形の長さに対する割合)
 const EDGE = 0.08;
@@ -84,7 +84,7 @@ export function waveOffset(u: number, t: number, amp: number): number {
   const x = u * TEETH;
   const frac = x - Math.floor(x);
   const tri = 1 - 4 * Math.abs(frac - 0.5);
-  const tooth = 0.15 + 0.85 * hash(Math.floor(x) + Math.floor(t * 12) * 31);
+  const tooth = 0.15 + 0.85 * hash(Math.floor(x) + Math.floor(t * 20) * 31);
   return amp * envelope(u) * tri * tooth;
 }
 
@@ -100,4 +100,23 @@ export function burstStrength(age: number, duration: number): number {
   if (!(x >= 0 && x <= 1)) return 0;
   if (x < ATTACK) return Math.sin((Math.PI / 2) * (x / ATTACK));
   return ((1 - x) / (1 - ATTACK)) ** 1.5;
+}
+
+/**
+ * ギザギザのまん中の位置(周りの上の距離)。u(0〜1)の前半は上の辺、後半は下の辺の
+ * まっすぐな所に、長さ len がはみ出さないように置く
+ */
+export function centerOnTopOrBottom(
+  { w, h, r }: Box,
+  u: number,
+  len: number,
+): number {
+  const edge = w - 2 * r;
+  const room = Math.max(edge - len, 0);
+  const top = u < 0.5;
+  const along =
+    edge > len ? len / 2 + room * ((top ? u : u - 0.5) * 2) : edge / 2;
+  if (top) return along;
+  // 下の辺は右から左へ進む
+  return edge + Math.PI * r + (h - 2 * r) + along;
 }
