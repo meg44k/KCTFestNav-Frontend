@@ -12,7 +12,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Marker } from "@/components/ui/marker";
-import { NAV_ENTRANCES, NAV_HOME } from "@/lib/navigation";
+import { NAV_ENTRANCES, NAV_HOME, type NavItem } from "@/lib/navigation";
 
 export default function SideMenu() {
   return (
@@ -36,14 +36,13 @@ export default function SideMenu() {
           </DrawerDescription>
         </DrawerHeader>
         <div className="p-4">
-          <Marker variant="border" className="border-black" />
-          {[NAV_HOME, ...NAV_ENTRANCES].map(({ label, href, icon: Icon }) => (
-            <DrawerLabel key={href} href={href}>
-              <div className="flex items-center gap-1">
-                <Icon size={20} strokeWidth={1.5} />
-                <span className="-translate-y-0.5">{label}</span>
-              </div>
-            </DrawerLabel>
+          {/* トップは線の上、各ページへの入口は線と線の間 */}
+          <NavItemLabel item={NAV_HOME} />
+          <div className="pt-2">
+            <Marker variant="border" className="border-black" />
+          </div>
+          {NAV_ENTRANCES.map((item) => (
+            <NavItemLabel key={item.href} item={item} />
           ))}
           <Marker variant="border" className="border-black" />
         </div>
@@ -55,6 +54,21 @@ export default function SideMenu() {
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
+  );
+}
+
+function NavItemLabel({
+  item: { label, href, icon: Icon },
+}: {
+  item: NavItem;
+}) {
+  return (
+    <DrawerLabel href={href}>
+      <div className="flex items-center gap-1">
+        <Icon size={20} strokeWidth={1.5} />
+        <span className="-translate-y-0.5">{label}</span>
+      </div>
+    </DrawerLabel>
   );
 }
 
