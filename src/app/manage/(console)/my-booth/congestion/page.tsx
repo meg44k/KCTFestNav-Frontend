@@ -17,6 +17,7 @@ export default async function MyBoothCongestionPage() {
       <UpdatedAgo
         key={booth.congestion_updated_at ?? "never"}
         updatedAt={booth.congestion_updated_at}
+        status={booth.congestion_status}
         serverNow={Date.now()}
       />
     </section>

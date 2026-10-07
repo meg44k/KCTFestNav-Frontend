@@ -25,7 +25,19 @@ export function serverClockNow(
 
 const NEVER = { label: "まだ更新されていません", stale: true };
 
+// 準備中(3)のブースは開いていないので、更新が止まっていても促さない
+const PREPARING = 3;
+
 export function updatedAgo(
+  updatedAt: string | null | undefined,
+  now: Date,
+  status?: number,
+): { label: string; stale: boolean } {
+  const result = elapsed(updatedAt, now);
+  return status === PREPARING ? { ...result, stale: false } : result;
+}
+
+function elapsed(
   updatedAt: string | null | undefined,
   now: Date,
 ): { label: string; stale: boolean } {

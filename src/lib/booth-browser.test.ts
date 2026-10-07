@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Booth } from "@/lib/api/booths";
 import {
   applyFilters,
+  BOOTH_SORTS,
   type BoothFilters,
   cardUpdatedLabel,
   filtersToQuery,
@@ -135,6 +136,14 @@ describe("parseFilters / filtersToQuery", () => {
       ),
     ).toBe(
       "?type=club&grade=2&sort=empty&empty=1&q=%E3%81%9F%E3%81%93+%E7%84%BC%E3%81%8D",
+    );
+  });
+});
+
+describe("並び順のことば", () => {
+  it("混雑度で並べる順は「待ち時間順」", () => {
+    expect(BOOTH_SORTS.find((s) => s.value === "empty")?.label).toBe(
+      "待ち時間順",
     );
   });
 });

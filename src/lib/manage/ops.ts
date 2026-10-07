@@ -6,9 +6,17 @@ const updatedMs = (b: BoothResponse) =>
     ? new Date(b.congestion_updated_at).getTime()
     : Number.NEGATIVE_INFINITY;
 
-/** 混雑度の監視用。更新が止まっているブースほど上に来る */
+// 準備中(3)は開いていないので、更新を確かめる対象の後ろに回す
+const isPreparing = (b: BoothResponse) => b.congestion_status === 3;
+
+/** 混雑度の監視用。更新が止まっているブースほど上に来る(準備中は最後) */
 export function sortForMonitor(booths: BoothResponse[]): BoothResponse[] {
-  return [...booths].sort((a, b) => updatedMs(a) - updatedMs(b) || a.id - b.id);
+  return [...booths].sort(
+    (a, b) =>
+      Number(isPreparing(a)) - Number(isPreparing(b)) ||
+      updatedMs(a) - updatedMs(b) ||
+      a.id - b.id,
+  );
 }
 
 /** 混雑度の画面の並び順 */

@@ -11,6 +11,12 @@ const ago = (minutes: number) =>
   new Date(now.getTime() - minutes * 60_000).toISOString();
 
 describe("updatedAgo", () => {
+  it("準備中(3)のブースは、未更新や古くても更新を促さない", () => {
+    expect(updatedAgo(null, now, 3).stale).toBe(false);
+    expect(updatedAgo("2026-10-31T01:00:00Z", now, 3).stale).toBe(false);
+    expect(updatedAgo(null, now, 0).stale).toBe(true);
+  });
+
   it("未更新は更新を促す", () => {
     expect(updatedAgo(null, now)).toEqual({
       label: "まだ更新されていません",

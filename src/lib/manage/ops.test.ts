@@ -16,6 +16,15 @@ describe("sortForMonitor", () => {
     expect(sorted.map((b) => b.id)).toEqual([2, 4, 3, 1]);
   });
 
+  it("準備中のブースは更新を確かめなくてよいので後ろ", () => {
+    const sorted = sortForMonitor([
+      { ...booth(1, null), congestion_status: 3 },
+      booth(2, "2026-10-31T03:30:00Z"),
+      booth(3, null),
+    ]);
+    expect(sorted.map((b) => b.id)).toEqual([3, 2, 1]);
+  });
+
   it("元の配列は変えない", () => {
     const list = [booth(1, "2026-10-31T03:30:00Z"), booth(2, null)];
     sortForMonitor(list);
