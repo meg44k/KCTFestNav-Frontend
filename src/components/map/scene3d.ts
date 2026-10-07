@@ -12,6 +12,7 @@ import {
   shortName,
 } from "@/lib/map/campus";
 import type { MapPin } from "@/lib/map/map-booths";
+import { groundTiles, tileUrl } from "@/lib/map/tiles";
 import { type MapFocus, type MapLocation, PIN_COLORS } from "./types";
 
 /**
@@ -19,6 +20,43 @@ import { type MapFocus, type MapLocation, PIN_COLORS } from "./types";
  * 1 号館を手前に見ながら学校全体が入る向き(本人の希望)
  */
 const CAMERA_BEARING = 193;
+
+const AERIAL_ZOOM = 18;
+const AERIAL_MARGIN_M = 120;
+
+/** 地理院タイルの航空写真を 1 枚の絵にまとめる。1 枚も読めなければ null */
+async function loadAerial(campus: Campus) {
+  if (typeof document === "undefined") return null;
+  const g = groundTiles(campus, AERIAL_MARGIN_M, AERIAL_ZOOM);
+  const canvas = document.createElement("canvas");
+  canvas.width = (g.tx1 - g.tx0 + 1) * 256;
+  canvas.height = (g.ty1 - g.ty0 + 1) * 256;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.fillStyle = COLOR.ground;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const jobs: Promise<boolean>[] = [];
+  for (let tx = g.tx0; tx <= g.tx1; tx++) {
+    for (let ty = g.ty0; ty <= g.ty1; ty++) {
+      jobs.push(
+        new Promise((resolve) => {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => {
+            ctx.drawImage(img, (tx - g.tx0) * 256, (ty - g.ty0) * 256);
+            resolve(true);
+          };
+          img.onerror = () => resolve(false);
+          img.src = tileUrl(AERIAL_ZOOM, tx, ty);
+        }),
+      );
+    }
+  }
+  if (!(await Promise.all(jobs)).some(Boolean)) return null;
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return { texture, rect: g.rect };
+}
 
 export type Hit = { pin: number } | { building: string } | null;
 
@@ -135,6 +173,29 @@ export function createScene(
   ground.rotation.x = -Math.PI / 2;
   ground.position.set((minX + maxX) / 2, -0.05, -(minY + maxY) / 2);
   scene.add(ground);
+  let disposed = false;
+  loadAerial(campus).then((aerial) => {
+    // 読めなかったとき・閉じた後は無地の地面のまま
+    if (!aerial || disposed) return aerial?.texture.dispose();
+    const { texture, rect } = aerial;
+    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    ground.geometry.dispose();
+    ground.geometry = new THREE.PlaneGeometry(
+      rect.x1 - rect.x0,
+      rect.y1 - rect.y0,
+    );
+    ground.position.set(
+      (rect.x0 + rect.x1) / 2,
+      -0.05,
+      -(rect.y0 + rect.y1) / 2,
+    );
+    // 写真のままだと明るくて建物とピンが埋もれるので、暗くしてサイトの黒基調に合わせる
+    ground.material.dispose();
+    ground.material = new THREE.MeshLambertMaterial({
+      map: texture,
+      color: "#8c8c8c",
+    });
+  });
 
   const camera = new THREE.PerspectiveCamera(
     45,
@@ -358,6 +419,7 @@ export function createScene(
     setLocation,
     focusOn,
     dispose() {
+      disposed = true;
       renderer.setAnimationLoop(null);
       resize.disconnect();
       renderer.domElement.removeEventListener("pointerdown", onDown);
