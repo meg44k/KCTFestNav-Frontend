@@ -41,6 +41,8 @@ const CROWD_RANK: Record<Booth["congestionStatus"], number> = {
   empty: 0,
   clouded: 1,
   veryClouded: 2,
+  // 準備中は空いているかどうか分からないので最後
+  preparing: 3,
 };
 
 // 全角・半角、大文字・小文字の違いを無視して比べる
@@ -142,4 +144,13 @@ export function updatedLabel(
   }
   const { label } = updatedAgo(updatedAt, new Date(nowMs));
   return label === "たった今" ? "たった今更新" : `${label}に更新`;
+}
+
+/** カードに出す「○分前に更新」。準備中のブースには出さない(まだ開いていないので) */
+export function cardUpdatedLabel(
+  booth: Pick<Booth, "congestionStatus" | "congestionUpdatedAt">,
+  nowMs: number,
+): string | undefined {
+  if (booth.congestionStatus === "preparing") return undefined;
+  return updatedLabel(booth.congestionUpdatedAt, nowMs);
 }

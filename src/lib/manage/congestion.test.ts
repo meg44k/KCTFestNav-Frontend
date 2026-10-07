@@ -49,8 +49,12 @@ describe("updatedAgo", () => {
 });
 
 describe("CONGESTION_LEVELS", () => {
-  it("来場者画面と同じ 3 段階", () => {
-    expect(CONGESTION_LEVELS.map((l) => l.value)).toEqual([0, 1, 2]);
+  it("来場者画面と同じ 4 段階。ボタンは開場の流れの順(準備中 → 空き → 少し混雑 → 混雑)", () => {
+    expect(CONGESTION_LEVELS.map((l) => l.value)).toEqual([3, 0, 1, 2]);
+    expect(CONGESTION_LEVELS[0]).toMatchObject({
+      label: "準備中",
+      color: "#9CA3AF",
+    });
   });
 });
 

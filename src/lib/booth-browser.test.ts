@@ -3,6 +3,7 @@ import type { Booth } from "@/lib/api/booths";
 import {
   applyFilters,
   type BoothFilters,
+  cardUpdatedLabel,
   filtersToQuery,
   gradeCounts,
   parseFilters,
@@ -135,6 +136,45 @@ describe("parseFilters / filtersToQuery", () => {
     ).toBe(
       "?type=club&grade=2&sort=empty&empty=1&q=%E3%81%9F%E3%81%93+%E7%84%BC%E3%81%8D",
     );
+  });
+});
+
+describe("準備中", () => {
+  const withPreparing = [
+    ...booths,
+    booth(6, "1-1", "preparing", { name: "準備中のブース" }),
+  ];
+  it("混雑度順では最後、空いているだけには入らない", () => {
+    const sorted = applyFilters(withPreparing, {
+      ...base,
+      type: "class",
+      sort: "empty",
+    });
+    expect(sorted.at(-1)?.congestionStatus).toBe("preparing");
+    expect(
+      applyFilters(withPreparing, {
+        ...base,
+        type: "class",
+        onlyEmpty: true,
+      }).some((b) => b.congestionStatus === "preparing"),
+    ).toBe(false);
+  });
+
+  it("準備中のカードには「○分前に更新」を出さない", () => {
+    const now = new Date("2026-10-31T12:00:00+09:00").getTime();
+    const at = "2026-10-31T11:48:00+09:00";
+    expect(
+      cardUpdatedLabel(
+        { congestionStatus: "preparing", congestionUpdatedAt: at },
+        now,
+      ),
+    ).toBeUndefined();
+    expect(
+      cardUpdatedLabel(
+        { congestionStatus: "empty", congestionUpdatedAt: at },
+        now,
+      ),
+    ).toBe("12分前に更新");
   });
 });
 

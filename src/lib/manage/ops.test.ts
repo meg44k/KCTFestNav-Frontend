@@ -61,6 +61,13 @@ describe("sortBooths", () => {
     expect(ids("crowded")).toEqual([4, 1, 2, 3]);
   });
 
+  it("混んでいる順で準備中(3)は最後", () => {
+    const withPreparing = [...list, b(5, "3-1", 3, null)];
+    expect(sortBooths(withPreparing, "crowded").map((x) => x.id)).toEqual([
+      4, 1, 2, 3, 5,
+    ]);
+  });
+
   it("元の配列は変えない", () => {
     sortBooths(list, "booth");
     expect(list.map((x) => x.id)).toEqual([3, 1, 2, 4]);

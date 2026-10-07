@@ -21,11 +21,12 @@ describe("toCongestionStatus", () => {
     expect(toCongestionStatus(0)).toBe("empty");
     expect(toCongestionStatus(1)).toBe("clouded");
     expect(toCongestionStatus(2)).toBe("veryClouded");
+    expect(toCongestionStatus(3)).toBe("preparing");
   });
 
-  it("想定外の値は空き扱いにフォールバックする", () => {
-    expect(toCongestionStatus(99)).toBe("empty");
-    expect(toCongestionStatus(-1)).toBe("empty");
+  it("想定外の値は準備中扱いにする(分からないときに「空いています」と言わない)", () => {
+    expect(toCongestionStatus(99)).toBe("preparing");
+    expect(toCongestionStatus(-1)).toBe("preparing");
   });
 });
 
