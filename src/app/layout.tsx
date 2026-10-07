@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Zen_Kaku_Gothic_New, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Zen_Kaku_Gothic_New } from "next/font/google";
 import "./globals.css";
+import { VisitTracker } from "@/components/layout/VisitTracker";
 
 const zenKakuGothicNew = Zen_Kaku_Gothic_New({
   variable: "--font-zen-kaku",
@@ -29,7 +30,10 @@ export default function RootLayout({
       className={`${zenKakuGothicNew.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <VisitTracker />
+        {children}
+      </body>
     </html>
   );
 }

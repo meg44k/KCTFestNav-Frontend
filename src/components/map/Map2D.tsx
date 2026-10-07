@@ -338,7 +338,7 @@ export function Map2D({
       <div
         aria-label="北の向き"
         role="img"
-        className="pointer-events-none absolute top-14 left-3 flex h-9 w-9 flex-col items-center justify-center rounded-full border border-white/40 bg-black/70 text-[10px] text-white"
+        className="pointer-events-none absolute top-[100px] left-4 flex h-9 w-9 flex-col items-center justify-center rounded-full border border-white/40 bg-black/70 text-[10px] text-white"
         style={{ transform: `rotate(${-MAP_BEARING}deg)` }}
       >
         <Navigation2 size={14} fill="currentColor" />N
