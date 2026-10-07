@@ -211,3 +211,25 @@ export function startingNow(
       .map((block) => ({ section, block })),
   );
 }
+
+export type StageHeadline = {
+  playing: NowPlaying[];
+  starting: { section: StageSectionResponse; block: StageBlockResponse }[];
+  next?: { section: StageSectionResponse; block: StageBlockResponse };
+};
+
+/**
+ * 入口ページの帯に出すもの。演奏中は学生会が進めたものを必ず見せるため日付で絞らない。
+ * 「まもなく」と「次は」は今日のブロックだけ(翌日の予定を「次」と出さない)
+ */
+export function stageHeadline(
+  sections: StageSectionResponse[],
+  nowMs: number,
+): StageHeadline {
+  const playing = nowPlaying(sections);
+  const ofToday = sectionsOn(sections, dayKey(nowMs));
+  const starting = startingNow(ofToday, nowMs);
+  if (playing.length > 0 || starting.length > 0) return { playing, starting };
+  const next = nextUp(ofToday, nowMs);
+  return next ? { playing, starting, next } : { playing, starting };
+}

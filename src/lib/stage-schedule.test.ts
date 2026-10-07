@@ -14,6 +14,7 @@ import {
   sectionsOn,
   sectionTimeRange,
   stageDays,
+  stageHeadline,
   startingNow,
   stepOrder,
 } from "./stage-schedule";
@@ -254,5 +255,77 @@ describe("sectionFinished(延長)", () => {
       }),
     ]);
     expect(sectionFinished(s, ms("2026-10-31T14:00:00+09:00"))).toBe(false);
+  });
+});
+
+describe("stageHeadline(入口ページの帯)", () => {
+  const today = section(1, [
+    block(1, "2026-10-31T13:00:00+09:00", "2026-10-31T13:50:00+09:00"),
+    block(2, "2026-10-31T14:00:00+09:00", "2026-10-31T14:40:00+09:00"),
+  ]);
+  const tomorrow = section(2, [
+    block(3, "2026-11-01T12:00:00+09:00", "2026-11-01T12:45:00+09:00"),
+  ]);
+
+  it("演奏中は日付に関係なく出す(当日前に学生会が進めた場合も)", () => {
+    const s = section(3, [
+      block(4, "2026-10-31T13:00:00+09:00", "2026-10-31T13:50:00+09:00", {
+        current_order: 1,
+        now_playing: true,
+      }),
+    ]);
+    const got = stageHeadline([s], ms("2026-10-07T10:00:00+09:00"));
+    expect(got.playing.map((p) => p.current.id)).toEqual([41]);
+    expect(got.next).toBeUndefined();
+  });
+
+  it("演奏中と、まもなく始まるブロックは両方出す", () => {
+    const s = section(3, [
+      block(4, "2026-10-31T13:00:00+09:00", "2026-10-31T13:50:00+09:00", {
+        current_order: 2,
+        now_playing: true,
+      }),
+      block(5, "2026-10-31T13:00:00+09:00", "2026-10-31T13:50:00+09:00"),
+    ]);
+    const got = stageHeadline([s], ms("2026-10-31T13:10:00+09:00"));
+    expect(got.playing.map((p) => p.block.id)).toEqual([4]);
+    expect(got.starting.map((x) => x.block.id)).toEqual([5]);
+    expect(got.next).toBeUndefined();
+  });
+
+  it("どちらも無ければ、今日これから始まるブロックを次として出す", () => {
+    const got = stageHeadline(
+      [today, tomorrow],
+      ms("2026-10-31T13:55:00+09:00"),
+    );
+    expect(got.playing).toEqual([]);
+    expect(got.starting).toEqual([]);
+    expect(got.next?.block.id).toBe(2);
+  });
+
+  it("今日の予定が終わったら、翌日のブロックは出さない", () => {
+    const got = stageHeadline(
+      [today, tomorrow],
+      ms("2026-10-31T16:00:00+09:00"),
+    );
+    expect(got).toEqual({ playing: [], starting: [] });
+  });
+
+  it("お祭りの日でなければ何も出さない", () => {
+    expect(
+      stageHeadline([today, tomorrow], ms("2026-10-07T10:00:00+09:00")),
+    ).toEqual({ playing: [], starting: [] });
+  });
+
+  it("全員終わったブロックは演奏中にしない", () => {
+    const s = section(3, [
+      block(4, "2026-10-31T13:00:00+09:00", "2026-10-31T13:50:00+09:00", {
+        current_order: 3,
+        now_playing: false,
+      }),
+    ]);
+    expect(stageHeadline([s], ms("2026-10-31T13:40:00+09:00")).playing).toEqual(
+      [],
+    );
   });
 });
