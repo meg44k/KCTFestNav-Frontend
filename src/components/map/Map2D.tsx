@@ -219,10 +219,10 @@ export function Map2D({
                     fillRule="evenodd"
                     // 名前のある棟は明るく、渡り廊下などは背景に引かせる
                     fill={
-                      focused ? "#3d8bff66" : b.name ? "#5b6472" : "#1c2025"
+                      focused ? "#fbbf2499" : b.name ? "#5b6472" : "#1c2025"
                     }
                     stroke={
-                      focused ? "#7fb2ff" : b.name ? "#d1d5db" : "#3a4048"
+                      focused ? "#fbbf24" : b.name ? "#d1d5db" : "#3a4048"
                     }
                     strokeWidth={(focused ? 2.5 : b.name ? 1.5 : 1) * px}
                     strokeLinejoin="round"
@@ -248,7 +248,7 @@ export function Map2D({
                     width={w}
                     height={h}
                     rx={h / 2}
-                    fill={focused ? "#3d8bff" : "#0b0d10"}
+                    fill={focused ? "#fbbf24" : "#0b0d10"}
                     stroke="#ffffffb3"
                     strokeWidth={px}
                   />
@@ -257,7 +257,7 @@ export function Map2D({
                     y={c.y}
                     fontSize={size}
                     fontWeight="bold"
-                    fill="#fff"
+                    fill={focused ? "#000" : "#fff"}
                     textAnchor="middle"
                     dominantBaseline="central"
                   >
@@ -310,7 +310,7 @@ export function Map2D({
               >
                 <circle
                   r={r}
-                  fill={PIN_COLORS[pin.kind]}
+                  fill={PIN_COLORS[pin.congestion]}
                   stroke="#fff"
                   strokeWidth={2.5 * px}
                 />

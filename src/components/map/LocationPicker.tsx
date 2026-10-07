@@ -93,6 +93,7 @@ export function LocationPicker({
                     elevation: 0,
                     floor: floorValue,
                     kind: "class",
+                    congestion: "empty",
                   },
                 ]
               : []

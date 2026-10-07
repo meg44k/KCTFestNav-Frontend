@@ -220,7 +220,8 @@
 }
 
 .map3d-label-focus {
-  background: #3d8bff;
+  background: #fbbf24;
+  color: #000;
   font-size: 13px;
   font-weight: bold;
 }
