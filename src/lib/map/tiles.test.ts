@@ -20,6 +20,11 @@ describe("groundTiles", () => {
     expect(g.rect.y1).toBeGreaterThan(maxY + 79);
   });
 
+  it("外側の粗い写真(z17・広め)も数十枚に収まる", () => {
+    const g = groundTiles(campus, 600, 17);
+    expect((g.tx1 - g.tx0 + 1) * (g.ty1 - g.ty0 + 1)).toBeLessThan(60);
+  });
+
   it("地理院の全国最新写真のタイル", () => {
     expect(tileUrl(18, 230000, 104000)).toBe(
       "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/18/230000/104000.jpg",
