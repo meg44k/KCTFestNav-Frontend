@@ -12,7 +12,7 @@ import {
 } from "@/lib/stage/live-wave";
 
 // 波形がはみ出せる余白(px)
-const MARGIN = 12;
+const MARGIN = 16;
 // いちばん大きいときの振れ幅(px)
 const MAX_AMP = 14;
 // ギザギザの長さ(周りの長さに対する割合)、一度に出る数、出ている長さと次が出るまでの間(秒)
