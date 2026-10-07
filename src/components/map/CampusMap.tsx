@@ -18,6 +18,7 @@ import {
 } from "@/lib/map/map-booths";
 import { TILE_CREDIT, TILE_CREDIT_URL } from "@/lib/map/tiles";
 import { cn } from "@/lib/utils";
+import { BottomPanel } from "./BottomPanel";
 import { BuildingSheet } from "./BuildingSheet";
 import { LocationButton } from "./LocationButton";
 import { Map2D } from "./Map2D";
@@ -217,40 +218,39 @@ export function CampusMap({
       </div>
 
       <div className="absolute inset-x-0 bottom-0 z-30 mx-auto max-w-md pr-16 pl-3">
-        {selectedBooth && (
-          // ブースが変わるたびに作り直して、下からぴょこっと出す
-          <div key={selectedBooth.id} className="pop-up relative pb-4">
-            <button
-              type="button"
-              aria-label="選択を外す"
-              onClick={() => update({ boothId: null })}
-              className="absolute -top-3 right-0 z-10 rounded-full bg-black/80 p-1 text-gray-300"
-            >
-              <X size={18} />
-            </button>
-            <BoothCard
-              name={selectedBooth.name}
-              description={selectedBooth.description}
-              organizer={selectedBooth.organizer}
-              location={selectedBooth.location}
-              imageUrl={selectedBooth.imageUrl}
-              imageAlt={selectedBooth.name}
-              congestionStatus={selectedBooth.congestionStatus}
-              latitude={selectedBooth.latitude}
-              longitude={selectedBooth.longitude}
+        <BottomPanel>
+          {selectedBooth ? (
+            // 右上の × がはみ出さないよう、上に少し余白をとる
+            <div className="relative pt-4 pb-4">
+              <button
+                type="button"
+                aria-label="選択を外す"
+                onClick={() => update({ boothId: null })}
+                className="absolute top-1 right-0 z-10 rounded-full bg-black/80 p-1 text-gray-300"
+              >
+                <X size={18} />
+              </button>
+              <BoothCard
+                name={selectedBooth.name}
+                description={selectedBooth.description}
+                organizer={selectedBooth.organizer}
+                location={selectedBooth.location}
+                imageUrl={selectedBooth.imageUrl}
+                imageAlt={selectedBooth.name}
+                congestionStatus={selectedBooth.congestionStatus}
+                latitude={selectedBooth.latitude}
+                longitude={selectedBooth.longitude}
+              />
+            </div>
+          ) : building ? (
+            <BuildingSheet
+              name={building.name ?? "建物"}
+              groups={boothsByFloor(pins, booths, building.id)}
+              onPick={(id) => props.onPickPin(id)}
+              onClose={() => setBuildingId(null)}
             />
-          </div>
-        )}
-        {!selectedBooth && building && (
-          <BuildingSheet
-            // 棟が変わるたびに作り直して、下からぴょこっと出す
-            key={building.id}
-            name={building.name ?? "建物"}
-            groups={boothsByFloor(pins, booths, building.id)}
-            onPick={(id) => props.onPickPin(id)}
-            onClose={() => setBuildingId(null)}
-          />
-        )}
+          ) : null}
+        </BottomPanel>
       </div>
     </div>
   );
