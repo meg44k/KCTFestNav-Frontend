@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Zen_Kaku_Gothic_New } from "next/font/google";
 import "./globals.css";
+import { VisitTracker } from "@/components/layout/VisitTracker";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const zenKakuGothicNew = Zen_Kaku_Gothic_New({
+  variable: "--font-zen-kaku",
+  weight: ["300", "400", "500", "700"],
   subsets: ["latin"],
 });
 
@@ -25,10 +27,13 @@ export default function RootLayout({
   return (
     <html
       lang="ja"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${zenKakuGothicNew.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <VisitTracker />
+        {children}
+      </body>
     </html>
   );
 }

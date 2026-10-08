@@ -1,11 +1,14 @@
-import { BoothCard } from "@/components/ui/boothcard";
+import { BoothBrowserPage } from "@/components/booths/BoothBrowserPage";
 
-export default function Bazaar() {
-  return (
-    <div>
-      <h1>クラブバザー</h1>
-      <h2>ご飯系</h2>
-      <BoothCard name="陸上部" description="あああ" imageUrl="" imageAlt="" />
-    </div>
-  );
+// 混雑度が随時変わるため常にリクエスト時に描画する。
+// これが無いとビルド時に静的生成が試みられ、cache:"no-store" の fetch が
+// 投げる DynamicServerError を catch が拾ってしまう
+export const dynamic = "force-dynamic";
+
+export default function BazaarPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  return <BoothBrowserPage defaultType="club" searchParams={searchParams} />;
 }

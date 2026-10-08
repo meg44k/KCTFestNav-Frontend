@@ -1,18 +1,14 @@
-import { BoothCard } from "@/components/ui/boothcard";
-export default function ClassBooth() {
-  return (
-    <div>
-      <h1>クラス展示</h1>
-      {/* スワイプして学年を切り替えれるスライドショーみたいな感じにする */}
-      <div>
-        <h2>1年生</h2>
-        <BoothCard
-          name="1-1"
-          description="クラスの説明"
-          imageUrl=""
-          imageAlt=""
-        />
-      </div>
-    </div>
-  );
+import { BoothBrowserPage } from "@/components/booths/BoothBrowserPage";
+
+// 混雑度が随時変わるため常にリクエスト時に描画する。
+// これが無いとビルド時に静的生成が試みられ、cache:"no-store" の fetch が
+// 投げる DynamicServerError を catch が拾ってしまう
+export const dynamic = "force-dynamic";
+
+export default function ClassBoothPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  return <BoothBrowserPage defaultType="class" searchParams={searchParams} />;
 }

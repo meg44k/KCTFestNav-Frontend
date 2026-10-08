@@ -15,6 +15,18 @@ export default defineConfig({
   test: {
     projects: [
       {
+        // ブラウザを使わない純粋なロジックのテスト
+        // tsconfig の "@/*" を unit テストでも解決できるようにする
+        resolve: {
+          alias: { '@': path.join(dirname, 'src') },
+        },
+        test: {
+          name: 'unit',
+          environment: 'node',
+          include: ['src/**/*.test.ts'],
+        },
+      },
+      {
         extends: true,
         plugins: [
           // The plugin will run tests for the stories defined in your Storybook config

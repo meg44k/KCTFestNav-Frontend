@@ -1,0 +1,115 @@
+import { parseGrade } from "@/lib/booth-grade";
+import { apiFetch } from "./client";
+
+/** バックエンドが返す生のブース。docs/openapi.yaml の Booth に対応する */
+export type BoothResponse = {
+  id: number;
+  name: string;
+  organizer: string;
+  detail: string;
+  location: string;
+  image_url: string;
+  congestion_status: number;
+  x: number;
+  y: number;
+  z: number;
+  latitude: number;
+  longitude: number;
+  /** 混雑度を最後に更新した時刻(ISO 8601)。未更新は null。古いバックエンドでは無い */
+  congestion_updated_at?: string | null;
+  /** 階。0 は屋外(または未設定)。古いバックエンドでは無い */
+  floor?: number;
+};
+
+/** すぐ入れる / 少し待つ / かなり待つ / 準備中(まだ一度も設定していないブースもこれ) */
+export type CongestionStatus =
+  | "empty"
+  | "clouded"
+  | "veryClouded"
+  | "preparing";
+
+/** 混雑度のことば。来場者の画面にも運営の画面にも同じことばで出す */
+export const CONGESTION_LABELS: Record<CongestionStatus, string> = {
+  preparing: "準備中",
+  empty: "すぐ入れる",
+  clouded: "少し待つ",
+  veryClouded: "かなり待つ",
+};
+
+/**
+ * ブースに合わせた混雑度のことば。クラブバザー(主催者が「学年-組」でない)の空きは
+ * 「すぐ買える」、クラス展示は「すぐ入れる」。ほかは同じ
+ */
+export function congestionLabel(
+  status: CongestionStatus,
+  organizer = "",
+): string {
+  if (status === "empty" && parseGrade(organizer) === null) return "すぐ買える";
+  return CONGESTION_LABELS[status];
+}
+
+/** 画面側で扱うブース。BoothCard にそのまま渡せる形にしてある */
+export type Booth = {
+  id: number;
+  name: string;
+  description: string;
+  organizer: string;
+  location: string;
+  /** 未設定のときは undefined (バックエンドは空文字を返す) */
+  imageUrl?: string;
+  congestionStatus: CongestionStatus;
+  /** 未設定のときは undefined (バックエンドは 0 を返す) */
+  latitude?: number;
+  longitude?: number;
+  /** 混雑度を最後に更新した時刻(ISO 8601)。未更新は undefined */
+  congestionUpdatedAt?: string;
+  /** 階。0 は屋外(または未設定) */
+  floor: number;
+};
+
+const CONGESTION_STATUS_MAP: Record<number, CongestionStatus> = {
+  0: "empty",
+  1: "clouded",
+  2: "veryClouded",
+  3: "preparing",
+};
+
+export function toCongestionStatus(raw: number): CongestionStatus {
+  // 想定外の値は準備中扱いにする(分からないときに「すぐ入れる」と言わない)
+  return CONGESTION_STATUS_MAP[raw] ?? "preparing";
+}
+
+export function toBooth(res: BoothResponse): Booth {
+  // バックエンドは未設定の座標を 0 として返すため、
+  // 緯度経度がどちらも 0 のときは「座標なし」として扱う
+  const hasLocation = res.latitude !== 0 || res.longitude !== 0;
+
+  return {
+    id: res.id,
+    name: res.name,
+    description: res.detail,
+    organizer: res.organizer,
+    location: res.location,
+    imageUrl: res.image_url === "" ? undefined : res.image_url,
+    congestionStatus: toCongestionStatus(res.congestion_status),
+    latitude: hasLocation ? res.latitude : undefined,
+    longitude: hasLocation ? res.longitude : undefined,
+    congestionUpdatedAt: res.congestion_updated_at ?? undefined,
+    floor: res.floor ?? 0,
+  };
+}
+
+export async function fetchBooths(init?: RequestInit): Promise<Booth[]> {
+  const { booths } = await apiFetch<{ booths: BoothResponse[] }>(
+    "/booths",
+    init,
+  );
+  return booths.map(toBooth);
+}
+
+export async function fetchBooth(
+  id: number,
+  init?: RequestInit,
+): Promise<Booth> {
+  return toBooth(await apiFetch<BoothResponse>(`/booths/${id}`, init));
+}
