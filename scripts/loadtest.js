@@ -1,5 +1,5 @@
 // 負荷テスト(k6)。来場者 1 日 5,000 人を見込み、同時 300 人が 10 分見て回る
-// 使い方: k6 run -e BASE_URL=https://kctfest.jp scripts/loadtest.js
+// 使い方: k6 run -e BASE_URL=https://kctfes.app scripts/loadtest.js
 import { check, sleep } from "k6";
 import http from "k6/http";
 
