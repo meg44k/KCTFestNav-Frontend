@@ -7,6 +7,8 @@ import { SectionLabel } from "./SectionLabel";
 // 色はデザインの案から読み取った値
 const YELLOW = "#FFB100";
 const TILE = "#0A0700";
+// マップの高さ(案は 127。上に置くと黄色が強すぎるので低くして試す)
+const MAP_H = 100;
 
 // 小さいタイルは幅が狭いので、長い名前は区切りのいい所で折り返す(案のとおり)
 const TILE_LINES: Record<string, string[]> = {
@@ -27,7 +29,7 @@ export function EntranceTiles() {
           href={href}
           className="relative block w-full active:brightness-95"
           style={{
-            aspectRatio: "264 / 127",
+            aspectRatio: `264 / ${MAP_H}`,
             background: YELLOW,
             borderRadius: u(10),
           }}
@@ -37,7 +39,7 @@ export function EntranceTiles() {
             strokeWidth={1.6}
             color="#1E1E1E"
             className="absolute"
-            style={{ left: u(10.5), top: u(12), width: u(36), height: u(36) }}
+            style={{ left: u(11), top: u(10), width: u(30), height: u(30) }}
           />
           <ArrowUpRight
             aria-hidden
@@ -50,7 +52,8 @@ export function EntranceTiles() {
             className="absolute font-black text-black"
             style={{
               left: u(15),
-              top: u(63),
+              // 下から測って置く(高さを変えても文字の大きさと下の余白は変わらない)
+              bottom: u(28),
               fontSize: u(30),
               lineHeight: 1,
               letterSpacing: "0.02em",
@@ -62,7 +65,7 @@ export function EntranceTiles() {
             className="absolute font-bold"
             style={{
               left: u(15.5),
-              top: u(101.5),
+              bottom: u(12),
               fontSize: u(10.2),
               lineHeight: 1,
               color: "#000",
