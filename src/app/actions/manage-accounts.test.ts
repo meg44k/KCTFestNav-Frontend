@@ -17,10 +17,10 @@ vi.mock("next/headers", () => ({
 
 import {
   addAccount,
-  changeLoginId,
   deleteAccount,
   issueMissingAccounts,
   resetPassword,
+  updateAccount,
 } from "./manage-accounts";
 
 const ok = (data?: unknown) => ({ ok: true, data });
@@ -142,41 +142,82 @@ describe("addAccount", () => {
   });
 });
 
-describe("changeLoginId", () => {
-  const user = {
+describe("updateAccount", () => {
+  const student = {
     id: "u1",
+    name: "1-1",
+    login_id: "booth-1",
+    assigned_booth_id: 1,
+    role: "Student",
+  };
+  const operator = {
+    ...student,
+    id: "u2",
     name: "学生会",
-    login_id: "old",
+    login_id: "gk",
     assigned_booth_id: 0,
     role: "Gakuseikai",
   };
 
-  it("今の内容のまま、ログイン ID だけ変えて送る(パスワードは送らない)", async () => {
-    manageRequest.mockResolvedValueOnce(ok(user)).mockResolvedValueOnce(ok());
-    expect(await changeLoginId("u1", "  new_id  ")).toEqual({});
+  it("担当者はログイン ID・名前・担当ブースを変え、役職とパスワードは送らない", async () => {
+    manageRequest
+      .mockResolvedValueOnce(ok(student))
+      .mockResolvedValueOnce(ok());
+    expect(
+      await updateAccount("u1", {
+        loginId: " booth-9 ",
+        name: " 3-2 ",
+        boothId: 9,
+      }),
+    ).toEqual({});
     expect(manageRequest).toHaveBeenLastCalledWith("/manage/users/u1", {
       method: "PUT",
       body: JSON.stringify({
-        name: "学生会",
-        login_id: "new_id",
-        assigned_booth_id: 0,
-        role: "Gakuseikai",
+        name: "3-2",
+        login_id: "booth-9",
+        assigned_booth_id: 9,
+        role: "Student",
       }),
     });
   });
 
-  it("空なら送らない", async () => {
-    expect(await changeLoginId("u1", "   ")).toEqual({
-      error: "ログイン ID を入力してください",
-    });
-    expect(manageRequest).not.toHaveBeenCalled();
+  it("担当者以外は担当ブースを変えない", async () => {
+    manageRequest
+      .mockResolvedValueOnce(ok(operator))
+      .mockResolvedValueOnce(ok());
+    expect(
+      await updateAccount("u2", {
+        loginId: "gk2",
+        name: "学生会2",
+        boothId: 5,
+      }),
+    ).toEqual({});
+    expect(
+      JSON.parse(manageRequest.mock.lastCall?.[1].body).assigned_booth_id,
+    ).toBe(0);
   });
 
-  it("使われていれば専用の文言", async () => {
+  it("空の項目や、担当者でブースが無いときは送らない", async () => {
+    expect(
+      await updateAccount("u1", { loginId: " ", name: "a", boothId: 1 }),
+    ).toEqual({ error: "ログイン ID を入力してください" });
+    expect(
+      await updateAccount("u1", { loginId: "a", name: " ", boothId: 1 }),
+    ).toEqual({ error: "担当者を入力してください" });
+    manageRequest.mockResolvedValueOnce(ok(student));
+    expect(
+      await updateAccount("u1", { loginId: "a", name: "b", boothId: 0 }),
+    ).toEqual({ error: "担当ブースを選んでください" });
+    expect(manageRequest).toHaveBeenCalledTimes(1);
+  });
+
+  it("ログイン ID が使われていれば専用の文言", async () => {
     manageRequest
-      .mockResolvedValueOnce(ok(user))
+      .mockResolvedValueOnce(ok(student))
       .mockResolvedValueOnce({ ok: false, reason: "conflict" });
-    expect(await changeLoginId("u1", "taken")).toEqual({
+    expect(
+      await updateAccount("u1", { loginId: "taken", name: "a", boothId: 1 }),
+    ).toEqual({
       error: "そのログイン ID はもう使われています",
     });
   });

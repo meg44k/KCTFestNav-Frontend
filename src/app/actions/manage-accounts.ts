@@ -113,20 +113,36 @@ export async function addAccount(
   return { issued: { boothName: name, loginId, password } };
 }
 
-/** ログイン ID だけを変える(パスワードを送らないので今のまま) */
-export async function changeLoginId(
+/**
+ * ログイン ID・担当者(名前)・担当ブースを変える。役職とパスワードは今のまま
+ * (パスワードを送らないとバックエンドは今のものを保つ)
+ */
+export async function updateAccount(
   userId: string,
-  loginId: string,
+  input: { loginId: string; name: string; boothId: number },
 ): Promise<{ error?: string }> {
-  const next = loginId.trim();
-  if (!next) return { error: "ログイン ID を入力してください" };
+  const loginId = input.loginId.trim();
+  const name = input.name.trim();
+  if (!loginId) return { error: "ログイン ID を入力してください" };
+  if (!name) return { error: "担当者を入力してください" };
   const user = await manageRequest<ManageUser>(`/manage/users/${userId}`);
   if (!user.ok) return { error: failed(user.reason) };
 
-  const { name, assigned_booth_id, role } = user.data;
+  const { role } = user.data;
+  // 担当ブースを持つのは担当(Student)だけ
+  const boothId =
+    role === "Student" ? input.boothId : user.data.assigned_booth_id;
+  if (role === "Student" && !(Number.isInteger(boothId) && boothId > 0)) {
+    return { error: "担当ブースを選んでください" };
+  }
   const res = await manageRequest(`/manage/users/${userId}`, {
     method: "PUT",
-    body: JSON.stringify({ name, login_id: next, assigned_booth_id, role }),
+    body: JSON.stringify({
+      name,
+      login_id: loginId,
+      assigned_booth_id: boothId,
+      role,
+    }),
   });
   if (!res.ok) {
     if (res.reason === "conflict") {
