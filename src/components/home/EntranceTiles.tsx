@@ -9,6 +9,8 @@ const YELLOW = "#FFB100";
 const TILE = "#0A0700";
 // マップの高さ(案は 127。上に置くと黄色が強すぎるので低くして試す)
 const MAP_H = 100;
+// 小さいタイルの高さ(案は 88。本人の希望で少し低く)
+const TILE_H = 72;
 
 // 小さいタイルは幅が狭いので、長い名前は区切りのいい所で折り返す(案のとおり)
 const TILE_LINES: Record<string, string[]> = {
@@ -17,7 +19,7 @@ const TILE_LINES: Record<string, string[]> = {
 
 /**
  * 各ページへの入口(デザインの案: 幅 264)。
- * マップは 264×127 の黄色、その下に 84×88 の小さいタイルを 6 の間をあけて 3 つ
+ * 小さいタイル 3 つ(6 の間をあける)を上に、その下に黄色のマップ(本人の希望で入れ替えて試す)
  */
 export function EntranceTiles() {
   const { href, label, icon: MapIcon } = TILE_MAP;
@@ -25,6 +27,50 @@ export function EntranceTiles() {
     <nav aria-labelledby="entrance-heading" className="flex w-full flex-col">
       <SectionLabel id="entrance-heading">さがす</SectionLabel>
       <div className="flex flex-col" style={{ gap: u(7) }}>
+        <div className="grid grid-cols-3" style={{ gap: u(6) }}>
+          {TILE_ENTRANCES.map(({ label, href, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className="relative block active:brightness-150"
+              style={{
+                aspectRatio: `84 / ${TILE_H}`,
+                background: TILE,
+                border: `1px solid ${YELLOW}`,
+                borderRadius: u(10),
+              }}
+            >
+              <Icon
+                aria-hidden
+                strokeWidth={2}
+                color={YELLOW}
+                className="absolute"
+                style={{
+                  left: u(8.5),
+                  top: u(8.5),
+                  width: u(20),
+                  height: u(20),
+                }}
+              />
+              <span
+                className="absolute font-bold"
+                style={{
+                  left: u(8.5),
+                  bottom: u(8),
+                  fontSize: u(10),
+                  lineHeight: 1.4,
+                  color: YELLOW,
+                }}
+              >
+                {(TILE_LINES[label] ?? [label]).map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))}
+              </span>
+            </Link>
+          ))}
+        </div>
         <Link
           href={href}
           className="relative block w-full active:brightness-95"
@@ -74,50 +120,6 @@ export function EntranceTiles() {
             展示・ゴミ箱・バザーの場所
           </span>
         </Link>
-        <div className="grid grid-cols-3" style={{ gap: u(6) }}>
-          {TILE_ENTRANCES.map(({ label, href, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              className="relative block active:brightness-150"
-              style={{
-                aspectRatio: "84 / 88",
-                background: TILE,
-                border: `1px solid ${YELLOW}`,
-                borderRadius: u(10),
-              }}
-            >
-              <Icon
-                aria-hidden
-                strokeWidth={2}
-                color={YELLOW}
-                className="absolute"
-                style={{
-                  left: u(8.5),
-                  top: u(8.5),
-                  width: u(20),
-                  height: u(20),
-                }}
-              />
-              <span
-                className="absolute font-bold"
-                style={{
-                  left: u(8.5),
-                  bottom: u(8),
-                  fontSize: u(10),
-                  lineHeight: 1.4,
-                  color: YELLOW,
-                }}
-              >
-                {(TILE_LINES[label] ?? [label]).map((line) => (
-                  <span key={line} className="block">
-                    {line}
-                  </span>
-                ))}
-              </span>
-            </Link>
-          ))}
-        </div>
       </div>
     </nav>
   );
