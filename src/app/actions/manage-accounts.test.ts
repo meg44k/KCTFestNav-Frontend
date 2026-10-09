@@ -17,6 +17,8 @@ vi.mock("next/headers", () => ({
 
 import {
   addAccount,
+  changeLoginId,
+  deleteAccount,
   issueMissingAccounts,
   resetPassword,
 } from "./manage-accounts";
@@ -137,5 +139,60 @@ describe("addAccount", () => {
     expect(await addAccount(undefined, f(" ", "Gakuseikai"))).toEqual({
       error: "ログイン ID を入力してください",
     });
+  });
+});
+
+describe("changeLoginId", () => {
+  const user = {
+    id: "u1",
+    name: "学生会",
+    login_id: "old",
+    assigned_booth_id: 0,
+    role: "Gakuseikai",
+  };
+
+  it("今の内容のまま、ログイン ID だけ変えて送る(パスワードは送らない)", async () => {
+    manageRequest.mockResolvedValueOnce(ok(user)).mockResolvedValueOnce(ok());
+    expect(await changeLoginId("u1", "  new_id  ")).toEqual({});
+    expect(manageRequest).toHaveBeenLastCalledWith("/manage/users/u1", {
+      method: "PUT",
+      body: JSON.stringify({
+        name: "学生会",
+        login_id: "new_id",
+        assigned_booth_id: 0,
+        role: "Gakuseikai",
+      }),
+    });
+  });
+
+  it("空なら送らない", async () => {
+    expect(await changeLoginId("u1", "   ")).toEqual({
+      error: "ログイン ID を入力してください",
+    });
+    expect(manageRequest).not.toHaveBeenCalled();
+  });
+
+  it("使われていれば専用の文言", async () => {
+    manageRequest
+      .mockResolvedValueOnce(ok(user))
+      .mockResolvedValueOnce({ ok: false, reason: "conflict" });
+    expect(await changeLoginId("u1", "taken")).toEqual({
+      error: "そのログイン ID はもう使われています",
+    });
+  });
+});
+
+describe("deleteAccount", () => {
+  it("DELETE する", async () => {
+    manageRequest.mockResolvedValueOnce(ok());
+    expect(await deleteAccount("u1")).toEqual({});
+    expect(manageRequest).toHaveBeenCalledWith("/manage/users/u1", {
+      method: "DELETE",
+    });
+  });
+
+  it("失敗は文言にする", async () => {
+    manageRequest.mockResolvedValueOnce({ ok: false, reason: "rejected" });
+    expect((await deleteAccount("u1")).error).toBeTruthy();
   });
 });
