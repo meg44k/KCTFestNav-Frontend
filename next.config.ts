@@ -1,3 +1,4 @@
+import { withBotId } from "botid/next/config";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -10,4 +11,5 @@ const nextConfig: NextConfig = {
     : [""],
 };
 
-export default nextConfig;
+// BotID(いいねのボット対策)のスクリプトを自分のドメイン経由で読む
+export default withBotId(nextConfig);

@@ -17,6 +17,7 @@ import {
   filtersToQuery,
   gradeCounts,
 } from "@/lib/booth-browser";
+import { canLike } from "@/lib/likes";
 import { cn } from "@/lib/utils";
 
 const TITLES: Record<BoothType, string> = {
@@ -229,6 +230,7 @@ export function BoothBrowser({
                       ? `/map?booth=${booth.id}`
                       : undefined
                   }
+                  likeBoothId={canLike(booth.organizer) ? booth.id : undefined}
                 />
               ))
             )}

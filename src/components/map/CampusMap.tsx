@@ -8,6 +8,7 @@ import { BoothCard } from "@/components/ui/boothcard";
 import campusData from "@/data/campus.json";
 import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import { type Booth, CONGESTION_LABELS } from "@/lib/api/booths";
+import { canLike } from "@/lib/likes";
 import { type CampusData, loadCampus, nearCampus } from "@/lib/map/campus";
 import {
   boothsByFloor,
@@ -256,6 +257,11 @@ export function CampusMap({
                 congestionStatus={selectedBooth.congestionStatus}
                 latitude={selectedBooth.latitude}
                 longitude={selectedBooth.longitude}
+                likeBoothId={
+                  canLike(selectedBooth.organizer)
+                    ? selectedBooth.id
+                    : undefined
+                }
               />
             </div>
           ) : building ? (

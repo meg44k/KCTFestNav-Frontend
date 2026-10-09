@@ -51,3 +51,32 @@ export async function saveAnnouncement(
   revalidatePath(OPS, "layout");
   return { saved: true };
 }
+
+/** そのブースの from 以上 to 未満(UTC)のいいねを取り消す(管理者・学生会) */
+export async function removeLikes(
+  boothId: number,
+  from: string,
+  to: string,
+): Promise<{ removed?: number; error?: string }> {
+  const q = new URLSearchParams({ from, to });
+  const res = await manageRequest<{ removed: number }>(
+    `/manage/likes/${boothId}?${q}`,
+    { method: "DELETE" },
+  );
+  if (!res.ok) return { error: failed(res.reason) };
+  revalidatePath(OPS, "layout");
+  return { removed: res.data.removed };
+}
+
+/** いいねを全部消す(管理者。文化祭の前の試しの票を消す用) */
+export async function removeAllLikes(): Promise<{
+  removed?: number;
+  error?: string;
+}> {
+  const res = await manageRequest<{ removed: number }>("/manage/likes", {
+    method: "DELETE",
+  });
+  if (!res.ok) return { error: failed(res.reason) };
+  revalidatePath(OPS, "layout");
+  return { removed: res.data.removed };
+}

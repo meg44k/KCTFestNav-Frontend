@@ -22,11 +22,12 @@ const MY_BOOTH: MenuItem[] = [
   { href: "/manage/my-booth/congestion", label: "混雑度" },
   { href: "/manage/my-booth/detail", label: "ブースの説明" },
 ];
-// 当日運営は 3 つのページに分けてヘッダーから直接開く
+// 当日運営はページに分けてヘッダーから直接開く
 const OPS: MenuItem[] = [
   { href: "/manage/ops/congestion", label: "混雑度" },
   { href: "/manage/ops/lives", label: "ライブ" },
   { href: "/manage/ops/announcement", label: "お知らせ" },
+  { href: "/manage/ops/likes", label: "いいね" },
 ];
 
 /** ログイン後に最初に開く画面。管理画面を使えないロールは null */

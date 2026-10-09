@@ -21,6 +21,7 @@ describe("menuFor", () => {
       "/manage/ops/congestion",
       "/manage/ops/lives",
       "/manage/ops/announcement",
+      "/manage/ops/likes",
     ]);
   });
 
@@ -29,6 +30,7 @@ describe("menuFor", () => {
       "混雑度",
       "ライブ",
       "お知らせ",
+      "いいね",
     ]);
   });
 
