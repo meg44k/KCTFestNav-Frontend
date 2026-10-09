@@ -27,6 +27,7 @@ export async function resizeToSquare(file: File): Promise<Blob> {
   canvas.height = out;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("この端末では写真を加工できません");
+  ctx.imageSmoothingQuality = "high";
   ctx.drawImage(bitmap, sx, sy, size, size, 0, 0, out, out);
   bitmap.close();
 

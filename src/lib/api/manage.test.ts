@@ -43,6 +43,9 @@ describe("toFailure", () => {
     expect(toFailure(403)).toBe("forbidden");
     expect(toFailure(400)).toBe("rejected");
     expect(toFailure(409)).toBe("conflict");
+    expect(failureMessage("conflict")).toBe(
+      "ほかの人が先に変更しました。開き直してからもう一度お試しください。",
+    );
     expect(toFailure(404)).toBe("rejected");
     expect(toFailure(500)).toBe("unavailable");
   });

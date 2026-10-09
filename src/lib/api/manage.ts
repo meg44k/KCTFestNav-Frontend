@@ -83,7 +83,8 @@ export function failureMessage(reason: ManageFailure): string {
     case "rejected":
       return "入力内容を確認してください。";
     case "conflict":
-      return "同じものがすでにあります。";
+      // 写真など、開いている間にほかの人が変えたもの(ログイン ID の重複は呼び出し側で言い分ける)
+      return "ほかの人が先に変更しました。開き直してからもう一度お試しください。";
     default:
       return "接続できませんでした。時間をおいて再度お試しください。";
   }

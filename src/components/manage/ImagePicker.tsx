@@ -45,12 +45,9 @@ export function ImagePicker({
       const res = await uploadImage(form);
       if (res.url) setUrl(res.url);
       else setError(res.error);
-    } catch (e) {
-      setError(
-        e instanceof Error && e.message
-          ? e.message
-          : "写真を読み込めませんでした。別の写真を選んでください",
-      );
+    } catch {
+      // 読めない形式(パソコンでの HEIC など)。ブラウザの英語のメッセージは出さない
+      setError("写真を読み込めませんでした。別の写真を選んでください");
     } finally {
       setBusy(false);
       // 同じ写真を選び直しても change が起きるように
@@ -62,6 +59,22 @@ export function ImagePicker({
     <div className="flex flex-col gap-2">
       <Label htmlFor={id}>{label}</Label>
       <input type="hidden" name={name} value={url} />
+      {/* アップロード中はフォームを送らせない(古い写真のまま保存されるのを防ぐ)。
+          ブラウザの入力チェックで止め、理由を吹き出しで出す */}
+      {busy && (
+        <input
+          aria-hidden
+          tabIndex={-1}
+          className="sr-only"
+          value=""
+          onChange={() => {}}
+          ref={(el) =>
+            el?.setCustomValidity(
+              "写真のアップロードが終わるまで待ってください",
+            )
+          }
+        />
+      )}
       {target ? (
         <div className="flex items-end gap-3">
           {/* カードと同じ正方形で見せる */}
