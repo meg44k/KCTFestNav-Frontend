@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { u } from "@/lib/home/design-unit";
 import { blockTimeRange, type StageHeadline } from "@/lib/stage-schedule";
+import { FitText } from "./FitText";
 
 // 色はデザインの案から読み取った値
 const YELLOW = "#FFB100";
@@ -117,18 +118,17 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
             >
               {live.section.location || live.section.name}
             </span>
-            <span
-              className="mt-auto truncate font-semibold text-white"
-              style={{ fontSize: u(30), lineHeight: 1.1 }}
+            {/* 長い名前は「…」で切らずに、入るまで小さくする */}
+            <FitText
+              className="mt-auto font-semibold text-white"
+              fontSize={u(28)}
+              style={{ lineHeight: 1.15 }}
             >
               {live.current.name}
-            </span>
-            <span
-              className="truncate"
-              style={{ fontSize: u(15), lineHeight: 1.2, color: GRAY }}
-            >
+            </FitText>
+            <FitText fontSize={u(13)} style={{ lineHeight: 1.25, color: GRAY }}>
               {live.next ? `次: ${live.next.name}` : "このブロックの最後です"}
-            </span>
+            </FitText>
           </>
         ) : (
           <span
