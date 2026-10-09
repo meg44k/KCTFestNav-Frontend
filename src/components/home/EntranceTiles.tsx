@@ -9,8 +9,8 @@ const YELLOW = "#FFB100";
 const TILE = "#0A0700";
 // マップの高さ(案は 127。上に置くと黄色が強すぎるので低くして試す)
 const MAP_H = 100;
-// 小さいタイルの高さ(案は 88。本人の希望で少し低く)
-const TILE_H = 72;
+// 小さいタイルの高さはマップとそろえる(案は 88)
+const TILE_H = MAP_H;
 
 // 小さいタイルは幅が狭いので、長い名前は区切りのいい所で折り返す(案のとおり)
 const TILE_LINES: Record<string, string[]> = {
