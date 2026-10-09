@@ -1,6 +1,6 @@
 import type { ManageUser } from "@/lib/manage/roles";
-import { ChangeLoginIdButton } from "./ChangeLoginIdButton";
 import { DeleteAccountButton } from "./DeleteAccountButton";
+import { EditAccountButton } from "./EditAccountButton";
 import { ResetPasswordButton } from "./ResetPasswordButton";
 
 const ROLE_LABEL: Record<ManageUser["role"], string> = {
@@ -35,9 +35,20 @@ export function AccountList({
 
   const boothOf = (u: ManageUser) =>
     booths[u.assigned_booth_id]?.name ?? "担当ブースなし";
-  // 担当者(1-1 など)はブースの主催者。ブースが削除済みならアカウントの名前
+  // 担当者はアカウントの名前(編集で変えられる)。名前が無ければブースの主催者(1-1 など)
   const organizerOf = (u: ManageUser) =>
-    booths[u.assigned_booth_id]?.organizer || u.name;
+    u.name || booths[u.assigned_booth_id]?.organizer || "";
+  // 編集で選べるブースと、ブースごとの担当
+  const boothChoices = Object.entries(booths)
+    .map(([id, b]) => ({ id: Number(id), name: b.name }))
+    .sort((a, b) => a.id - b.id);
+  const boothOwners: Record<number, string[]> = {};
+  for (const u of staff) {
+    boothOwners[u.assigned_booth_id] = [
+      ...(boothOwners[u.assigned_booth_id] ?? []),
+      u.login_id,
+    ];
+  }
 
   const section = (title: string, list: ManageUser[], showBooth: boolean) =>
     list.length > 0 && (
@@ -95,7 +106,11 @@ export function AccountList({
                         loginId={u.login_id}
                         label={showBooth ? boothOf(u) : u.name}
                       />
-                      <ChangeLoginIdButton userId={u.id} loginId={u.login_id} />
+                      <EditAccountButton
+                        user={u}
+                        booths={boothChoices}
+                        boothOwners={boothOwners}
+                      />
                       {u.id !== meId && (
                         <DeleteAccountButton
                           userId={u.id}
