@@ -38,13 +38,14 @@ function TicketDecoration({ live }: { live: boolean }) {
         height: "calc(100% + 2px)",
       }}
     >
+      {/* 流れ星は線の向きはそのままで、文字にかからないよう上の方に寄せる */}
       {live && (
         <g stroke={STAR} fill={STAR} strokeWidth="0.7">
-          <line x1="155" y1="39" x2="190" y2="0" />
-          <line x1="190" y1="19" x2="206" y2="0" />
+          <line x1="166.7" y1="26" x2="190" y2="0" />
+          <line x1="196.7" y1="11" x2="206" y2="0" />
           <g stroke="none">
-            <Star x={155} y={39} r={6} />
-            <Star x={190} y={19} r={4} />
+            <Star x={166.7} y={26} r={6} />
+            <Star x={196.7} y={11} r={4} />
           </g>
         </g>
       )}
