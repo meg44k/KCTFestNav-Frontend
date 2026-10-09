@@ -1,6 +1,7 @@
 import { EntranceTiles } from "@/components/home/EntranceTiles";
 import { CatchcopyTitle } from "@/components/home/FestivalTitle";
 import { StageHeadlineCard } from "@/components/home/StageHeadlineCard";
+import { StarField } from "@/components/home/StarField";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
 import { RefreshEvery } from "@/components/RefreshEvery";
 import { BulletinBoard } from "@/components/ui/bulletinBoard";
@@ -31,9 +32,12 @@ export default async function Main() {
   const sections = stage.status === "fulfilled" ? stage.value.sections : [];
 
   return (
-    <div>
+    // 背景の星を中身の後ろに置くため、ここで重なりの基準を作る
+    <div className="relative isolate min-h-dvh">
+      <StarField />
       {/* intro-* はタイトル画面から来たときだけ、見出しのまわりをふわっと出す目印(globals.css) */}
-      <div className="intro-bulletin">
+      {/* お知らせの帯には星を透かさない */}
+      <div className="intro-bulletin bg-black">
         <BulletinBoard content={announcementOrDefault(content)} />
       </div>
       <SideMenu />
