@@ -2,6 +2,7 @@ import Link from "next/link";
 import { u } from "@/lib/home/design-unit";
 import { blockTimeRange, type StageHeadline } from "@/lib/stage-schedule";
 import { FitText } from "./FitText";
+import { SectionLabel } from "./SectionLabel";
 
 // 色はデザインの案から読み取った値
 const YELLOW = "#FFB100";
@@ -75,86 +76,91 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
   if (playing.length === 0 && starting.length === 0 && !next) return null;
   const live = playing[0];
   return (
-    <Link
-      href="/stage-event"
-      className="relative block w-full overflow-hidden active:brightness-125"
-      style={{
-        aspectRatio: "264 / 112",
-        background: CARD,
-        border: "1px solid #595959",
-        borderRadius: u(10),
-        marginBottom: u(22),
-      }}
-    >
-      {live && (
-        <span
-          // 枠線の上にかぶせる(案では帯の左には線が無い)
-          className="absolute flex items-center justify-center"
-          style={{
-            top: -1,
-            bottom: -1,
-            left: -1,
-            width: u(17),
-            background: YELLOW,
-          }}
-        >
-          <span
-            className="-rotate-90 whitespace-nowrap font-bold"
-            style={{ fontSize: u(8.5), lineHeight: 1, color: "#201700" }}
-          >
-            LIVE!
-          </span>
-        </span>
-      )}
-      <span
-        className="absolute flex flex-col"
-        style={{ left: u(27.5), right: u(60), top: u(12), bottom: u(12) }}
+    <section style={{ marginBottom: u(16) }}>
+      <SectionLabel>いまのステージ</SectionLabel>
+      <Link
+        href="/stage-event"
+        className="relative block w-full overflow-hidden active:brightness-125"
+        style={{
+          aspectRatio: "264 / 112",
+          background: CARD,
+          border: "1px solid #595959",
+          borderRadius: u(10),
+        }}
       >
-        {live ? (
-          <>
-            <span
-              className="truncate"
-              style={{ fontSize: u(10), lineHeight: 1.2, color: GRAY }}
-            >
-              {live.section.location || live.section.name}
-            </span>
-            {/* 長い名前は「…」で切らずに、入るまで小さくする */}
-            <FitText
-              className="mt-auto font-semibold text-white"
-              fontSize={u(28)}
-              style={{ lineHeight: 1.15 }}
-            >
-              {live.current.name}
-            </FitText>
-            <FitText fontSize={u(13)} style={{ lineHeight: 1.25, color: GRAY }}>
-              {live.next ? `次: ${live.next.name}` : "このブロックの最後です"}
-            </FitText>
-          </>
-        ) : (
+        {live && (
           <span
-            className="my-auto flex flex-col gap-1 text-white"
-            style={{ fontSize: u(11), lineHeight: 1.4 }}
+            // 枠線の上にかぶせる(案では帯の左には線が無い)
+            className="absolute flex items-center justify-center"
+            style={{
+              top: -1,
+              bottom: -1,
+              left: -1,
+              width: u(17),
+              background: YELLOW,
+            }}
           >
-            {starting.map(({ section, block }) => (
-              <span key={block.id}>
-                まもなく始まります: <b>{section.name}</b>
-                {place(section.location)}
-              </span>
-            ))}
-            {next && (
-              <span>
-                次は{" "}
-                <b>
-                  {blockTimeRange(next.block).split("〜")[0]}〜{" "}
-                  {next.section.name}
-                </b>
-                {place(next.section.location)}
-              </span>
-            )}
+            <span
+              className="-rotate-90 whitespace-nowrap font-bold"
+              style={{ fontSize: u(8.5), lineHeight: 1, color: "#201700" }}
+            >
+              LIVE!
+            </span>
           </span>
         )}
-      </span>
-      <TicketDecoration live={Boolean(live)} />
-    </Link>
+        <span
+          className="absolute flex flex-col"
+          style={{ left: u(27.5), right: u(60), top: u(12), bottom: u(12) }}
+        >
+          {live ? (
+            <>
+              <span
+                className="truncate"
+                style={{ fontSize: u(10), lineHeight: 1.2, color: GRAY }}
+              >
+                {live.section.location || live.section.name}
+              </span>
+              {/* 長い名前は「…」で切らずに、入るまで小さくする */}
+              <FitText
+                className="mt-auto font-semibold text-white"
+                fontSize={u(28)}
+                style={{ lineHeight: 1.15 }}
+              >
+                {live.current.name}
+              </FitText>
+              <FitText
+                fontSize={u(13)}
+                style={{ lineHeight: 1.25, color: GRAY }}
+              >
+                {live.next ? `次: ${live.next.name}` : "このブロックの最後です"}
+              </FitText>
+            </>
+          ) : (
+            <span
+              className="my-auto flex flex-col gap-1 text-white"
+              style={{ fontSize: u(11), lineHeight: 1.4 }}
+            >
+              {starting.map(({ section, block }) => (
+                <span key={block.id}>
+                  まもなく始まります: <b>{section.name}</b>
+                  {place(section.location)}
+                </span>
+              ))}
+              {next && (
+                <span>
+                  次は{" "}
+                  <b>
+                    {blockTimeRange(next.block).split("〜")[0]}〜{" "}
+                    {next.section.name}
+                  </b>
+                  {place(next.section.location)}
+                </span>
+              )}
+            </span>
+          )}
+        </span>
+        <TicketDecoration live={Boolean(live)} />
+      </Link>
+    </section>
   );
 }

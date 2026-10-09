@@ -2,6 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { u } from "@/lib/home/design-unit";
 import { TILE_ENTRANCES, TILE_MAP } from "@/lib/navigation";
+import { SectionLabel } from "./SectionLabel";
 
 // 色はデザインの案から読み取った値
 const YELLOW = "#FFB100";
@@ -19,93 +20,101 @@ const TILE_LINES: Record<string, string[]> = {
 export function EntranceTiles() {
   const { href, label, icon: MapIcon } = TILE_MAP;
   return (
-    <nav className="flex w-full flex-col" style={{ gap: u(7) }}>
-      <Link
-        href={href}
-        className="relative block w-full active:brightness-95"
-        style={{
-          aspectRatio: "264 / 127",
-          background: YELLOW,
-          borderRadius: u(10),
-        }}
-      >
-        <MapIcon
-          aria-hidden
-          strokeWidth={1.6}
-          color="#1E1E1E"
-          className="absolute"
-          style={{ left: u(10.5), top: u(12), width: u(36), height: u(36) }}
-        />
-        <ArrowUpRight
-          aria-hidden
-          strokeWidth={2.2}
-          color="#000"
-          className="absolute"
-          style={{ right: u(6), top: u(6), width: u(28), height: u(28) }}
-        />
-        <span
-          className="absolute font-black text-black"
+    <nav aria-labelledby="entrance-heading" className="flex w-full flex-col">
+      <SectionLabel id="entrance-heading">さがす</SectionLabel>
+      <div className="flex flex-col" style={{ gap: u(7) }}>
+        <Link
+          href={href}
+          className="relative block w-full active:brightness-95"
           style={{
-            left: u(15),
-            top: u(63),
-            fontSize: u(30),
-            lineHeight: 1,
-            letterSpacing: "0.02em",
+            aspectRatio: "264 / 127",
+            background: YELLOW,
+            borderRadius: u(10),
           }}
         >
-          {label}
-        </span>
-        <span
-          className="absolute font-bold"
-          style={{
-            left: u(15.5),
-            top: u(101.5),
-            fontSize: u(10.2),
-            lineHeight: 1,
-            color: "#000",
-          }}
-        >
-          展示・ゴミ箱・バザーの場所
-        </span>
-      </Link>
-      <div className="grid grid-cols-3" style={{ gap: u(6) }}>
-        {TILE_ENTRANCES.map(({ label, href, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className="relative block active:brightness-150"
+          <MapIcon
+            aria-hidden
+            strokeWidth={1.6}
+            color="#1E1E1E"
+            className="absolute"
+            style={{ left: u(10.5), top: u(12), width: u(36), height: u(36) }}
+          />
+          <ArrowUpRight
+            aria-hidden
+            strokeWidth={2.2}
+            color="#000"
+            className="absolute"
+            style={{ right: u(6), top: u(6), width: u(28), height: u(28) }}
+          />
+          <span
+            className="absolute font-black text-black"
             style={{
-              aspectRatio: "84 / 88",
-              background: TILE,
-              border: `1px solid ${YELLOW}`,
-              borderRadius: u(10),
+              left: u(15),
+              top: u(63),
+              fontSize: u(30),
+              lineHeight: 1,
+              letterSpacing: "0.02em",
             }}
           >
-            <Icon
-              aria-hidden
-              strokeWidth={2}
-              color={YELLOW}
-              className="absolute"
-              style={{ left: u(8.5), top: u(8.5), width: u(20), height: u(20) }}
-            />
-            <span
-              className="absolute font-bold"
+            {label}
+          </span>
+          <span
+            className="absolute font-bold"
+            style={{
+              left: u(15.5),
+              top: u(101.5),
+              fontSize: u(10.2),
+              lineHeight: 1,
+              color: "#000",
+            }}
+          >
+            展示・ゴミ箱・バザーの場所
+          </span>
+        </Link>
+        <div className="grid grid-cols-3" style={{ gap: u(6) }}>
+          {TILE_ENTRANCES.map(({ label, href, icon: Icon }) => (
+            <Link
+              key={href}
+              href={href}
+              className="relative block active:brightness-150"
               style={{
-                left: u(8.5),
-                bottom: u(8),
-                fontSize: u(10),
-                lineHeight: 1.4,
-                color: YELLOW,
+                aspectRatio: "84 / 88",
+                background: TILE,
+                border: `1px solid ${YELLOW}`,
+                borderRadius: u(10),
               }}
             >
-              {(TILE_LINES[label] ?? [label]).map((line) => (
-                <span key={line} className="block">
-                  {line}
-                </span>
-              ))}
-            </span>
-          </Link>
-        ))}
+              <Icon
+                aria-hidden
+                strokeWidth={2}
+                color={YELLOW}
+                className="absolute"
+                style={{
+                  left: u(8.5),
+                  top: u(8.5),
+                  width: u(20),
+                  height: u(20),
+                }}
+              />
+              <span
+                className="absolute font-bold"
+                style={{
+                  left: u(8.5),
+                  bottom: u(8),
+                  fontSize: u(10),
+                  lineHeight: 1.4,
+                  color: YELLOW,
+                }}
+              >
+                {(TILE_LINES[label] ?? [label]).map((line) => (
+                  <span key={line} className="block">
+                    {line}
+                  </span>
+                ))}
+              </span>
+            </Link>
+          ))}
+        </div>
       </div>
     </nav>
   );
