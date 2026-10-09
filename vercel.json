@@ -1,5 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "regions": ["hnd1"],
-  "ignoreCommand": "[ \"$VERCEL_ENV\" != \"production\" ]"
+  "git": {
+    "deploymentEnabled": {
+      "develop": false,
+      "feature/**": false,
+      "fix/**": false,
+      "chore/**": false,
+      "docs/**": false,
+      "perf/**": false,
+      "refactor/**": false
+    }
+  }
 }
