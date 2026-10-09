@@ -119,6 +119,8 @@ function BoothCard({
                     src={imageUrl}
                     fill
                     sizes="120px"
+                    // 上げるときに縮めてあるので、Vercel の画像変換を使わない
+                    unoptimized
                     className="object-cover"
                   ></Image>
                 )}
@@ -175,13 +177,14 @@ function BoothCard({
                 >
                   <XIcon className="size-5" />
                 </DialogClose>
-                <div className="relative w-full aspect-video bg-gray-300 rounded-sm overflow-hidden">
+                <div className="relative w-full aspect-square bg-gray-300 rounded-sm overflow-hidden">
                   {imageUrl && (
                     <Image
                       alt={imageAlt}
                       src={imageUrl}
                       fill
                       sizes="(min-width: 768px) 400px, 85vw"
+                      unoptimized
                       className="object-cover"
                     ></Image>
                   )}

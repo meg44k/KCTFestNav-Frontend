@@ -43,6 +43,9 @@ describe("toFailure", () => {
     expect(toFailure(403)).toBe("forbidden");
     expect(toFailure(400)).toBe("rejected");
     expect(toFailure(409)).toBe("conflict");
+    expect(failureMessage("conflict")).toBe(
+      "ほかの人が先に変更しました。開き直してからもう一度お試しください。",
+    );
     expect(toFailure(404)).toBe("rejected");
     expect(toFailure(500)).toBe("unavailable");
   });
@@ -61,6 +64,17 @@ describe("manageRequest", () => {
     expect(url).toMatch(/\/auth\/me$/);
     expect(init.headers.Authorization).toBe("Bearer jwt-token");
     expect(init.cache).toBe("no-store");
+  });
+
+  it("FormData を送るときは Content-Type を付けない(fetch が multipart の境界を付ける)", async () => {
+    fetchMock.mockResolvedValue(new Response("{}", { status: 201 }));
+    const body = new FormData();
+    body.set("target", "booth:1");
+    await manageRequest("/manage/images", { method: "POST", body });
+    const init = fetchMock.mock.calls[0][1];
+    expect(init.headers["Content-Type"]).toBeUndefined();
+    expect(init.headers.Authorization).toBe("Bearer jwt-token");
+    expect(init.body).toBe(body);
   });
 
   it("応答が返らないまま待ち続けないよう、タイムアウトを付ける", async () => {

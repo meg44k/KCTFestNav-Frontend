@@ -17,6 +17,7 @@ import {
   savePerformer,
   saveSection,
 } from "@/app/actions/stage";
+import { ImagePicker } from "@/components/manage/ImagePicker";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -247,11 +248,11 @@ export function PerformerDialog({
           defaultValue={performer?.detail}
         />
       </div>
-      <Field
-        label="写真の URL"
+      <ImagePicker
+        label="写真"
         name="thumbnailUrl"
-        defaultValue={performer?.thumbnail_url}
-        placeholder="https://..."
+        target={performer ? `performer:${performer.id}` : undefined}
+        defaultUrl={performer?.thumbnail_url}
       />
     </FormDialog>
   );
