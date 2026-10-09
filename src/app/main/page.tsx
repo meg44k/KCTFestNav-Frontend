@@ -40,7 +40,8 @@ export default async function Main() {
       <RefreshEvery seconds={60} />
       <div className="flex flex-col items-center gap-4 px-4 pb-10">
         <CatchcopyTitle className="w-full pt-10 pb-2" />
-        <div className="intro-content flex w-full flex-col items-center gap-4">
+        {/* チケットとタイルはデザインの案(幅 264)の比率で描くので、幅の基準になる入れ物 */}
+        <div className="intro-content @container w-full max-w-md">
           <StageHeadlineCard headline={stageHeadline(sections, Date.now())} />
           <EntranceTiles />
         </div>
