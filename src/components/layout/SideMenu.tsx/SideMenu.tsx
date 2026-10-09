@@ -1,6 +1,7 @@
 "use client";
 
 import { Menu } from "lucide-react";
+import Image from "next/image";
 import { BackButton } from "@/components/layout/BackButton";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,8 +36,15 @@ export default function SideMenu() {
         <DrawerContent className="[--drawer-inset:10px] max-w-55 bg-amber-400/80 after:bg-amber-400/80 border-amber-300 [&_[data-slot=drawer-swipe-handle]]:after:bg-black/40">
           <DrawerHeader>
             <DrawerTitle className="pt-2 text-black">高専祭 2026</DrawerTitle>
-            <DrawerDescription className="text-wrap">
-              高専祭のテーマをここに書く
+            {/* 高専祭のテーマ(キャッチコピーのロゴ)。黄色の上なので黒 */}
+            <DrawerDescription className="pt-1">
+              <Image
+                src="/catchcopy-black.png"
+                alt="ST@R G4ZER"
+                width={992}
+                height={528}
+                className="h-auto w-full"
+              />
             </DrawerDescription>
           </DrawerHeader>
           <div className="p-4">
