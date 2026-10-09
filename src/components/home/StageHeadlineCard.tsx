@@ -81,7 +81,7 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
         aspectRatio: "264 / 112",
         background: CARD,
         border: "1px solid #595959",
-        borderRadius: `${u(5)} ${u(10)} ${u(10)} ${u(5)}`,
+        borderRadius: u(10),
         marginBottom: u(22),
       }}
     >
