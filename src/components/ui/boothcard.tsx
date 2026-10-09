@@ -123,7 +123,13 @@ function BoothCard({
                   ></Image>
                 )}
               </div>
-              <div className="flex flex-col mr-auto">
+              <div
+                className={cn(
+                  "flex flex-col mr-auto min-w-0",
+                  // 右上に重ねるハートと文字が重ならないようにあける
+                  likeBoothId !== undefined && "pr-10",
+                )}
+              >
                 <span className="text-black">{name}</span>
                 {/* 全文はタップで開く詳細ダイアログで読めるため、カードでは1行に抑える */}
                 <span className="text-black text-sm line-clamp-1">

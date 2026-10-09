@@ -55,20 +55,20 @@ export function LikesMonitor({
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-gray-400 text-sm">
+      <p className="text-black/50 text-sm">
         来場者には数は見えません。⚠
         は、10分間のいいねがそのブースのふだんの5倍以上(30件以上)に増えた時間帯があるブースです。
       </p>
       {message && (
-        <output className="block rounded-md bg-white/10 px-3 py-2 text-sm">
+        <output className="block rounded-md bg-black/5 px-3 py-2 text-sm">
           {message}
         </output>
       )}
 
       {rows.length === 0 ? (
-        <p className="text-gray-400">クラス展示がまだありません。</p>
+        <p className="text-black/50">クラス展示がまだありません。</p>
       ) : (
-        <ul className="flex flex-col divide-y divide-white/10 rounded-md border border-white/10">
+        <ul className="flex flex-col divide-y divide-black/10 rounded-md border border-black/10">
           {rows.map((row) => {
             const open = openId === row.boothId;
             const max = Math.max(1, ...row.buckets.map((b) => b.count));
@@ -90,10 +90,10 @@ export function LikesMonitor({
                   aria-expanded={open}
                   className="grid w-full cursor-pointer grid-cols-[2.5rem_1fr_auto_1.5rem] items-center gap-2 px-3 py-3 text-left"
                 >
-                  <span className="text-gray-400">{row.rank}位</span>
+                  <span className="text-black/50">{row.rank}位</span>
                   <span className="truncate">
                     {row.name}
-                    <span className="ml-2 text-gray-400 text-xs">
+                    <span className="ml-2 text-black/50 text-xs">
                       {row.organizer}
                     </span>
                   </span>
@@ -110,12 +110,12 @@ export function LikesMonitor({
                 {open && (
                   <div className="flex flex-col gap-3 px-3 pb-4">
                     {row.buckets.length === 0 ? (
-                      <p className="text-gray-400 text-sm">
+                      <p className="text-black/50 text-sm">
                         まだいいねがありません。
                       </p>
                     ) : (
                       <>
-                        <p className="text-gray-400 text-xs">
+                        <p className="text-black/50 text-xs">
                           10分ごとの数。棒を2本押すと、その間の時間帯を選べます。
                         </p>
                         <div className="overflow-x-auto">
@@ -137,7 +137,7 @@ export function LikesMonitor({
                                     className={cn(
                                       "w-full rounded-t-sm",
                                       b.burst ? "bg-[#e54141]" : "bg-amber-400",
-                                      chosen && "outline-2 outline-white",
+                                      chosen && "outline-2 outline-black",
                                     )}
                                     style={{
                                       height: `${Math.max(2, (b.count / max) * 100)}%`,
@@ -148,7 +148,7 @@ export function LikesMonitor({
                             })}
                           </div>
                         </div>
-                        <div className="flex justify-between text-gray-400 text-xs">
+                        <div className="flex justify-between text-black/50 text-xs">
                           <span>{toJstTime(starts[0])}</span>
                           <span>{toJstTime(starts[starts.length - 1])}</span>
                         </div>
