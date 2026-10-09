@@ -1,78 +1,20 @@
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { u } from "@/lib/home/design-unit";
 import { blockTimeRange, type StageHeadline } from "@/lib/stage-schedule";
 import { FitText } from "./FitText";
 import { SectionLabel } from "./SectionLabel";
 
-// 色はデザインの案から読み取った値
+// 入口ページの黄色と灰色(タイル・マップと同じ)
 const YELLOW = "#FFB100";
-const STAR = "#FFC107";
-const CARD = "#1C1C1C";
 const GRAY = "#9E9E9E";
-// チケットの高さ(案は 112。本人の希望で少し短く)
-const TICKET_H = 96;
 
 const place = (location: string) => (location ? `（${location}）` : "");
 
-/** 4 つの角の星(案の座標) */
-function Star({ x, y, r }: { x: number; y: number; r: number }) {
-  const k = r * 0.25;
-  return (
-    <path
-      d={`M${x} ${y - r}Q${x + k} ${y - k} ${x + r} ${y}Q${x + k} ${y + k} ${x} ${y + r}Q${x - k} ${y + k} ${x - r} ${y}Q${x - k} ${y - k} ${x} ${y - r}Z`}
-    />
-  );
-}
-
-/** チケットの飾り(流れ星・切り取り線・「>」)。案と同じ幅 264 の座標で描く */
-function TicketDecoration({ live }: { live: boolean }) {
-  return (
-    <svg
-      viewBox={`0 0 264 ${TICKET_H}`}
-      aria-hidden="true"
-      // 枠線を含めた大きさに合わせる(座標を案とそろえる)
-      className="pointer-events-none absolute"
-      style={{
-        inset: -1,
-        width: "calc(100% + 2px)",
-        height: "calc(100% + 2px)",
-      }}
-    >
-      {/* 流れ星は線の向きはそのままで、文字にかからないよう上の方に寄せる */}
-      {live && (
-        <g stroke={STAR} fill={STAR} strokeWidth="0.7">
-          <line x1="166.7" y1="26" x2="190" y2="0" />
-          <line x1="196.7" y1="11" x2="206" y2="0" />
-          <g stroke="none">
-            <Star x={166.7} y={26} r={6} />
-            <Star x={196.7} y={11} r={4} />
-          </g>
-        </g>
-      )}
-      <line
-        x1="211"
-        y1="0"
-        x2="211"
-        y2={TICKET_H}
-        stroke="#5D5D5D"
-        strokeWidth="0.8"
-        strokeDasharray="2.5 2"
-      />
-      <polyline
-        points={`243.5,${TICKET_H / 2 - 6.5} 250,${TICKET_H / 2} 243.5,${TICKET_H / 2 + 6.5}`}
-        fill="none"
-        stroke="#E3E3E3"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 /**
- * 入口ページのステージのチケット(デザインの案は 264×112、高さだけ少し短くした)。全体を押すとステージイベントへ。
- * 演奏中は左に黄色の「LIVE!」の帯と流れ星。出すものが無ければ何も出さない
+ * 入口ページの「いまのステージ」。枠で囲まず、星空の上に左の黄色の線 1 本でまとめる。
+ * 演奏中は黄色の「● LIVE」(点がゆっくり光る)と会場、大きくバンド名、灰色で次。
+ * 全体を押すとステージイベントへ。出すものが無ければ何も出さない
  */
 export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
   const { playing, starting, next } = headline;
@@ -83,49 +25,48 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
       <SectionLabel>いまのステージ</SectionLabel>
       <Link
         href="/stage-event"
-        className="relative block w-full overflow-hidden active:brightness-125"
+        className="flex items-center active:opacity-70"
         style={{
-          aspectRatio: `264 / ${TICKET_H}`,
-          background: CARD,
-          border: "1px solid #595959",
-          borderRadius: u(10),
+          borderLeft: `${u(2)} solid ${YELLOW}`,
+          paddingLeft: u(12),
+          paddingBlock: u(4),
+          gap: u(8),
         }}
       >
-        {live && (
-          <span
-            // 枠線の上にかぶせる(案では帯の左には線が無い)
-            className="absolute flex items-center justify-center"
-            style={{
-              top: -1,
-              bottom: -1,
-              left: -1,
-              width: u(17),
-              background: YELLOW,
-            }}
-          >
-            <span
-              className="-rotate-90 whitespace-nowrap font-bold"
-              style={{ fontSize: u(8.5), lineHeight: 1, color: "#201700" }}
-            >
-              LIVE!
-            </span>
-          </span>
-        )}
-        <span
-          className="absolute flex flex-col"
-          style={{ left: u(27.5), right: u(60), top: u(12), bottom: u(12) }}
-        >
+        <span className="flex min-w-0 flex-1 flex-col" style={{ gap: u(4) }}>
           {live ? (
             <>
               <span
-                className="truncate"
-                style={{ fontSize: u(10), lineHeight: 1.2, color: GRAY }}
+                className="flex items-center"
+                style={{ gap: u(6), fontSize: u(10), lineHeight: 1.2 }}
               >
-                {live.section.location || live.section.name}
+                <span
+                  className="flex items-center font-bold"
+                  style={{ gap: u(4), color: YELLOW, letterSpacing: "0.08em" }}
+                >
+                  <span
+                    aria-hidden
+                    className="relative inline-flex"
+                    style={{ width: u(6), height: u(6) }}
+                  >
+                    <span
+                      className="absolute inset-0 rounded-full opacity-70 motion-safe:animate-ping"
+                      style={{ background: YELLOW }}
+                    />
+                    <span
+                      className="relative rounded-full"
+                      style={{ width: u(6), height: u(6), background: YELLOW }}
+                    />
+                  </span>
+                  LIVE
+                </span>
+                <span className="truncate" style={{ color: GRAY }}>
+                  {live.section.location || live.section.name}
+                </span>
               </span>
               {/* 長い名前は「…」で切らずに、入るまで小さくする */}
               <FitText
-                className="mt-auto font-semibold text-white"
+                className="font-semibold text-white"
                 fontSize={u(28)}
                 style={{ lineHeight: 1.15 }}
               >
@@ -140,8 +81,8 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
             </>
           ) : (
             <span
-              className="my-auto flex flex-col gap-1 text-white"
-              style={{ fontSize: u(11), lineHeight: 1.4 }}
+              className="flex flex-col text-white"
+              style={{ fontSize: u(11), lineHeight: 1.5, gap: u(2) }}
             >
               {starting.map(({ section, block }) => (
                 <span key={block.id}>
@@ -162,7 +103,12 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
             </span>
           )}
         </span>
-        <TicketDecoration live={Boolean(live)} />
+        <ChevronRight
+          aria-hidden
+          strokeWidth={2}
+          color={YELLOW}
+          style={{ width: u(18), height: u(18), flexShrink: 0 }}
+        />
       </Link>
     </section>
   );
