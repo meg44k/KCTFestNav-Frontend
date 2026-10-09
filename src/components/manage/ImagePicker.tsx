@@ -98,6 +98,7 @@ export function ImagePicker({
               variant="outline"
               disabled={busy}
               onClick={() => input.current?.click()}
+              className="border-black/20 bg-white text-black hover:bg-black/5"
             >
               {url ? "写真を変える" : "写真を選ぶ"}
             </Button>
