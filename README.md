@@ -37,7 +37,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## 本番
 
-- Vercel(東京 `hnd1`)。本番のブランチは main。main 以外はビルドしない(`vercel.json` の `ignoreCommand`。プレビューが本番の API につながり、管理画面の操作が本番のデータに入るのを防ぐ)
+- Vercel(東京 `hnd1`)。本番のブランチは main。main 以外(develop・feature/** など)はデプロイしない(`vercel.json` の `git.deploymentEnabled`。プレビューが本番の API につながり、管理画面の操作が本番のデータに入るのを防ぐ)
 - Vercel の画面で: リポジトリを取り込む → Settings → Git の Production Branch を `main` → 環境変数 `NEXT_PUBLIC_API_BASE_URL` に Cloud Run の URL(バックエンドの `terraform output -raw api_url`、`https://kctfestnav-api-....run.app`)を入れる(Production)。`api.kctfes.app` は Google がまだプレビューとしている機能なので通り道に使わない→ Domains に `kctfes.app` と `www.kctfes.app`(www は kctfes.app へ転送)
 - DNS のレコードはバックエンドの `infra/`(Terraform)が作る。作り方は KCTFestNav-Backend の `infra/README.md`
 - 負荷テスト(k6): `k6 run -e BASE_URL=https://kctfes.app scripts/loadtest.js`(同時 300 人・10 分。エラー 0・95% が 1 秒以内)
