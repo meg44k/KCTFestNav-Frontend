@@ -26,7 +26,7 @@ export function EntranceTiles() {
         style={{
           aspectRatio: "264 / 127",
           background: YELLOW,
-          borderRadius: u(7),
+          borderRadius: u(10),
         }}
       >
         <MapIcon
@@ -78,7 +78,7 @@ export function EntranceTiles() {
               aspectRatio: "84 / 88",
               background: TILE,
               border: `1px solid ${YELLOW}`,
-              borderRadius: u(7),
+              borderRadius: u(10),
             }}
           >
             <Icon
