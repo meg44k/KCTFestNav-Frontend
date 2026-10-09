@@ -1,5 +1,4 @@
 import { EntranceTiles } from "@/components/home/EntranceTiles";
-import { CatchcopyTitle } from "@/components/home/FestivalTitle";
 import { StageHeadlineCard } from "@/components/home/StageHeadlineCard";
 import { StarField } from "@/components/home/StarField";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
@@ -7,6 +6,7 @@ import { RefreshEvery } from "@/components/RefreshEvery";
 import { BulletinBoard } from "@/components/ui/bulletinBoard";
 import { apiFetch } from "@/lib/api/client";
 import type { StageSectionResponse } from "@/lib/api/stage";
+import { eventYear } from "@/lib/constants";
 import { u } from "@/lib/home/design-unit";
 import { announcementOrDefault } from "@/lib/live-schedule";
 import { stageHeadline } from "@/lib/stage-schedule";
@@ -44,7 +44,9 @@ export default async function Main() {
       <SideMenu />
       <RefreshEvery seconds={60} />
       <div className="flex flex-col items-center gap-4 px-4 pb-14">
-        <CatchcopyTitle className="w-full pt-12 pb-5" />
+        {/* ロゴは外して試す(本人の希望)。読み上げ用の見出しだけ残す。上はメニューのボタンと重ならない分あける */}
+        <h1 className="sr-only">{eventYear} 北九州高専 高専祭</h1>
+        <div aria-hidden className="h-16" />
         {/* チケットとタイルはデザインの案(幅 264)の比率で描くので、幅の基準になる入れ物 */}
         <div className="intro-content @container w-full max-w-md">
           {/* 「いまのステージ」を上、「さがす」を下。間は案の 24 */}
