@@ -1,5 +1,5 @@
 import { EntranceTiles } from "@/components/home/EntranceTiles";
-import { FestivalTitle } from "@/components/home/FestivalTitle";
+import { CatchcopyTitle } from "@/components/home/FestivalTitle";
 import { StageHeadlineCard } from "@/components/home/StageHeadlineCard";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
 import { RefreshEvery } from "@/components/RefreshEvery";
@@ -39,7 +39,7 @@ export default async function Main() {
       <SideMenu />
       <RefreshEvery seconds={60} />
       <div className="flex flex-col items-center gap-4 px-4 pb-10">
-        <FestivalTitle className="pt-10 pb-2 text-center" />
+        <CatchcopyTitle className="w-full pt-10 pb-2" />
         <div className="intro-content flex w-full flex-col items-center gap-4">
           <StageHeadlineCard headline={stageHeadline(sections, Date.now())} />
           <EntranceTiles />
