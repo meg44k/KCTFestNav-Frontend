@@ -112,3 +112,40 @@ export async function addAccount(
   revalidatePath("/manage/accounts");
   return { issued: { boothName: name, loginId, password } };
 }
+
+/** ログイン ID だけを変える(パスワードを送らないので今のまま) */
+export async function changeLoginId(
+  userId: string,
+  loginId: string,
+): Promise<{ error?: string }> {
+  const next = loginId.trim();
+  if (!next) return { error: "ログイン ID を入力してください" };
+  const user = await manageRequest<ManageUser>(`/manage/users/${userId}`);
+  if (!user.ok) return { error: failed(user.reason) };
+
+  const { name, assigned_booth_id, role } = user.data;
+  const res = await manageRequest(`/manage/users/${userId}`, {
+    method: "PUT",
+    body: JSON.stringify({ name, login_id: next, assigned_booth_id, role }),
+  });
+  if (!res.ok) {
+    if (res.reason === "conflict") {
+      return { error: "そのログイン ID はもう使われています" };
+    }
+    return { error: failed(res.reason) };
+  }
+  revalidatePath("/manage/accounts");
+  return {};
+}
+
+/** アカウントを削除する(自分自身はバックエンドが断る) */
+export async function deleteAccount(
+  userId: string,
+): Promise<{ error?: string }> {
+  const res = await manageRequest(`/manage/users/${userId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) return { error: failed(res.reason) };
+  revalidatePath("/manage/accounts");
+  return {};
+}

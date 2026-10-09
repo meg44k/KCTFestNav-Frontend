@@ -42,6 +42,7 @@ describe("toFailure", () => {
     expect(toFailure(401)).toBe("unauthorized");
     expect(toFailure(403)).toBe("forbidden");
     expect(toFailure(400)).toBe("rejected");
+    expect(toFailure(409)).toBe("conflict");
     expect(toFailure(404)).toBe("rejected");
     expect(toFailure(500)).toBe("unavailable");
   });

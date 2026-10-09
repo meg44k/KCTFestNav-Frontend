@@ -1,4 +1,6 @@
 import type { ManageUser } from "@/lib/manage/roles";
+import { ChangeLoginIdButton } from "./ChangeLoginIdButton";
+import { DeleteAccountButton } from "./DeleteAccountButton";
 import { ResetPasswordButton } from "./ResetPasswordButton";
 
 const ROLE_LABEL: Record<ManageUser["role"], string> = {
@@ -11,8 +13,11 @@ const ROLE_LABEL: Record<ManageUser["role"], string> = {
 export function AccountList({
   users,
   booths,
+  meId,
 }: {
   users: ManageUser[];
+  /** ログイン中の自分。自分のアカウントは削除できない */
+  meId: string;
   /** ブース ID → ブース名と担当者(主催者) */
   booths: Record<number, { name: string; organizer: string }>;
 }) {
@@ -83,12 +88,27 @@ export function AccountList({
                       </td>
                     </>
                   )}
-                  <td className="text-right">
-                    <ResetPasswordButton
-                      userId={u.id}
-                      loginId={u.login_id}
-                      label={showBooth ? boothOf(u) : u.name}
-                    />
+                  <td>
+                    <div className="flex justify-end gap-2">
+                      <ResetPasswordButton
+                        userId={u.id}
+                        loginId={u.login_id}
+                        label={showBooth ? boothOf(u) : u.name}
+                      />
+                      <ChangeLoginIdButton userId={u.id} loginId={u.login_id} />
+                      {u.id !== meId && (
+                        <DeleteAccountButton
+                          userId={u.id}
+                          loginId={u.login_id}
+                          label={showBooth ? organizerOf(u) : u.name}
+                          boothName={
+                            showBooth && booths[u.assigned_booth_id]
+                              ? boothOf(u)
+                              : undefined
+                          }
+                        />
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

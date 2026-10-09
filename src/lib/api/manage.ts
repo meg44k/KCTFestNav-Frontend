@@ -13,6 +13,7 @@ export type ManageFailure =
   | "unauthorized"
   | "forbidden"
   | "rejected"
+  | "conflict"
   | "unavailable";
 
 export type ManageResult<T> =
@@ -22,6 +23,7 @@ export type ManageResult<T> =
 export function toFailure(status: number): ManageFailure {
   if (status === 401) return "unauthorized";
   if (status === 403) return "forbidden";
+  if (status === 409) return "conflict";
   if (status >= 400 && status < 500) return "rejected";
   return "unavailable";
 }
@@ -77,6 +79,8 @@ export function failureMessage(reason: ManageFailure): string {
       return "この操作の権限がありません。";
     case "rejected":
       return "入力内容を確認してください。";
+    case "conflict":
+      return "同じものがすでにあります。";
     default:
       return "接続できませんでした。時間をおいて再度お試しください。";
   }
