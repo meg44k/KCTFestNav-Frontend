@@ -1,11 +1,13 @@
 import { EntranceTiles } from "@/components/home/EntranceTiles";
-import { FestivalTitle } from "@/components/home/FestivalTitle";
+import { CatchcopyTitle } from "@/components/home/FestivalTitle";
 import { StageHeadlineCard } from "@/components/home/StageHeadlineCard";
+import { StarField } from "@/components/home/StarField";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
 import { RefreshEvery } from "@/components/RefreshEvery";
 import { BulletinBoard } from "@/components/ui/bulletinBoard";
 import { apiFetch } from "@/lib/api/client";
 import type { StageSectionResponse } from "@/lib/api/stage";
+import { u } from "@/lib/home/design-unit";
 import { announcementOrDefault } from "@/lib/live-schedule";
 import { stageHeadline } from "@/lib/stage-schedule";
 
@@ -31,18 +33,25 @@ export default async function Main() {
   const sections = stage.status === "fulfilled" ? stage.value.sections : [];
 
   return (
-    <div>
+    // 背景の星を中身の後ろに置くため、ここで重なりの基準を作る
+    <div className="relative isolate min-h-dvh">
+      <StarField />
       {/* intro-* はタイトル画面から来たときだけ、見出しのまわりをふわっと出す目印(globals.css) */}
-      <div className="intro-bulletin">
+      {/* お知らせの帯には星を透かさない */}
+      <div className="intro-bulletin bg-black">
         <BulletinBoard content={announcementOrDefault(content)} />
       </div>
       <SideMenu />
       <RefreshEvery seconds={60} />
-      <div className="flex flex-col items-center gap-4 px-4 pb-10">
-        <FestivalTitle className="pt-10 pb-2 text-center" />
-        <div className="intro-content flex w-full flex-col items-center gap-4">
-          <StageHeadlineCard headline={stageHeadline(sections, Date.now())} />
-          <EntranceTiles />
+      <div className="flex flex-col items-center gap-4 px-4 pb-14">
+        <CatchcopyTitle className="w-full pt-12 pb-5" />
+        {/* チケットとタイルはデザインの案(幅 264)の比率で描くので、幅の基準になる入れ物 */}
+        <div className="intro-content @container w-full max-w-md">
+          {/* 「いまのステージ」を上、「さがす」を下。間は案の 24 */}
+          <div className="flex flex-col" style={{ gap: u(24) }}>
+            <StageHeadlineCard headline={stageHeadline(sections, Date.now())} />
+            <EntranceTiles />
+          </div>
         </div>
       </div>
     </div>
