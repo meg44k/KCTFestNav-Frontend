@@ -1,4 +1,5 @@
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
+import { LikesProvider } from "@/components/likes/LikesProvider";
 import { CampusMap } from "@/components/map/CampusMap";
 import { RefreshEvery } from "@/components/RefreshEvery";
 import { type Booth, fetchBooths } from "@/lib/api/booths";
@@ -22,7 +23,9 @@ export default async function MapPage({
   const initial = resolveInitial(parseMapQuery(await searchParams), booths);
   return (
     <div>
-      <CampusMap booths={booths} initial={initial} loadFailed={loadFailed} />
+      <LikesProvider>
+        <CampusMap booths={booths} initial={initial} loadFailed={loadFailed} />
+      </LikesProvider>
       <SideMenu />
       <RefreshEvery seconds={60} />
     </div>

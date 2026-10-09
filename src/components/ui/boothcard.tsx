@@ -1,6 +1,7 @@
 import { MapPin, XIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { LikeButton } from "@/components/likes/LikeButton";
 import {
   Dialog,
   DialogClose,
@@ -42,6 +43,7 @@ function BoothCard({
   longitude,
   updatedLabel,
   mapHref,
+  likeBoothId,
 }: {
   name: string;
   description: string;
@@ -61,6 +63,8 @@ function BoothCard({
   updatedLabel?: string;
   /** 地図でこのブースを開くリンク。位置が無いブースや地図の上では渡さない */
   mapHref?: string;
+  /** いいねできるブース(クラス展示)の ID。渡したときだけハートを出す */
+  likeBoothId?: number;
 }) {
   const congestionStatusMessage = congestionMessageOf(
     congestionStatus,
@@ -177,9 +181,14 @@ function BoothCard({
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <DialogTitle className="text-black text-xl">
-                    {name}
-                  </DialogTitle>
+                  <div className="flex items-start gap-2">
+                    <DialogTitle className="mr-auto text-black text-xl">
+                      {name}
+                    </DialogTitle>
+                    {likeBoothId !== undefined && (
+                      <LikeButton boothId={likeBoothId} />
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-x-3 text-black/60 text-xs">
                     {organizer && <span>{organizer}</span>}
                     {location && <span>{location}</span>}
@@ -223,6 +232,10 @@ function BoothCard({
           name={name}
           className="absolute bottom-3 right-3"
         />
+      )}
+      {/* ナビボタンと同じく、詳細のトリガーの外に重ねる */}
+      {likeBoothId !== undefined && (
+        <LikeButton boothId={likeBoothId} className="absolute top-8 right-3" />
       )}
     </div>
   );

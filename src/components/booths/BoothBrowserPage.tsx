@@ -1,4 +1,5 @@
 import { BoothBrowser } from "@/components/booths/BoothBrowser";
+import { LikesProvider } from "@/components/likes/LikesProvider";
 import { type Booth, fetchBooths } from "@/lib/api/booths";
 import { type BoothType, parseFilters } from "@/lib/booth-browser";
 
@@ -22,12 +23,14 @@ export async function BoothBrowserPage({
   }
 
   return (
-    <BoothBrowser
-      booths={booths}
-      loadFailed={loadFailed}
-      defaultType={defaultType}
-      initialFilters={parseFilters(await searchParams, defaultType)}
-      serverNow={Date.now()}
-    />
+    <LikesProvider>
+      <BoothBrowser
+        booths={booths}
+        loadFailed={loadFailed}
+        defaultType={defaultType}
+        initialFilters={parseFilters(await searchParams, defaultType)}
+        serverNow={Date.now()}
+      />
+    </LikesProvider>
   );
 }
