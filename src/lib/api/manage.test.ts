@@ -63,6 +63,17 @@ describe("manageRequest", () => {
     expect(init.cache).toBe("no-store");
   });
 
+  it("FormData を送るときは Content-Type を付けない(fetch が multipart の境界を付ける)", async () => {
+    fetchMock.mockResolvedValue(new Response("{}", { status: 201 }));
+    const body = new FormData();
+    body.set("target", "booth:1");
+    await manageRequest("/manage/images", { method: "POST", body });
+    const init = fetchMock.mock.calls[0][1];
+    expect(init.headers["Content-Type"]).toBeUndefined();
+    expect(init.headers.Authorization).toBe("Bearer jwt-token");
+    expect(init.body).toBe(body);
+  });
+
   it("応答が返らないまま待ち続けないよう、タイムアウトを付ける", async () => {
     fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
     await manageRequest("/auth/me");

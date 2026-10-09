@@ -43,7 +43,10 @@ export async function manageRequest<T>(
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       ...init,
       headers: {
-        "Content-Type": "application/json",
+        // FormData(写真)のときは fetch が multipart の境界を付けるので、こちらでは付けない
+        ...(init?.body instanceof FormData
+          ? {}
+          : { "Content-Type": "application/json" }),
         ...init?.headers,
         Authorization: `Bearer ${token}`,
       },
