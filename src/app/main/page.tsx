@@ -7,6 +7,7 @@ import { RefreshEvery } from "@/components/RefreshEvery";
 import { BulletinBoard } from "@/components/ui/bulletinBoard";
 import { apiFetch } from "@/lib/api/client";
 import type { StageSectionResponse } from "@/lib/api/stage";
+import { u } from "@/lib/home/design-unit";
 import { announcementOrDefault } from "@/lib/live-schedule";
 import { stageHeadline } from "@/lib/stage-schedule";
 
@@ -46,8 +47,11 @@ export default async function Main() {
         <CatchcopyTitle className="w-full pt-12 pb-5" />
         {/* チケットとタイルはデザインの案(幅 264)の比率で描くので、幅の基準になる入れ物 */}
         <div className="intro-content @container w-full max-w-md">
-          <StageHeadlineCard headline={stageHeadline(sections, Date.now())} />
-          <EntranceTiles />
+          {/* 「さがす」を上、「いまのステージ」を下(本人の希望で入れ替えて試す)。間は案の 24 */}
+          <div className="flex flex-col" style={{ gap: u(24) }}>
+            <EntranceTiles />
+            <StageHeadlineCard headline={stageHeadline(sections, Date.now())} />
+          </div>
         </div>
       </div>
     </div>
