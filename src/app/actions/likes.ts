@@ -1,5 +1,6 @@
 "use server";
 
+import { checkBotId } from "botid/server";
 import { cookies } from "next/headers";
 import {
   FAILED,
@@ -32,6 +33,8 @@ export async function toggleLike(
   on: boolean,
 ): Promise<{ error?: string }> {
   if (!Number.isInteger(boothId)) return { error: FAILED };
+  // プログラムからの大量投票を入口で止める(Vercel BotID。手元では常に人として通る)
+  if ((await checkBotId()).isBot) return { error: FAILED };
   let voter: string | number | undefined = (await cookies()).get(
     VOTER_COOKIE,
   )?.value;

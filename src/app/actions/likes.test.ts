@@ -14,6 +14,9 @@ vi.mock("next/headers", () => ({
   }),
 }));
 
+const checkBotId = vi.hoisted(() => vi.fn());
+vi.mock("botid/server", () => ({ checkBotId }));
+
 const fetchMock = vi.fn();
 vi.stubGlobal("fetch", fetchMock);
 vi.stubEnv("INTERNAL_API_KEY", "key");
@@ -33,6 +36,8 @@ const calls = () =>
   }));
 
 beforeEach(() => {
+  checkBotId.mockReset();
+  checkBotId.mockResolvedValue({ isBot: false });
   jar.clear();
   setCookie.mockReset();
   fetchMock.mockReset();
@@ -108,6 +113,13 @@ describe("toggleLike", () => {
     expect(await toggleLike(5, true)).toEqual({ error: FAILED });
     fetchMock.mockRejectedValueOnce(new Error("down"));
     expect(await toggleLike(5, true)).toEqual({ error: FAILED });
+  });
+
+  it("ボットと判定されたら番号も作らず断る", async () => {
+    checkBotId.mockResolvedValue({ isBot: true });
+    expect(await toggleLike(5, true)).toEqual({ error: FAILED });
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(setCookie).not.toHaveBeenCalled();
   });
 
   it("ID が数でなければ送らない", async () => {
