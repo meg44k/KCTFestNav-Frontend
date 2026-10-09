@@ -79,7 +79,7 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
   if (playing.length === 0 && starting.length === 0 && !next) return null;
   const live = playing[0];
   return (
-    <section style={{ marginBottom: u(16) }}>
+    <section style={{ marginBottom: u(24) }}>
       <SectionLabel>いまのステージ</SectionLabel>
       <Link
         href="/stage-event"

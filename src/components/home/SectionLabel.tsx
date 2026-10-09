@@ -15,7 +15,7 @@ export function SectionLabel({
       style={{
         fontSize: u(10),
         lineHeight: 1,
-        marginBottom: u(6),
+        marginBottom: u(8),
         paddingLeft: u(2),
       }}
     >
