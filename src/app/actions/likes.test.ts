@@ -122,6 +122,13 @@ describe("toggleLike", () => {
     expect(setCookie).not.toHaveBeenCalled();
   });
 
+  it("BotID 自体が失敗したら止めずに通す(ボットと判定されたときだけ断る)", async () => {
+    checkBotId.mockRejectedValue(new Error("x-vercel-oidc-token missing"));
+    jar.set(VOTER_COOKIE, "v.sig");
+    fetchMock.mockResolvedValueOnce(res(204));
+    expect(await toggleLike(5, true)).toEqual({});
+  });
+
   it("ID が数でなければ送らない", async () => {
     expect(await toggleLike(Number.NaN, true)).toEqual({ error: FAILED });
     expect(fetchMock).not.toHaveBeenCalled();

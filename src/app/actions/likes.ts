@@ -25,6 +25,20 @@ async function issueVoter(): Promise<string | number> {
   return voter;
 }
 
+/**
+ * プログラムからの大量投票を入口で止める(Vercel BotID。`next dev` では常に人として通る)。
+ * BotID 自体が失敗したとき(Vercel の外・一時的な障害)は止めない。いいねが全部押せなくなるより、
+ * 後から管理画面で見つけて取り消すほうを選ぶ
+ */
+async function isBot(): Promise<boolean> {
+  try {
+    return (await checkBotId()).isBot;
+  } catch (e) {
+    console.error("BotID の判定に失敗しました。止めずに通します", e);
+    return false;
+  }
+}
+
 const errorOf = (status: number) => (status === 429 ? TOO_MANY : FAILED);
 
 /** クラス展示にいいねする(on)・取り消す */
@@ -33,8 +47,7 @@ export async function toggleLike(
   on: boolean,
 ): Promise<{ error?: string }> {
   if (!Number.isInteger(boothId)) return { error: FAILED };
-  // プログラムからの大量投票を入口で止める(Vercel BotID。手元では常に人として通る)
-  if ((await checkBotId()).isBot) return { error: FAILED };
+  if (await isBot()) return { error: FAILED };
   let voter: string | number | undefined = (await cookies()).get(
     VOTER_COOKIE,
   )?.value;

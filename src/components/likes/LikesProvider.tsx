@@ -10,7 +10,7 @@ import {
   useState,
 } from "react";
 import { myLikes, toggleLike } from "@/app/actions/likes";
-import { withLike } from "@/lib/likes";
+import { FAILED, withLike } from "@/lib/likes";
 
 type Likes = {
   isLiked: (boothId: number) => boolean;
@@ -48,13 +48,16 @@ export function LikesProvider({ children }: { children: ReactNode }) {
     (boothId: number) => {
       const on = !liked.has(boothId);
       setLiked((cur) => withLike(cur, boothId, on));
-      toggleLike(boothId, on).then((res) => {
-        if (!res.error) return;
-        setLiked((cur) => withLike(cur, boothId, !on));
-        setError(res.error);
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => setError(null), 3000);
-      });
+      // つながらないなどで Server Action 自体が失敗したときも元に戻す
+      toggleLike(boothId, on)
+        .catch(() => ({ error: FAILED }))
+        .then((res) => {
+          if (!res.error) return;
+          setLiked((cur) => withLike(cur, boothId, !on));
+          setError(res.error);
+          clearTimeout(timer.current);
+          timer.current = setTimeout(() => setError(null), 3000);
+        });
     },
     [liked],
   );
