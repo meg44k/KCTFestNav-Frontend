@@ -36,7 +36,7 @@ export function ChangeLoginIdButton({
       }}
     >
       <DialogTrigger render={<Button variant="outline" size="sm" />}>
-        ID 変更
+        編集
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogTitle>{loginId} のログイン ID を変える</DialogTitle>
