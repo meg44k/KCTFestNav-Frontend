@@ -9,6 +9,8 @@ const YELLOW = "#FFB100";
 const STAR = "#FFC107";
 const CARD = "#1C1C1C";
 const GRAY = "#9E9E9E";
+// チケットの高さ(案は 112。本人の希望で少し短く)
+const TICKET_H = 96;
 
 const place = (location: string) => (location ? `（${location}）` : "");
 
@@ -22,11 +24,11 @@ function Star({ x, y, r }: { x: number; y: number; r: number }) {
   );
 }
 
-/** チケットの飾り(流れ星・切り取り線・「>」)。案と同じ 264×112 の座標で描く */
+/** チケットの飾り(流れ星・切り取り線・「>」)。案と同じ幅 264 の座標で描く */
 function TicketDecoration({ live }: { live: boolean }) {
   return (
     <svg
-      viewBox="0 0 264 112"
+      viewBox={`0 0 264 ${TICKET_H}`}
       aria-hidden="true"
       // 枠線を含めた大きさに合わせる(座標を案とそろえる)
       className="pointer-events-none absolute"
@@ -50,13 +52,13 @@ function TicketDecoration({ live }: { live: boolean }) {
         x1="211"
         y1="0"
         x2="211"
-        y2="112"
+        y2={TICKET_H}
         stroke="#5D5D5D"
         strokeWidth="0.8"
         strokeDasharray="2.5 2"
       />
       <polyline
-        points="243.5,49 250,55.5 243.5,62"
+        points={`243.5,${TICKET_H / 2 - 6.5} 250,${TICKET_H / 2} 243.5,${TICKET_H / 2 + 6.5}`}
         fill="none"
         stroke="#E3E3E3"
         strokeWidth="1.6"
@@ -68,7 +70,7 @@ function TicketDecoration({ live }: { live: boolean }) {
 }
 
 /**
- * 入口ページのステージのチケット(デザインの案: 264×112)。全体を押すとステージイベントへ。
+ * 入口ページのステージのチケット(デザインの案は 264×112、高さだけ少し短くした)。全体を押すとステージイベントへ。
  * 演奏中は左に黄色の「LIVE!」の帯と流れ星。出すものが無ければ何も出さない
  */
 export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
@@ -82,7 +84,7 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
         href="/stage-event"
         className="relative block w-full overflow-hidden active:brightness-125"
         style={{
-          aspectRatio: "264 / 112",
+          aspectRatio: `264 / ${TICKET_H}`,
           background: CARD,
           border: "1px solid #595959",
           borderRadius: u(10),
