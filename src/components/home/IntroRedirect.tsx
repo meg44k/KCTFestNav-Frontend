@@ -12,9 +12,12 @@ import { INTRO_COOKIE_SET } from "@/lib/intro";
 export function IntroRedirect({
   to,
   afterMs,
+  reducedMotionMs = afterMs,
 }: {
   to: string;
   afterMs: number;
+  /** 「視差効果を減らす」の端末で待つ時間(アニメーションを流さないので短くてよい) */
+  reducedMotionMs?: number;
 }) {
   const router = useRouter();
   useEffect(() => {
@@ -23,12 +26,16 @@ export function IntroRedirect({
     const html = document.documentElement;
     html.dataset.intro = "";
     router.prefetch(to);
-    const timer = setTimeout(() => router.replace(to), afterMs);
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const timer = setTimeout(
+      () => router.replace(to),
+      reduce ? reducedMotionMs : afterMs,
+    );
     return () => {
       clearTimeout(timer);
       // 入口ページが出てアニメーションが終わるまで待ってから外す
       setTimeout(() => delete html.dataset.intro, 2500);
     };
-  }, [router, to, afterMs]);
+  }, [router, to, afterMs, reducedMotionMs]);
   return null;
 }
