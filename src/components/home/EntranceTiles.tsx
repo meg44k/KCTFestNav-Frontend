@@ -1,13 +1,16 @@
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { u } from "@/lib/home/design-unit";
+import {
+  ICON_LINE,
+  ICON_STROKE,
+  TILE,
+  YELLOW,
+  YELLOW_LINE,
+} from "@/lib/home/palette";
 import { TILE_ENTRANCES, TILE_MAP } from "@/lib/navigation";
 import { SectionLabel } from "./SectionLabel";
 
-// 色はデザインの案から読み取った値
-const YELLOW = "#FFB100";
-// 真っ黒の背景から少し浮く、やわらかい黒(案のチケットと同じ色)
-const TILE = "#1C1C1C";
 // マップの高さ(案は 127。上に置くと黄色が強すぎるので低くして試す)
 const MAP_H = 100;
 // 小さいタイルの高さ(案は 88。マップ(100)より少し低く)
@@ -37,15 +40,15 @@ export function EntranceTiles() {
               style={{
                 aspectRatio: `84 / ${TILE_H}`,
                 background: TILE,
-                border: `1px solid ${YELLOW}`,
+                border: `1px solid ${YELLOW_LINE}`,
                 borderRadius: u(10),
               }}
             >
               <Icon
                 aria-hidden
-                strokeWidth={2}
+                strokeWidth={ICON_STROKE}
                 color={YELLOW}
-                className="absolute"
+                className={`absolute ${ICON_LINE}`}
                 style={{
                   left: u(8.5),
                   top: u(8.5),
@@ -79,26 +82,26 @@ export function EntranceTiles() {
           style={{
             aspectRatio: `264 / ${MAP_H}`,
             background: TILE,
-            border: `1px solid ${YELLOW}`,
+            border: `1px solid ${YELLOW_LINE}`,
             borderRadius: u(10),
           }}
         >
           <MapIcon
             aria-hidden
-            strokeWidth={1.6}
+            strokeWidth={ICON_STROKE}
             color={YELLOW}
-            className="absolute"
+            className={`absolute ${ICON_LINE}`}
             style={{ left: u(11), top: u(10), width: u(30), height: u(30) }}
           />
           <ArrowUpRight
             aria-hidden
-            strokeWidth={2.2}
+            strokeWidth={ICON_STROKE}
             color={YELLOW}
-            className="absolute"
+            className={`absolute ${ICON_LINE}`}
             style={{ right: u(6), top: u(6), width: u(28), height: u(28) }}
           />
           <span
-            className="absolute font-black"
+            className="absolute font-bold"
             style={{
               left: u(15),
               // 下から測って置く(高さを変えても文字の大きさと下の余白は変わらない)

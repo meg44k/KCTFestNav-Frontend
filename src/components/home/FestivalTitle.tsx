@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ViewTransition } from "react";
 import { eventYear } from "@/lib/constants";
+import { OFF_WHITE } from "@/lib/home/palette";
 
 /**
  * 「2026 北九州高専 / 高専祭」。タイトル画面と入口ページで同じ名前を付け、
@@ -39,8 +40,8 @@ export function CatchcopyTitle({ className }: { className?: string }) {
           <span
             aria-hidden
             // ロゴの文字(GAZER)の下の端(画像の上から 83%)のすぐ下に置く。左下の星の線には少しかかってよい
-            className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap font-bold text-[#F4F1EA] text-2xl leading-none tracking-widest"
-            style={{ top: "calc(83.2% + 4px)" }}
+            className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap font-bold text-2xl leading-none tracking-widest"
+            style={{ top: "calc(83.2% + 4px)", color: OFF_WHITE }}
           >
             北九州高専 高専祭 {eventYear}
           </span>

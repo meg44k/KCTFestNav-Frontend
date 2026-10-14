@@ -7,6 +7,7 @@ import { RefreshEvery } from "@/components/RefreshEvery";
 import { BulletinBoard } from "@/components/ui/bulletinBoard";
 import { apiFetch } from "@/lib/api/client";
 import type { StageSectionResponse } from "@/lib/api/stage";
+import { BG } from "@/lib/home/palette";
 import { announcementOrDefault } from "@/lib/live-schedule";
 import { stageHeadline } from "@/lib/stage-schedule";
 
@@ -33,11 +34,14 @@ export default async function Main() {
 
   return (
     // 背景の星を中身の後ろに置くため、ここで重なりの基準を作る
-    <div className="relative isolate flex min-h-dvh flex-col">
+    <div
+      className="relative isolate flex min-h-dvh flex-col"
+      style={{ background: BG }}
+    >
       <StarField />
       {/* intro-* はタイトル画面から来たときだけ、見出しのまわりをふわっと出す目印(globals.css) */}
       {/* お知らせの帯には星を透かさない */}
-      <div className="intro-bulletin bg-black">
+      <div className="intro-bulletin" style={{ background: BG }}>
         <BulletinBoard content={announcementOrDefault(content)} />
       </div>
       <SideMenu />
@@ -61,7 +65,7 @@ export default async function Main() {
       {/* 中身が短い画面でも、いちばん下に置く */}
       <footer className="mt-auto px-4 pb-6 text-center text-white/50 text-xs">
         {/* 文字に背景の星が重ならないよう、文字の後ろだけ黒くする */}
-        <span className="bg-black px-2 py-1">
+        <span className="px-2 py-1" style={{ background: BG }}>
           © 2026 KCT Festival Committee
         </span>
       </footer>

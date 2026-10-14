@@ -1,15 +1,17 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { u } from "@/lib/home/design-unit";
+import {
+  BG,
+  GRAY,
+  ICON_LINE,
+  ICON_STROKE,
+  OFF_WHITE,
+  YELLOW,
+} from "@/lib/home/palette";
 import { blockTimeRange, type StageHeadline } from "@/lib/stage-schedule";
 import { FitText } from "./FitText";
 import { SectionLabel } from "./SectionLabel";
-
-// 入口ページの黄色と灰色(タイル・マップと同じ)
-const YELLOW = "#FFB100";
-const GRAY = "#9E9E9E";
-// ロゴと同じ、少しあたたかい白
-const OFF_WHITE = "#F4F1EA";
 
 const place = (location: string) => (location ? `（${location}）` : "");
 
@@ -24,13 +26,13 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
   const live = playing[0];
   return (
     // 文字の後ろに背景の星が見えないよう、真っ黒を敷く(まわりにも少しはみ出させる)
-    <section style={{ background: "#000", boxShadow: `0 0 0 ${u(6)} #000` }}>
+    <section style={{ background: BG, boxShadow: `0 0 0 ${u(6)} ${BG}` }}>
       <SectionLabel>いまのステージ</SectionLabel>
       <Link
         href="/stage-event"
         className="flex items-center active:opacity-70"
         style={{
-          borderLeft: `${u(2)} solid ${YELLOW}`,
+          borderLeft: `2px solid ${YELLOW}`,
           paddingLeft: u(12),
           paddingBlock: u(4),
           gap: u(8),
@@ -69,7 +71,7 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
               </span>
               {/* 長い名前は「…」で切らずに、入るまで小さくする */}
               <FitText
-                className="font-semibold"
+                className="font-bold"
                 fontSize={u(28)}
                 style={{ lineHeight: 1.15, color: OFF_WHITE }}
               >
@@ -108,7 +110,8 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
         </span>
         <ChevronRight
           aria-hidden
-          strokeWidth={2}
+          strokeWidth={ICON_STROKE}
+          className={ICON_LINE}
           color={YELLOW}
           style={{ width: u(18), height: u(18), flexShrink: 0 }}
         />
