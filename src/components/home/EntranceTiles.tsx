@@ -73,29 +73,31 @@ export function EntranceTiles() {
         </div>
         <Link
           href={href}
-          className="relative block w-full active:brightness-95"
+          // 上の 3 つと同じ見た目(黒地・黄色の細い枠・黄色のアイコンと文字)。大きさはそのまま
+          className="relative block w-full active:brightness-150"
           style={{
             aspectRatio: `264 / ${MAP_H}`,
-            background: YELLOW,
+            background: TILE,
+            border: `1px solid ${YELLOW}`,
             borderRadius: u(10),
           }}
         >
           <MapIcon
             aria-hidden
             strokeWidth={1.6}
-            color="#1E1E1E"
+            color={YELLOW}
             className="absolute"
             style={{ left: u(11), top: u(10), width: u(30), height: u(30) }}
           />
           <ArrowUpRight
             aria-hidden
             strokeWidth={2.2}
-            color="#000"
+            color={YELLOW}
             className="absolute"
             style={{ right: u(6), top: u(6), width: u(28), height: u(28) }}
           />
           <span
-            className="absolute font-black text-black"
+            className="absolute font-black"
             style={{
               left: u(15),
               // 下から測って置く(高さを変えても文字の大きさと下の余白は変わらない)
@@ -103,6 +105,7 @@ export function EntranceTiles() {
               fontSize: u(30),
               lineHeight: 1,
               letterSpacing: "0.02em",
+              color: YELLOW,
             }}
           >
             {label}
@@ -114,7 +117,7 @@ export function EntranceTiles() {
               bottom: u(12),
               fontSize: u(10.2),
               lineHeight: 1,
-              color: "#000",
+              color: YELLOW,
             }}
           >
             展示・ゴミ箱・バザーの場所
