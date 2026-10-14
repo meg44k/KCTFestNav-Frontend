@@ -52,7 +52,7 @@ export default async function Main() {
         上: お知らせのすぐ下に「いまのステージ」、まん中: ロゴ、下: 「さがす」(画面の下にそろえる)。
         部品はデザインの案(幅 264)の比率で描くので、ここが幅の基準になる入れ物
       */}
-      <div className="intro-content @container mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col px-4">
+      <div className="intro-content @container mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col px-7">
         <div className="pt-5">
           <StageHeadlineCard headline={stageHeadline(sections, Date.now())} />
         </div>
