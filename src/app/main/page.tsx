@@ -35,7 +35,9 @@ export default async function Main() {
   return (
     // 背景の星を中身の後ろに置くため、ここで重なりの基準を作る
     <div
-      className="relative isolate flex min-h-dvh flex-col"
+      // 入口ページは 1 画面に全部収める(画面の高さに合わせてロゴが伸び縮みする)。
+      // ただしとても低い画面(横向きなど)では縮めすぎないよう、下限を決めてスクロールさせる
+      className="relative isolate flex h-dvh min-h-[560px] flex-col"
       style={{ background: BG }}
     >
       <StarField />
@@ -50,20 +52,20 @@ export default async function Main() {
         上: お知らせのすぐ下に「いまのステージ」、まん中: ロゴ、下: 「さがす」(画面の下にそろえる)。
         部品はデザインの案(幅 264)の比率で描くので、ここが幅の基準になる入れ物
       */}
-      <div className="intro-content @container mx-auto flex w-full max-w-md flex-1 flex-col px-4">
+      <div className="intro-content @container mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col px-4">
         <div className="pt-5">
           <StageHeadlineCard headline={stageHeadline(sections, Date.now())} />
         </div>
-        {/* 上と下の間の空きのまん中にロゴ */}
-        <div className="flex flex-1 items-center justify-center py-6">
+        {/* 上と下の間の空きのまん中にロゴ。空きの高さに合わせてロゴの大きさを決める(大きさの基準になる入れ物) */}
+        <div className="flex min-h-0 flex-1 items-center justify-center py-4 [container-type:size]">
           <CatchcopyTitle className="w-full" />
         </div>
-        <div className="pb-6">
+        <div className="pb-4">
           <EntranceTiles />
         </div>
       </div>
       {/* 中身が短い画面でも、いちばん下に置く */}
-      <footer className="mt-auto px-4 pb-6 text-center text-white/50 text-xs">
+      <footer className="px-4 pb-4 text-center text-white/50 text-xs">
         {/* 文字に背景の星が重ならないよう、文字の後ろだけ黒くする */}
         <span className="px-2 py-1" style={{ background: BG }}>
           © 2026 KCT Festival Committee
