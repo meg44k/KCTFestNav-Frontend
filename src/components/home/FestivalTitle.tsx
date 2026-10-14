@@ -26,7 +26,7 @@ export function CatchcopyTitle({ className }: { className?: string }) {
     <ViewTransition name="festival-title" share="intro-morph">
       <h1 className={className}>
         <span className="sr-only">{eventYear} 北九州高専 高専祭</span>
-        {/* ロゴの上に学校名・祭の名前・年(読み上げは上の見出しがあるので飾り扱い) */}
+        {/* ロゴの下のまん中に学校名・祭の名前・年(読み上げは上の見出しがあるので飾り扱い) */}
         <span className="relative mx-auto block w-full max-w-80">
           <Image
             src="/catchcopy-offwhite.png"
@@ -38,9 +38,7 @@ export function CatchcopyTitle({ className }: { className?: string }) {
           />
           <span
             aria-hidden
-            // ロゴの「T」の横棒(画像の上から 14%)の 10px 上に置く。星の線に少しかかってもよい
-            className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap font-bold text-[#F4F1EA] text-2xl leading-none tracking-widest"
-            style={{ bottom: "calc(86% + 10px)" }}
+            className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap font-bold text-[#F4F1EA] text-2xl tracking-widest"
           >
             北九州高専 高専祭 {eventYear}
           </span>
