@@ -41,7 +41,8 @@ export const ORB_START = 900;
 const ORB_DOWN = 650;
 const ORB_NEAR = 1150;
 const CAM_F = 1000;
-const NEAR_Z = 975;
+// カメラに近づく深さ。手前で最大 CAM_F / (CAM_F - NEAR_Z) = 10 倍に見える(大きすぎると画面が真っ白になる)
+const NEAR_Z = 900;
 /** 戻ってきた流れ星が斜線をなぞり始める時刻と、なぞる長さ(時間) */
 export const HEAD_START = ORB_START + ORB_DOWN + ORB_NEAR;
 const HEAD_DUR = 700;
@@ -59,8 +60,12 @@ const MID = {
   y: (SLASH_START.y + SLASH_END.y) / 2,
 };
 const ORB_A = Math.hypot(SLASH_START.x - MID.x, SLASH_START.y - MID.y) + PRE;
+// 手前の半分のふくらみ
+const ORB_B = ORB_A * 0.25;
 // 最初に飛び込んでくる所(斜線の右上の端よりずっと外)
 const U0 = 2.8;
+
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
 export type OrbitPoint = { x: number; y: number; k: number; th: number };
 
@@ -69,9 +74,14 @@ function orbit(th: number): OrbitPoint {
   const u = Math.cos(th);
   const z = th > Math.PI ? -Math.sin(th) * NEAR_Z : 0;
   const k = CAM_F / (CAM_F - z);
-  const c = th > Math.PI * 1.5 ? 1 : k ** -0.82;
-  const px = MID.x - DIR.x * ORB_A * u * c;
-  const py = MID.y - DIR.y * ORB_A * u * c;
+  // 手前を通るまでは斜線の中心へ寄せ、通り過ぎたら少しずつ寄せるのをやめて大きく弧を描いて戻る。
+  // 寄せ方を一度に切り替えず続けて変えるので、位置が飛ばない
+  const back = clamp01((th - Math.PI * 1.5) / (Math.PI * 0.5));
+  const c = k ** (-0.82 * (1 - back * back * (3 - 2 * back)));
+  // 手前の半分は斜線から右下へ少しふくらませる(折り返しの瞬間から横へ動き出し、止まって見えない)
+  const w = th > Math.PI ? -Math.sin(th) * ORB_B : 0;
+  const px = MID.x + (-DIR.x * ORB_A * u + DIR.y * w) * c;
+  const py = MID.y + (-DIR.y * ORB_A * u - DIR.x * w) * c;
   return { x: MID.x + (px - MID.x) * k, y: MID.y + (py - MID.y) * k, k, th };
 }
 
@@ -81,7 +91,9 @@ export function orbitAt(t: number): OrbitPoint | null {
   if (e < 0 || e >= ORB_DOWN + ORB_NEAR) return null;
   if (e < ORB_DOWN) {
     const q = e / ORB_DOWN;
-    const u = -1 + (U0 + 1) * (1 - q) * (1 - q);
+    // 飛び込んで減速するが、左下の端でも止まりきらずに手前へ回り始める
+    const left = 1 - q;
+    const u = -1 + ((U0 + 1) * left * (1 + 2 * left)) / 3;
     return {
       x: MID.x - DIR.x * ORB_A * u,
       y: MID.y - DIR.y * ORB_A * u,
@@ -89,7 +101,9 @@ export function orbitAt(t: number): OrbitPoint | null {
       th: Math.PI * q,
     };
   }
-  return orbit(Math.PI + (Math.PI * (e - ORB_DOWN)) / ORB_NEAR);
+  // 回り始めは横にほとんど動かないので、出だしを速くして止まって見えないようにする
+  const q = (e - ORB_DOWN) / ORB_NEAR;
+  return orbit(Math.PI + Math.PI * (q + 0.8 * q * (1 - q)));
 }
 
 /** 時刻 t の、斜線をなぞる流れ星の頭(p は進み具合 0〜1.25)。なぞっていない時は null */

@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  HEAD_START,
   headAt,
   LOGO_H,
   LOGO_W,
   logoImageRect,
+  ORB_START,
+  orbitAt,
   REVEAL_END_MS,
   revealLayout,
   SLASH_END,
@@ -59,5 +62,37 @@ describe("headAt(斜線をなぞる流れ星の頭)", () => {
     const mid = points[Math.floor(points.length / 2)];
     expect(mid.x).toBeLessThan(SLASH_START.x);
     expect(mid.x).toBeGreaterThan(SLASH_END.x);
+  });
+});
+
+describe("orbitAt(大きな流れ星)", () => {
+  // 1 コマ(約 16ms)ごとの移動量(絵の座標)
+  const steps = () => {
+    const out: { t: number; d: number; k: number }[] = [];
+    let prev = orbitAt(ORB_START);
+    for (let t = ORB_START + 16; t < HEAD_START; t += 16) {
+      const o = orbitAt(t);
+      if (!o || !prev) break;
+      out.push({ t, d: Math.hypot(o.x - prev.x, o.y - prev.y), k: o.k });
+      prev = o;
+    }
+    return out;
+  };
+
+  it("途中で止まって見えない(どの 0.1 秒の間にも、はっきり動く)", () => {
+    for (let t = ORB_START; t + 100 < HEAD_START; t += 16) {
+      const a = orbitAt(t);
+      const b = orbitAt(t + 100);
+      if (!a || !b) continue;
+      expect(Math.hypot(b.x - a.x, b.y - a.y), `t=${t}`).toBeGreaterThan(20);
+    }
+  });
+
+  it("途中で位置が飛ばない", () => {
+    for (const s of steps()) expect(s.d, `t=${s.t}`).toBeLessThan(120);
+  });
+
+  it("カメラの前を通っても、画面を覆うほど大きくならない", () => {
+    for (const s of steps()) expect(s.k, `t=${s.t}`).toBeLessThanOrEqual(10);
   });
 });
