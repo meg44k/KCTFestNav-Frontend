@@ -1,53 +1,44 @@
-import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { u } from "@/lib/home/design-unit";
-import {
-  BG,
-  GRAY,
-  ICON_LINE,
-  ICON_STROKE,
-  OFF_WHITE,
-  YELLOW,
-} from "@/lib/home/palette";
+import { BG, GRAY, OFF_WHITE, YELLOW } from "@/lib/home/palette";
 import { blockTimeRange, type StageHeadline } from "@/lib/stage-schedule";
 import { FitText } from "./FitText";
-import { SectionLabel } from "./SectionLabel";
 
 const place = (location: string) => (location ? `（${location}）` : "");
 
 /**
- * 入口ページの「いまのステージ」。枠で囲まず、星空の上に左の黄色の線 1 本でまとめる。
- * 演奏中は黄色の「● LIVE」(点がゆっくり光る)と会場、大きくバンド名、灰色で次。
- * 全体を押すとステージイベントへ。出すものが無ければ何も出さない
+ * 入口ページの「いまのステージ」。2 行だけのシンプルな形。
+ * 1 行目: 黄色の「● LIVE」(点がゆっくり光る)とバンド名、2 行目: 会場と次のバンド(小さく灰色)。
+ * 全体を押すとステージイベントへ(右上のメニューボタンと重なるので矢印は付けない)。出すものが無ければ何も出さない
  */
 export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
   const { playing, starting, next } = headline;
   if (playing.length === 0 && starting.length === 0 && !next) return null;
   const live = playing[0];
   return (
-    // 文字の後ろに背景の星が見えないよう、真っ黒を敷く(まわりにも少しはみ出させる)
-    <section style={{ background: BG, boxShadow: `0 0 0 ${u(6)} ${BG}` }}>
-      <SectionLabel>いまのステージ</SectionLabel>
+    // 文字の後ろに背景の星が見えないよう、背景の色を敷く(まわりにも少しはみ出させる)
+    <section
+      aria-label="いまのステージ"
+      style={{ background: BG, boxShadow: `0 0 0 ${u(6)} ${BG}` }}
+    >
       <Link
         href="/stage-event"
         className="flex items-center active:opacity-70"
-        style={{
-          borderLeft: `2px solid ${YELLOW}`,
-          paddingLeft: u(12),
-          paddingBlock: u(4),
-          gap: u(8),
-        }}
+        // 右上のメニューボタンと重ならないよう、右をあける
+        style={{ paddingRight: u(40) }}
       >
-        <span className="flex min-w-0 flex-1 flex-col" style={{ gap: u(4) }}>
+        <span className="flex min-w-0 flex-1 flex-col" style={{ gap: u(3) }}>
           {live ? (
             <>
-              <span
-                className="flex items-center"
-                style={{ gap: u(6), fontSize: u(10), lineHeight: 1.2 }}
-              >
+              <span className="flex min-w-0 items-center" style={{ gap: u(8) }}>
                 <span
-                  className="flex items-center font-bold"
-                  style={{ gap: u(4), color: YELLOW, letterSpacing: "0.08em" }}
+                  className="flex shrink-0 items-center font-bold"
+                  style={{
+                    gap: u(4),
+                    color: YELLOW,
+                    fontSize: u(10),
+                    letterSpacing: "0.08em",
+                  }}
                 >
                   <span
                     aria-hidden
@@ -65,29 +56,31 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
                   </span>
                   LIVE
                 </span>
-                <span className="truncate" style={{ color: GRAY }}>
-                  {live.section.location || live.section.name}
-                </span>
+                {/* 長い名前は「…」で切らずに、入るまで小さくする */}
+                <FitText
+                  className="min-w-0 flex-1 font-bold"
+                  fontSize={u(15)}
+                  style={{ lineHeight: 1.2, color: OFF_WHITE }}
+                >
+                  {live.current.name}
+                </FitText>
               </span>
-              {/* 長い名前は「…」で切らずに、入るまで小さくする */}
               <FitText
-                className="font-bold"
-                fontSize={u(28)}
-                style={{ lineHeight: 1.15, color: OFF_WHITE }}
+                fontSize={u(10)}
+                style={{ lineHeight: 1.3, color: GRAY }}
               >
-                {live.current.name}
-              </FitText>
-              <FitText
-                fontSize={u(13)}
-                style={{ lineHeight: 1.25, color: GRAY }}
-              >
-                {live.next ? `次: ${live.next.name}` : "このブロックの最後です"}
+                {[
+                  live.section.location || live.section.name,
+                  live.next
+                    ? `次: ${live.next.name}`
+                    : "このブロックの最後です",
+                ].join(" ・ ")}
               </FitText>
             </>
           ) : (
             <span
-              className="flex flex-col text-white"
-              style={{ fontSize: u(11), lineHeight: 1.5, gap: u(2) }}
+              className="flex flex-col"
+              style={{ fontSize: u(11), lineHeight: 1.5, color: OFF_WHITE }}
             >
               {starting.map(({ section, block }) => (
                 <span key={block.id}>
@@ -108,13 +101,6 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
             </span>
           )}
         </span>
-        <ChevronRight
-          aria-hidden
-          strokeWidth={ICON_STROKE}
-          className={ICON_LINE}
-          color={YELLOW}
-          style={{ width: u(18), height: u(18), flexShrink: 0 }}
-        />
       </Link>
     </section>
   );
