@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { u } from "@/lib/home/design-unit";
-import { BG, GRAY, OFF_WHITE, YELLOW } from "@/lib/home/palette";
+import { BG, GRAY, LIVE_RED, OFF_WHITE } from "@/lib/home/palette";
 import { blockTimeRange, type StageHeadline } from "@/lib/stage-schedule";
 import { FitText } from "./FitText";
 
@@ -8,7 +8,7 @@ const place = (location: string) => (location ? `（${location}）` : "");
 
 /**
  * 入口ページの「いまのステージ」。2 行だけのシンプルな形。
- * 1 行目: 黄色の「● LIVE」(点がゆっくり光る)とバンド名、2 行目: 会場と次のバンド(小さく灰色)。
+ * 1 行目: 赤の「● LIVE」(点がゆっくり光る)とバンド名、2 行目: 会場と次のバンド(小さく灰色)。
  * 全体を押すとステージイベントへ(右上のメニューボタンと重なるので矢印は付けない)。出すものが無ければ何も出さない
  */
 export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
@@ -35,7 +35,7 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
                   className="flex shrink-0 items-center font-bold"
                   style={{
                     gap: u(4),
-                    color: YELLOW,
+                    color: LIVE_RED,
                     fontSize: u(10),
                     letterSpacing: "0.08em",
                   }}
@@ -47,11 +47,15 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
                   >
                     <span
                       className="absolute inset-0 rounded-full opacity-70 motion-safe:animate-ping"
-                      style={{ background: YELLOW }}
+                      style={{ background: LIVE_RED }}
                     />
                     <span
                       className="relative rounded-full"
-                      style={{ width: u(6), height: u(6), background: YELLOW }}
+                      style={{
+                        width: u(6),
+                        height: u(6),
+                        background: LIVE_RED,
+                      }}
                     />
                   </span>
                   LIVE

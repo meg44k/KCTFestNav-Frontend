@@ -4,6 +4,8 @@
 export const BG = "#0E0E10";
 /** 黄色。少し明るさと鮮やかさを落とした */
 export const YELLOW = "#F2A900";
+// 「● LIVE」の赤(黒地でまぶしすぎない、少しやわらかい赤)
+export const LIVE_RED = "#E5484D";
 /** 細い枠の黄色(少し透かして、線のちらつきを抑える) */
 export const YELLOW_LINE = "rgba(242, 169, 0, 0.8)";
 /** タイルの地(背景から少し浮く黒) */
