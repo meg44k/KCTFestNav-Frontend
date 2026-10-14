@@ -6,8 +6,8 @@ export const BG = "#0E0E10";
 export const YELLOW = "#F2A900";
 // 「● LIVE」の赤(黒地でまぶしすぎない、少しやわらかい赤)
 export const LIVE_RED = "#E5484D";
-/** 細い枠の黄色(少し透かして、線のちらつきを抑える) */
-export const YELLOW_LINE = "rgba(242, 169, 0, 0.8)";
+/** 細い枠の黄色。暗めにして、線を細く見せる(ちらつきも抑える) */
+export const YELLOW_LINE = "rgba(242, 169, 0, 0.5)";
 /** タイルの地(背景から少し浮く黒) */
 export const TILE = "#1C1C1C";
 /** 大きい文字の白(ロゴと同じ、少しあたたかい白) */
