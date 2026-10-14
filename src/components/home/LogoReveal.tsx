@@ -495,13 +495,10 @@ export function LogoReveal() {
         style={{ opacity: done ? 0 : 1 }}
       />
       {rect && (
-        // 入口ページのロゴと同じ名前。移るときに位置と大きさが滑らかに変わる
-        <ViewTransition name="festival-title" share="intro-morph">
-          <h1
-            className="absolute m-0"
-            style={{ ...rect, opacity: done ? 1 : 0 }}
-          >
-            <span className="sr-only">{eventYear} 北九州高専 高専祭</span>
+        <h1 className="absolute m-0" style={{ ...rect, opacity: done ? 1 : 0 }}>
+          <span className="sr-only">{eventYear} 北九州高専 高専祭</span>
+          {/* 入口ページのロゴ画像と同じ名前。移るときに位置と大きさが滑らかに変わる */}
+          <ViewTransition name="festival-title" share="intro-morph">
             <Image
               src="/catchcopy-offwhite.png"
               alt="ST@R G4ZER"
@@ -510,8 +507,8 @@ export function LogoReveal() {
               priority
               className="h-full w-full"
             />
-          </h1>
-        </ViewTransition>
+          </ViewTransition>
+        </h1>
       )}
     </div>
   );
