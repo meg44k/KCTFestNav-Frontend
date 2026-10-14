@@ -38,9 +38,9 @@ export function CatchcopyTitle({ className }: { className?: string }) {
           />
           <span
             aria-hidden
-            className="absolute right-1 -bottom-3 font-bold text-[#F4F1EA] text-2xl tracking-widest"
+            className="absolute -bottom-7 left-1/2 -translate-x-1/2 whitespace-nowrap font-bold text-[#F4F1EA] text-2xl tracking-widest"
           >
-            高専祭 {eventYear}
+            北九州高専 高専祭 {eventYear}
           </span>
         </span>
       </h1>
