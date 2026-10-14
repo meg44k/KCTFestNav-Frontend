@@ -20,9 +20,8 @@ import {
   STAR_BOXES,
 } from "@/lib/home/logo-reveal";
 
-// 色は「r,g,b」の形(透明度を後から付けるため)
-const GOLD = "255,217,138";
-const CYAN = "159,212,255";
+// 光はすべて白。色は「r,g,b」の形(透明度を後から付けるため)
+const WHITE = "255,255,255";
 // 文字は入口ページのロゴと同じあたたかい白(#F4F1EA)
 const LETTER = [244, 241, 234] as const;
 
@@ -279,7 +278,7 @@ export function LogoReveal() {
           if (!o) continue;
           const [x, y] = toStage(o.x, o.y);
           if (prev) {
-            ctx.strokeStyle = `rgba(${GOLD},${0.025 * (36 - i)})`;
+            ctx.strokeStyle = `rgba(${WHITE},${0.025 * (36 - i)})`;
             ctx.lineWidth = Math.min(7 * dpr * o.k, 4000);
             ctx.lineCap = "round";
             ctx.beginPath();
@@ -291,9 +290,9 @@ export function LogoReveal() {
         }
         const [x, y] = toStage(oo.x, oo.y);
         const r = 6 * dpr * oo.k * Math.max(sc, 0.4);
-        glowDot(ctx, x, y, r * 7, "255,200,120", 0.5);
-        glowDot(ctx, x, y, r * 2.2, "255,240,210", 0.9);
-        glowDot(ctx, x, y, r * 0.8, "255,255,255", 1);
+        glowDot(ctx, x, y, r * 7, WHITE, 0.5);
+        glowDot(ctx, x, y, r * 2.2, WHITE, 0.9);
+        glowDot(ctx, x, y, r * 0.8, WHITE, 1);
         ctx.save();
         ctx.translate(x, y);
         ctx.rotate(oo.th * 0.5);
@@ -314,7 +313,7 @@ export function LogoReveal() {
               born: t,
               life: rnd(200, 450),
               r: rnd(1, 3) * Math.min(oo.k, 4) * 0.6,
-              col: Math.random() < 0.5 ? GOLD : "200,230,255",
+              col: WHITE,
             });
           }
       }
@@ -332,7 +331,7 @@ export function LogoReveal() {
           hy,
           5 * dpr,
           0.55,
-          GOLD,
+          WHITE,
         );
         streak(
           ctx,
@@ -342,10 +341,10 @@ export function LogoReveal() {
           hy,
           2 * dpr,
           1,
-          "255,255,255",
+          WHITE,
         );
-        glowDot(ctx, hx, hy, 60 * dpr, GOLD, 0.55);
-        glowDot(ctx, hx, hy, 16 * dpr, "255,255,255", 1);
+        glowDot(ctx, hx, hy, 60 * dpr, WHITE, 0.55);
+        glowDot(ctx, hx, hy, 16 * dpr, WHITE, 1);
         if (Math.random() < 0.9)
           for (let i = 0; i < 3; i++)
             particles.push({
@@ -356,7 +355,7 @@ export function LogoReveal() {
               born: t,
               life: rnd(300, 700),
               r: rnd(1, 2.4),
-              col: Math.random() < 0.5 ? GOLD : CYAN,
+              col: WHITE,
             });
       }
 
@@ -375,8 +374,8 @@ export function LogoReveal() {
             c.sx + (c.s[0] - c.sx) * e,
             c.sy + (c.s[1] - c.sy) * e,
           );
-          streak(ctx, a1, b1, a2, b2, 2.2 * dpr, 0.9, CYAN);
-          glowDot(ctx, a2, b2, 14 * dpr, "255,255,255", 0.95);
+          streak(ctx, a1, b1, a2, b2, 2.2 * dpr, 0.9, WHITE);
+          glowDot(ctx, a2, b2, 14 * dpr, WHITE, 0.95);
         }
         if (p >= 1 && !c.burst) {
           c.burst = true;
@@ -391,7 +390,7 @@ export function LogoReveal() {
               born: t,
               life: rnd(350, 750),
               r: rnd(1, 2.2),
-              col: "255,236,190",
+              col: WHITE,
             });
           }
         }
@@ -409,14 +408,14 @@ export function LogoReveal() {
           ctx.save();
           ctx.translate(x, y);
           ctx.rotate(k < 1 ? ((1 - ease(k)) * Math.PI) / 4 : 0);
-          glowDot(ctx, 0, 0, r * 2.2, GOLD, 0.75 * fade);
+          glowDot(ctx, 0, 0, r * 2.2, WHITE, 0.75 * fade);
           const a = c.s[4] ? (k < 1 ? 1 - ease(k) : 0) : fade;
           ctx.fillStyle = `rgba(255,255,255,${a})`;
           sparkPath(ctx, 0, 0, r);
           ctx.fill();
           ctx.restore();
           if (k < 1) {
-            ctx.strokeStyle = `rgba(${CYAN},${1 - k})`;
+            ctx.strokeStyle = `rgba(${WHITE},${1 - k})`;
             ctx.lineWidth = 1.5 * dpr;
             ctx.beginPath();
             ctx.arc(x, y, c.s[2] * sc * (1 + k * 3), 0, 6.283);
@@ -444,8 +443,8 @@ export function LogoReveal() {
           H / 2,
           Math.max(W, H) * 0.7,
         );
-        g.addColorStop(0, `rgba(255,250,235,${a})`);
-        g.addColorStop(1, "rgba(255,250,235,0)");
+        g.addColorStop(0, `rgba(${WHITE},${a})`);
+        g.addColorStop(1, `rgba(${WHITE},0)`);
         ctx.fillStyle = g;
         ctx.fillRect(0, 0, W, H);
       }
