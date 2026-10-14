@@ -73,7 +73,7 @@ export function EntranceTiles() {
         <Link
           href={href}
           // 上の 3 つと同じ見た目(黒地・黄色の細い枠・黄色のアイコンと文字)。大きさはそのまま
-          className="relative block aspect-[264/100] w-full active:brightness-150"
+          className="relative block aspect-[264/88] w-full active:brightness-150"
           style={{
             background: TILE,
             border: `1px solid ${YELLOW_LINE}`,
