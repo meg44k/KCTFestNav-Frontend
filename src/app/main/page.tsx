@@ -34,7 +34,7 @@ export default async function Main() {
 
   return (
     // 背景の星を中身の後ろに置くため、ここで重なりの基準を作る
-    <div className="relative isolate min-h-dvh">
+    <div className="relative isolate flex min-h-dvh flex-col">
       <StarField />
       {/* intro-* はタイトル画面から来たときだけ、見出しのまわりをふわっと出す目印(globals.css) */}
       {/* お知らせの帯には星を透かさない */}
@@ -43,7 +43,7 @@ export default async function Main() {
       </div>
       <SideMenu />
       <RefreshEvery seconds={60} />
-      <div className="flex flex-col items-center gap-4 px-4 pb-14">
+      <div className="flex flex-col items-center gap-4 px-4 pb-10">
         <CatchcopyTitle className="w-full pt-12 pb-5" />
         {/* チケットとタイルはデザインの案(幅 264)の比率で描くので、幅の基準になる入れ物 */}
         <div className="intro-content @container w-full max-w-md">
@@ -54,6 +54,13 @@ export default async function Main() {
           </div>
         </div>
       </div>
+      {/* 中身が短い画面でも、いちばん下に置く */}
+      <footer className="mt-auto px-4 pb-6 text-center text-white/50 text-xs">
+        {/* 文字に背景の星が重ならないよう、文字の後ろだけ黒くする */}
+        <span className="bg-black px-2 py-1">
+          © 2026 KCT Festival Committee
+        </span>
+      </footer>
     </div>
   );
 }
