@@ -6,7 +6,8 @@ import { SectionLabel } from "./SectionLabel";
 
 // 色はデザインの案から読み取った値
 const YELLOW = "#FFB100";
-const TILE = "#0A0700";
+// 真っ黒の背景から少し浮く、やわらかい黒(案のチケットと同じ色)
+const TILE = "#1C1C1C";
 // マップの高さ(案は 127。上に置くと黄色が強すぎるので低くして試す)
 const MAP_H = 100;
 // 小さいタイルの高さ(案は 88。マップ(100)より少し低く)
