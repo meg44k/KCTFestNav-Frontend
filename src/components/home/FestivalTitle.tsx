@@ -26,14 +26,23 @@ export function CatchcopyTitle({ className }: { className?: string }) {
     <ViewTransition name="festival-title" share="intro-morph">
       <h1 className={className}>
         <span className="sr-only">{eventYear} 北九州高専 高専祭</span>
-        <Image
-          src="/catchcopy-offwhite.png"
-          alt="ST@R G4ZER"
-          width={992}
-          height={528}
-          priority
-          className="mx-auto h-auto w-full max-w-80"
-        />
+        {/* ロゴの右下に小さく年と名前(読み上げは上の見出しがあるので飾り扱い) */}
+        <span className="relative mx-auto block w-full max-w-80">
+          <Image
+            src="/catchcopy-offwhite.png"
+            alt="ST@R G4ZER"
+            width={992}
+            height={528}
+            priority
+            className="h-auto w-full"
+          />
+          <span
+            aria-hidden
+            className="absolute right-1 bottom-0 font-bold text-[#F4F1EA] text-sm tracking-widest"
+          >
+            {eventYear} 高専祭
+          </span>
+        </span>
       </h1>
     </ViewTransition>
   );
