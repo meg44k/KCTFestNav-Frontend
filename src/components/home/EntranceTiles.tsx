@@ -98,8 +98,9 @@ export function EntranceTiles() {
             className="absolute font-bold"
             style={{
               left: u(15),
-              // 下から測って置く(高さを変えても文字の大きさと下の余白は変わらない)
-              bottom: u(28),
+              // 下から測って置く(高さを変えても文字の大きさと下の余白は変わらない)。
+              // 説明の行は置かず、その位置(下から 12)に名前を置く
+              bottom: u(12),
               fontSize: u(30),
               lineHeight: 1,
               letterSpacing: "0.02em",
@@ -107,18 +108,6 @@ export function EntranceTiles() {
             }}
           >
             {label}
-          </span>
-          <span
-            className="absolute font-bold"
-            style={{
-              left: u(15.5),
-              bottom: u(12),
-              fontSize: u(10.2),
-              lineHeight: 1,
-              color: YELLOW,
-            }}
-          >
-            展示・ゴミ箱・バザーの場所
           </span>
         </Link>
       </div>
