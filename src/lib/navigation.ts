@@ -17,13 +17,15 @@ export const NAV_ENTRANCES: NavItem[] = [
   { label: "ステージイベント", href: "/stage-event", icon: MicVocal },
 ];
 
-/** トップの 2×2 のタイルの並び。クラブバザーを左上にする(本人の希望)。メニューは NAV_ENTRANCES の順 */
+// トップの入口。マップを大きく 1 つ、その下に小さい 3 つ(デザインの案のとおり)。メニューは NAV_ENTRANCES の順
 const byHref = (href: string) =>
   NAV_ENTRANCES.find((n) => n.href === href) as NavItem;
+
+export const TILE_MAP: NavItem = byHref("/map");
+
 export const TILE_ENTRANCES: NavItem[] = [
   byHref("/bazaar"),
   byHref("/class-booth"),
-  byHref("/map"),
   byHref("/stage-event"),
 ];
 
