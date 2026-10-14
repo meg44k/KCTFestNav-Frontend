@@ -21,7 +21,8 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
   if (playing.length === 0 && starting.length === 0 && !next) return null;
   const live = playing[0];
   return (
-    <section>
+    // 文字の後ろに背景の星が見えないよう、真っ黒を敷く(まわりにも少しはみ出させる)
+    <section style={{ background: "#000", boxShadow: `0 0 0 ${u(6)} #000` }}>
       <SectionLabel>いまのステージ</SectionLabel>
       <Link
         href="/stage-event"
