@@ -27,7 +27,7 @@ export function CatchcopyTitle({ className }: { className?: string }) {
     <ViewTransition name="festival-title" share="intro-morph">
       <h1 className={className}>
         <span className="sr-only">{eventYear} 北九州高専 高専祭</span>
-        {/* ロゴの下のまん中に学校名・祭の名前・年(読み上げは上の見出しがあるので飾り扱い) */}
+        {/* ロゴの上のまん中に学校名・祭の名前・年(読み上げは上の見出しがあるので飾り扱い) */}
         {/*
           ロゴの幅は、横幅(最大 17rem)と、置き場所の高さ(下の文字の分 28px を除く)に収まる大きい方。
           高さの低いスマホでは小さくなり、入口ページが 1 画面に収まる
@@ -50,11 +50,11 @@ export function CatchcopyTitle({ className }: { className?: string }) {
           />
           <span
             aria-hidden
-            // ロゴの文字(GAZER)の下の端(画像の上から 83%)のすぐ下に置く。左下の星の線には少しかかってよい
+            // ロゴの「T」の横棒(画像の上から 14%)の少し上に置く(左右はまん中のまま)。星の線に少しかかってもよい
             className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap font-bold leading-none tracking-widest"
             // ロゴの幅 272px のとき約 20px
             style={{
-              top: "calc(83.2% + 1.25cqw)",
+              bottom: "calc(86% + 3cqw)",
               fontSize: "7.5cqw",
               color: OFF_WHITE,
             }}
