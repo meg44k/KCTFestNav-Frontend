@@ -94,20 +94,26 @@ export function EntranceTiles() {
             className={`absolute ${ICON_LINE}`}
             style={{ right: u(6), top: u(6), width: u(28), height: u(28) }}
           />
+          {/*
+            下から測って置く(高さを変えても文字の大きさと下の余白は変わらない)。
+            マップが低いので、説明は名前の下ではなく右に、文字の下の線をそろえて並べる
+          */}
           <span
-            className="absolute font-bold"
-            style={{
-              left: u(15),
-              // 下から測って置く(高さを変えても文字の大きさと下の余白は変わらない)。
-              // 説明の行は置かず、その位置(下から 12)に名前を置く
-              bottom: u(12),
-              fontSize: u(30),
-              lineHeight: 1,
-              letterSpacing: "0.02em",
-              color: YELLOW,
-            }}
+            className="absolute flex items-baseline font-bold"
+            style={{ left: u(15), bottom: u(12), gap: u(10), color: YELLOW }}
           >
-            {label}
+            <span
+              style={{
+                fontSize: u(30),
+                lineHeight: 1,
+                letterSpacing: "0.02em",
+              }}
+            >
+              {label}
+            </span>
+            <span style={{ fontSize: u(10.2), lineHeight: 1 }}>
+              展示・ゴミ箱・バザーの場所
+            </span>
           </span>
         </Link>
       </div>
