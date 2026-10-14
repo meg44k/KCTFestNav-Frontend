@@ -29,7 +29,7 @@ export function CatchcopyTitle({ className }: { className?: string }) {
         <span className="sr-only">{eventYear} 北九州高専 高専祭</span>
         {/* ロゴの下のまん中に学校名・祭の名前・年(読み上げは上の見出しがあるので飾り扱い) */}
         {/*
-          ロゴの幅は、横幅(最大 20rem)と、置き場所の高さ(下の文字の分 28px を除く)に収まる大きい方。
+          ロゴの幅は、横幅(最大 17rem)と、置き場所の高さ(下の文字の分 28px を除く)に収まる大きい方。
           高さの低いスマホでは小さくなり、入口ページが 1 画面に収まる
         */}
         <span
@@ -37,7 +37,7 @@ export function CatchcopyTitle({ className }: { className?: string }) {
           className="relative mx-auto block [container-type:inline-size]"
           style={{
             // 下の文字(ロゴの幅の約 9%)の分を除いた高さに収める
-            width: "min(20rem, 100cqw, calc(100cqh * 992 / 528 / 1.17))",
+            width: "min(17rem, 100cqw, calc(100cqh * 992 / 528 / 1.17))",
           }}
         >
           <Image
@@ -52,7 +52,7 @@ export function CatchcopyTitle({ className }: { className?: string }) {
             aria-hidden
             // ロゴの文字(GAZER)の下の端(画像の上から 83%)のすぐ下に置く。左下の星の線には少しかかってよい
             className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap font-bold leading-none tracking-widest"
-            // ロゴの幅 320px のとき 24px
+            // ロゴの幅 272px のとき約 20px
             style={{
               top: "calc(83.2% + 1.25cqw)",
               fontSize: "7.5cqw",
