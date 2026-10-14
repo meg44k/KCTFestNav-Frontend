@@ -43,7 +43,13 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
                   <span
                     aria-hidden
                     className="relative inline-flex"
-                    style={{ width: u(6), height: u(6) }}
+                    // フォントの文字の箱は上に余白があり、そのままだと点が「LIVE」より上に見える。
+                    // 大文字のまん中に来るよう少し下げる
+                    style={{
+                      width: u(6),
+                      height: u(6),
+                      transform: `translateY(${u(1)})`,
+                    }}
                   >
                     <span
                       className="absolute inset-0 rounded-full opacity-70 motion-safe:animate-ping"
