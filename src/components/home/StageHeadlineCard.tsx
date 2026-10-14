@@ -8,6 +8,8 @@ import { SectionLabel } from "./SectionLabel";
 // 入口ページの黄色と灰色(タイル・マップと同じ)
 const YELLOW = "#FFB100";
 const GRAY = "#9E9E9E";
+// ロゴと同じ、少しあたたかい白
+const OFF_WHITE = "#F4F1EA";
 
 const place = (location: string) => (location ? `（${location}）` : "");
 
@@ -67,9 +69,9 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
               </span>
               {/* 長い名前は「…」で切らずに、入るまで小さくする */}
               <FitText
-                className="font-semibold text-white"
+                className="font-semibold"
                 fontSize={u(28)}
-                style={{ lineHeight: 1.15 }}
+                style={{ lineHeight: 1.15, color: OFF_WHITE }}
               >
                 {live.current.name}
               </FitText>

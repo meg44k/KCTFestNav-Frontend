@@ -27,7 +27,7 @@ export function CatchcopyTitle({ className }: { className?: string }) {
       <h1 className={className}>
         <span className="sr-only">{eventYear} 北九州高専 高専祭</span>
         <Image
-          src="/catchcopy.png"
+          src="/catchcopy-offwhite.png"
           alt="ST@R G4ZER"
           width={992}
           height={528}

@@ -7,7 +7,6 @@ import { RefreshEvery } from "@/components/RefreshEvery";
 import { BulletinBoard } from "@/components/ui/bulletinBoard";
 import { apiFetch } from "@/lib/api/client";
 import type { StageSectionResponse } from "@/lib/api/stage";
-import { u } from "@/lib/home/design-unit";
 import { announcementOrDefault } from "@/lib/live-schedule";
 import { stageHeadline } from "@/lib/stage-schedule";
 
@@ -43,15 +42,20 @@ export default async function Main() {
       </div>
       <SideMenu />
       <RefreshEvery seconds={60} />
-      <div className="flex flex-col items-center gap-4 px-4 pb-10">
-        <CatchcopyTitle className="w-full pt-12 pb-5" />
-        {/* チケットとタイルはデザインの案(幅 264)の比率で描くので、幅の基準になる入れ物 */}
-        <div className="intro-content @container w-full max-w-md">
-          {/* 「いまのステージ」を上、「さがす」を下。間は案の 24 */}
-          <div className="flex flex-col" style={{ gap: u(24) }}>
-            <StageHeadlineCard headline={stageHeadline(sections, Date.now())} />
-            <EntranceTiles />
-          </div>
+      {/*
+        上: お知らせのすぐ下に「いまのステージ」、まん中: ロゴ、下: 「さがす」(画面の下にそろえる)。
+        部品はデザインの案(幅 264)の比率で描くので、ここが幅の基準になる入れ物
+      */}
+      <div className="intro-content @container mx-auto flex w-full max-w-md flex-1 flex-col px-4">
+        <div className="pt-5">
+          <StageHeadlineCard headline={stageHeadline(sections, Date.now())} />
+        </div>
+        {/* 上と下の間の空きのまん中にロゴ */}
+        <div className="flex flex-1 items-center justify-center py-6">
+          <CatchcopyTitle className="w-full" />
+        </div>
+        <div className="pb-6">
+          <EntranceTiles />
         </div>
       </div>
       {/* 中身が短い画面でも、いちばん下に置く */}
