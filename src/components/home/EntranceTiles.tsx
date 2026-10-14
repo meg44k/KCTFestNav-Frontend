@@ -111,8 +111,11 @@ export function EntranceTiles() {
             >
               {label}
             </span>
-            {/* 名前より目立たないよう、少し暗い黄色にする */}
-            <span style={{ fontSize: u(10.2), lineHeight: 1, opacity: 0.6 }}>
+            {/* 名前より目立たないよう、少し暗い黄色の細い文字にする */}
+            <span
+              className="font-normal"
+              style={{ fontSize: u(10.2), lineHeight: 1, opacity: 0.6 }}
+            >
               展示・ゴミ箱・バザーの場所
             </span>
           </span>
