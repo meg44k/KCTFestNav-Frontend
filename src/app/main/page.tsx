@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { EntranceTiles } from "@/components/home/EntranceTiles";
 import { CatchcopyTitle } from "@/components/home/FestivalTitle";
 import { StageHeadlineCard } from "@/components/home/StageHeadlineCard";
@@ -65,6 +66,16 @@ export default async function Main() {
         </div>
       </div>
       {/* 中身が短い画面でも、いちばん下に置く */}
+      {/* 開発中だけ: タイトル画面のアニメーションをもう一度見る */}
+      {process.env.NODE_ENV !== "production" && (
+        <Link
+          href="/?replay=1"
+          className="fixed right-4 bottom-4 z-50 rounded-full border border-white/30 px-3 py-1 text-white/70 text-xs"
+          style={{ background: BG }}
+        >
+          アニメを見る
+        </Link>
+      )}
       <footer className="px-4 pb-4 text-center text-white/50 text-xs">
         {/* 文字に背景の星が重ならないよう、文字の後ろだけ黒くする */}
         <span className="px-2 py-1" style={{ background: BG }}>

@@ -11,9 +11,18 @@ import { INTRO_COOKIE, introSeen } from "@/lib/intro";
 // アニメーションが終わってから、ロゴを少し見せて入口へ
 const HOLD_MS = 500;
 
-export default async function Home() {
-  // 一度見た人にはタイトルを出さず、すぐ入口へ(画面をちらつかせない)
-  if (introSeen((await cookies()).get(INTRO_COOKIE)?.value)) redirect("/main");
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ replay?: string }>;
+}) {
+  // 一度見た人にはタイトルを出さず、すぐ入口へ(画面をちらつかせない)。
+  // 開発中は ?replay=1 でもう一度見られる(入口ページのデバッグ用ボタンから)
+  const replay =
+    process.env.NODE_ENV !== "production" &&
+    (await searchParams).replay === "1";
+  if (!replay && introSeen((await cookies()).get(INTRO_COOKIE)?.value))
+    redirect("/main");
   return (
     // 押せばアニメーションを飛ばしてすぐ入口へ。JavaScript が動かなくても移れる
     <Link
