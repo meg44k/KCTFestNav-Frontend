@@ -1,17 +1,25 @@
 import { describe, expect, it } from "vitest";
-import { canLike, withLike } from "./likes";
+import { canLike, nextVote, voteState } from "./likes";
 
-describe("withLike", () => {
-  it("押すと足し、取り消すと抜く。元は変えない", () => {
-    const before = new Set([1]);
-    expect([...withLike(before, 2, true)]).toEqual([1, 2]);
-    expect([...withLike(before, 1, false)]).toEqual([]);
-    expect([...before]).toEqual([1]);
+describe("nextVote(押したあとの自分の票)", () => {
+  it("まだ入れていなければ、押した展示に入る", () => {
+    expect(nextVote(null, 2)).toBe(2);
   });
 
-  it("同じ状態にしても変わらない", () => {
-    expect([...withLike(new Set([1]), 1, true)]).toEqual([1]);
-    expect([...withLike(new Set<number>(), 1, false)]).toEqual([]);
+  it("入れている展示をもう一度押すと取り消す", () => {
+    expect(nextVote(2, 2)).toBeNull();
+  });
+
+  it("ほかの展示に入れていれば、押した展示へ移す(1 人 1 票)", () => {
+    expect(nextVote(1, 2)).toBe(2);
+  });
+});
+
+describe("voteState(ボタンの見た目)", () => {
+  it("入れていない・この展示に入れている・ほかの展示に入れている", () => {
+    expect(voteState(null, 2)).toBe("none");
+    expect(voteState(2, 2)).toBe("mine");
+    expect(voteState(1, 2)).toBe("other");
   });
 });
 

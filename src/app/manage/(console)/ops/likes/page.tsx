@@ -10,14 +10,14 @@ export default async function LikesPage() {
   ]);
   if (!likes.ok) {
     return (
-      <ConsoleMessage title="いいね">
+      <ConsoleMessage title="投票">
         {failureMessage(likes.reason)}
       </ConsoleMessage>
     );
   }
   return (
     <>
-      <h1 className="font-extrabold text-3xl">いいね</h1>
+      <h1 className="font-extrabold text-3xl">投票</h1>
       <LikesMonitor
         rows={rankRows(likes.data)}
         isAdmin={me.ok && me.data.role === "Admin"}

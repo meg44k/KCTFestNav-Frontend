@@ -63,7 +63,7 @@ function BoothCard({
   updatedLabel?: string;
   /** 地図でこのブースを開くリンク。位置が無いブースや地図の上では渡さない */
   mapHref?: string;
-  /** いいねできるブース(クラス展示)の ID。渡したときだけハートを出す */
+  /** 投票できるブース(クラス展示)の ID。渡したときだけ投票のボタンを出す */
   likeBoothId?: number;
 }) {
   const congestionStatusMessage = congestionMessageOf(
@@ -128,7 +128,7 @@ function BoothCard({
               <div
                 className={cn(
                   "flex flex-col mr-auto min-w-0",
-                  // 右上に重ねるハートと文字が重ならないようにあける
+                  // 右上に重ねる投票のボタンと文字が重ならないようにあける
                   likeBoothId !== undefined && "pr-10",
                 )}
               >
@@ -244,7 +244,11 @@ function BoothCard({
       )}
       {/* ナビボタンと同じく、詳細のトリガーの外に重ねる */}
       {likeBoothId !== undefined && (
-        <LikeButton boothId={likeBoothId} className="absolute top-8 right-3" />
+        <LikeButton
+          boothId={likeBoothId}
+          compact
+          className="absolute top-8 right-3"
+        />
       )}
     </div>
   );
