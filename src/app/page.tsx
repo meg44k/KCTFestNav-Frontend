@@ -1,22 +1,44 @@
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { FestivalTitle } from "@/components/home/FestivalTitle";
 import { IntroRedirect } from "@/components/home/IntroRedirect";
+import { LogoReveal } from "@/components/home/LogoReveal";
+import { StarField } from "@/components/home/StarField";
+import { REVEAL_END_MS } from "@/lib/home/logo-reveal";
+import { BG } from "@/lib/home/palette";
 import { INTRO_COOKIE, introSeen } from "@/lib/intro";
 
-export default async function Home() {
-  // 一度見た人にはタイトルを出さず、すぐ入口へ(画面をちらつかせない)
-  if (introSeen((await cookies()).get(INTRO_COOKIE)?.value)) redirect("/main");
+// アニメーションが終わってから、ロゴを少し見せて入口へ
+const HOLD_MS = 500;
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ replay?: string }>;
+}) {
+  // 一度見た人にはタイトルを出さず、すぐ入口へ(画面をちらつかせない)。
+  // 開発中は ?replay=1 でもう一度見られる(入口ページのデバッグ用ボタンから)
+  const replay =
+    process.env.NODE_ENV !== "production" &&
+    (await searchParams).replay === "1";
+  if (!replay && introSeen((await cookies()).get(INTRO_COOKIE)?.value))
+    redirect("/main");
   return (
-    // JavaScript が動かなくても、押せば移れる
+    // 押せばアニメーションを飛ばしてすぐ入口へ。JavaScript が動かなくても移れる
     <Link
       href="/main"
       replace
-      className="flex h-dvh flex-col items-center justify-center text-center"
+      aria-label="入口ページへ"
+      className="relative isolate block h-dvh overflow-hidden"
+      style={{ background: BG }}
     >
-      <FestivalTitle />
-      <IntroRedirect to="/main" afterMs={1000} />
+      <StarField />
+      <LogoReveal />
+      <IntroRedirect
+        to="/main"
+        afterMs={REVEAL_END_MS + HOLD_MS}
+        reducedMotionMs={1000}
+      />
     </Link>
   );
 }
