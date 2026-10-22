@@ -9,6 +9,7 @@ import {
   useState,
   type WheelEvent,
 } from "react";
+import { OFF_WHITE } from "@/lib/home/palette";
 import {
   floorLabel,
   fromScreen,
@@ -28,6 +29,8 @@ const MAX_ZOOM = 12;
 const PIN_NAME_ZOOM = 2.2;
 // 画面の上でこれより近いピンは 1 つの丸にまとめる(px)。拡大するとほどける
 const CLUSTER_PX = 28;
+// 地図の上の白は、タイトル画面・入口ページと同じ少しあたたかい白(OFF_WHITE)。
+// 真っ白だと黒い地図の上でチカチカする(現在地の青い点のふちだけは真っ白のまま)
 
 // 地図の座標 → 画面の向き(MAP_BEARING が上)に回した座標。文字は回さずにすむ
 const S = (xy: XY) => toScreen(xy, MAP_BEARING);
@@ -281,7 +284,7 @@ export function Map2D({
                   <circle
                     r={15 * px}
                     fill="#0b0d10"
-                    stroke="#fff"
+                    stroke={OFF_WHITE}
                     strokeWidth={2.5 * px}
                   />
                   <text
@@ -289,8 +292,8 @@ export function Map2D({
                     // 数がひと目で読めるよう太く。文字の書体は 700 より太いものが無いので、
                     // 同じ色のふちを足して太らせる
                     fontWeight="bold"
-                    fill="#fff"
-                    stroke="#fff"
+                    fill={OFF_WHITE}
+                    stroke={OFF_WHITE}
                     strokeWidth={1.1 * px}
                     textAnchor="middle"
                     dominantBaseline="central"
@@ -321,7 +324,7 @@ export function Map2D({
                   <circle
                     r={r}
                     fill={PIN_COLORS[pin.congestion]}
-                    stroke="#fff"
+                    stroke={OFF_WHITE}
                     strokeWidth={2.5 * px}
                   />
                   {label && (
@@ -330,7 +333,7 @@ export function Map2D({
                       y={0}
                       fontSize={12 * px}
                       fontWeight="bold"
-                      fill="#fff"
+                      fill={OFF_WHITE}
                       stroke="#000"
                       strokeWidth={3 * px}
                       paintOrder="stroke"
@@ -367,7 +370,7 @@ export function Map2D({
                     height={h}
                     rx={h / 2}
                     fill={focused ? "#fbbf24" : "#0b0d10"}
-                    stroke="#ffffffb3"
+                    stroke={`${OFF_WHITE}b3`}
                     strokeWidth={px}
                   />
                   <text
@@ -375,7 +378,7 @@ export function Map2D({
                     y={c.y}
                     fontSize={size}
                     fontWeight="bold"
-                    fill={focused ? "#000" : "#fff"}
+                    fill={focused ? "#000" : OFF_WHITE}
                     textAnchor="middle"
                     dominantBaseline="central"
                   >
