@@ -31,6 +31,8 @@ const PIN_NAME_ZOOM = 2.2;
 const CLUSTER_PX = 28;
 // 地図の上の白は、タイトル画面・入口ページと同じ少しあたたかい白(OFF_WHITE)。
 // 真っ白だと黒い地図の上でチカチカする(現在地の青い点のふちだけは真っ白のまま)
+// 丸や名札の中は、真っ黒ではなく暗い灰色にして白との差をやわらげる
+const DARK = "#2b3038";
 
 // 地図の座標 → 画面の向き(MAP_BEARING が上)に回した座標。文字は回さずにすむ
 const S = (xy: XY) => toScreen(xy, MAP_BEARING);
@@ -283,7 +285,7 @@ export function Map2D({
                 >
                   <circle
                     r={15 * px}
-                    fill="#0b0d10"
+                    fill={DARK}
                     stroke={OFF_WHITE}
                     strokeWidth={2.5 * px}
                   />
@@ -369,7 +371,7 @@ export function Map2D({
                     width={w}
                     height={h}
                     rx={h / 2}
-                    fill={focused ? "#fbbf24" : "#0b0d10"}
+                    fill={focused ? "#fbbf24" : DARK}
                     stroke={`${OFF_WHITE}b3`}
                     strokeWidth={px}
                   />
