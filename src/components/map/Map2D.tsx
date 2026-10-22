@@ -323,10 +323,13 @@ export function Map2D({
                   data-pin={pin.id}
                   transform={`translate(${p.x} ${p.y})`}
                 >
-                  {/* 真ん中は白、ふちを混雑度の色にする(太めにして色が分かるように) */}
+                  {/*
+                    真ん中は透明、ふちを混雑度の色にする(太めにして色が分かるように)。
+                    none ではなく transparent にして、真ん中を押してもピンを選べるようにする
+                  */}
                   <circle
                     r={r}
-                    fill={OFF_WHITE}
+                    fill="transparent"
                     stroke={PIN_COLORS[pin.congestion]}
                     strokeWidth={4 * px}
                   />
