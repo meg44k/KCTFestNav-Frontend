@@ -321,9 +321,12 @@ export function Map2D({
                   />
                   <text
                     fontSize={14 * px}
-                    // 数がひと目で読めるよう、いちばん太く
-                    fontWeight={900}
+                    // 数がひと目で読めるよう太く。文字の書体は 700 より太いものが無いので、
+                    // 同じ色のふちを足して太らせる
+                    fontWeight="bold"
                     fill="#fff"
+                    stroke="#fff"
+                    strokeWidth={1.1 * px}
                     textAnchor="middle"
                     dominantBaseline="central"
                   >
