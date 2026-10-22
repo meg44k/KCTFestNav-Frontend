@@ -16,7 +16,12 @@ vi.mock("next/headers", () => ({
   cookies: async () => ({ get: () => undefined }),
 }));
 
-import { saveAnnouncement, setBoothCongestion } from "./ops";
+import {
+  removeAllLikes,
+  removeLikes,
+  saveAnnouncement,
+  setBoothCongestion,
+} from "./ops";
 
 // 戻り値を返すと vitest が後片付けの関数として呼んでしまうので、ブロックで書く
 beforeEach(() => {
@@ -71,6 +76,36 @@ describe("saveAnnouncement", () => {
     expect(manageRequest).toHaveBeenCalledWith("/manage/announcements", {
       method: "PUT",
       body: JSON.stringify({ content: "13時から体育館でライブ" }),
+    });
+  });
+});
+
+describe("removeLikes", () => {
+  it("時間帯を付けて DELETE し、消した件数を返す", async () => {
+    manageRequest.mockResolvedValue({ ok: true, data: { removed: 4 } });
+    expect(
+      await removeLikes(3, "2026-10-31T01:00:00Z", "2026-10-31T01:20:00Z"),
+    ).toEqual({ removed: 4 });
+    expect(manageRequest).toHaveBeenCalledWith(
+      "/manage/likes/3?from=2026-10-31T01%3A00%3A00Z&to=2026-10-31T01%3A20%3A00Z",
+      { method: "DELETE" },
+    );
+    expect(revalidatePath).toHaveBeenCalledWith("/manage/ops", "layout");
+  });
+
+  it("失敗は文言にする", async () => {
+    manageRequest.mockResolvedValue({ ok: false, reason: "forbidden" });
+    const res = await removeLikes(3, "a", "b");
+    expect(res.error).toBeTruthy();
+  });
+});
+
+describe("removeAllLikes", () => {
+  it("全部消す", async () => {
+    manageRequest.mockResolvedValue({ ok: true, data: { removed: 9 } });
+    expect(await removeAllLikes()).toEqual({ removed: 9 });
+    expect(manageRequest).toHaveBeenCalledWith("/manage/likes", {
+      method: "DELETE",
     });
   });
 });

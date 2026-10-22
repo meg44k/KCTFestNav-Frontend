@@ -8,6 +8,7 @@ import {
   useTransition,
 } from "react";
 import { type ActionState, saveBooth } from "@/app/actions/manage-booths";
+import { ImagePicker } from "@/components/manage/ImagePicker";
 import { LocationPicker } from "@/components/map/LocationPicker";
 import { Button } from "@/components/ui/button";
 import {
@@ -99,11 +100,11 @@ function BoothForm({
         defaultValue={current?.location}
         placeholder="第一体育館 など"
       />
-      <Field
-        label="画像 URL"
+      <ImagePicker
+        label="写真"
         name="imageUrl"
-        defaultValue={current?.image_url}
-        placeholder="https://..."
+        target={current ? `booth:${current.id}` : undefined}
+        defaultUrl={current?.image_url}
       />
       <LocationPicker
         latitude={current?.latitude}

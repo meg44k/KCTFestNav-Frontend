@@ -47,7 +47,11 @@ export default async function AccountsPage() {
         <AddAccountDialog />
       </div>
       <IssueAccounts missing={missing.length} />
-      <AccountList users={users.data.users} booths={boothsById} />
+      <AccountList
+        users={users.data.users}
+        booths={boothsById}
+        meId={auth.user.id}
+      />
     </div>
   );
 }

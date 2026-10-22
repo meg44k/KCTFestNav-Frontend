@@ -1,4 +1,6 @@
 import type { ManageUser } from "@/lib/manage/roles";
+import { DeleteAccountButton } from "./DeleteAccountButton";
+import { EditAccountButton } from "./EditAccountButton";
 import { ResetPasswordButton } from "./ResetPasswordButton";
 
 const ROLE_LABEL: Record<ManageUser["role"], string> = {
@@ -11,8 +13,11 @@ const ROLE_LABEL: Record<ManageUser["role"], string> = {
 export function AccountList({
   users,
   booths,
+  meId,
 }: {
   users: ManageUser[];
+  /** ログイン中の自分。自分のアカウントは削除できない */
+  meId: string;
   /** ブース ID → ブース名と担当者(主催者) */
   booths: Record<number, { name: string; organizer: string }>;
 }) {
@@ -30,9 +35,20 @@ export function AccountList({
 
   const boothOf = (u: ManageUser) =>
     booths[u.assigned_booth_id]?.name ?? "担当ブースなし";
-  // 担当者(1-1 など)はブースの主催者。ブースが削除済みならアカウントの名前
+  // 担当者はアカウントの名前(編集で変えられる)。名前が無ければブースの主催者(1-1 など)
   const organizerOf = (u: ManageUser) =>
-    booths[u.assigned_booth_id]?.organizer || u.name;
+    u.name || booths[u.assigned_booth_id]?.organizer || "";
+  // 編集で選べるブースと、ブースごとの担当
+  const boothChoices = Object.entries(booths)
+    .map(([id, b]) => ({ id: Number(id), name: b.name }))
+    .sort((a, b) => a.id - b.id);
+  const boothOwners: Record<number, string[]> = {};
+  for (const u of staff) {
+    boothOwners[u.assigned_booth_id] = [
+      ...(boothOwners[u.assigned_booth_id] ?? []),
+      u.login_id,
+    ];
+  }
 
   const section = (title: string, list: ManageUser[], showBooth: boolean) =>
     list.length > 0 && (
@@ -83,12 +99,31 @@ export function AccountList({
                       </td>
                     </>
                   )}
-                  <td className="text-right">
-                    <ResetPasswordButton
-                      userId={u.id}
-                      loginId={u.login_id}
-                      label={showBooth ? boothOf(u) : u.name}
-                    />
+                  <td>
+                    <div className="flex justify-end gap-2">
+                      <ResetPasswordButton
+                        userId={u.id}
+                        loginId={u.login_id}
+                        label={showBooth ? boothOf(u) : u.name}
+                      />
+                      <EditAccountButton
+                        user={u}
+                        booths={boothChoices}
+                        boothOwners={boothOwners}
+                      />
+                      {u.id !== meId && (
+                        <DeleteAccountButton
+                          userId={u.id}
+                          loginId={u.login_id}
+                          label={showBooth ? organizerOf(u) : u.name}
+                          boothName={
+                            showBooth && booths[u.assigned_booth_id]
+                              ? boothOf(u)
+                              : undefined
+                          }
+                        />
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

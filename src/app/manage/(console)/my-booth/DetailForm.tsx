@@ -2,6 +2,7 @@
 
 import { type FormEvent, useActionState, useState, useTransition } from "react";
 import { type DetailState, saveDetail } from "@/app/actions/my-booth";
+import { ImagePicker } from "@/components/manage/ImagePicker";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,7 +11,6 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { BoothResponse } from "@/lib/api/booths";
@@ -49,16 +49,12 @@ export function DetailForm({ booth }: { booth: BoothResponse }) {
           defaultValue={booth.detail}
         />
       </div>
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="imageUrl">展示物画像</Label>
-        <Input
-          id="imageUrl"
-          name="imageUrl"
-          className="h-10"
-          defaultValue={booth.image_url}
-          placeholder="https://..."
-        />
-      </div>
+      <ImagePicker
+        label="展示物画像"
+        name="imageUrl"
+        target={`booth:${booth.id}`}
+        defaultUrl={booth.image_url}
+      />
       {state?.error && (
         <p role="alert" className="text-[#e54141]">
           {state.error}
