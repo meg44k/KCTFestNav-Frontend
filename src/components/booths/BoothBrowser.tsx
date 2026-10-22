@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { type TouchEvent, useRef, useState } from "react";
 import { PageTitle } from "@/components/layout/PageTitle";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
+import { IchioshiIntro } from "@/components/likes/IchioshiIntro";
 import { RefreshEvery } from "@/components/RefreshEvery";
 import { BoothCard } from "@/components/ui/boothcard";
 import type { Booth } from "@/lib/api/booths";
@@ -205,15 +206,18 @@ export function BoothBrowser({
           </div>
 
           <div className="flex flex-col items-center gap-3 px-4 pt-3 pb-10">
-            {/* 「イチオシにする」が何のボタンか、初めて見た人にもわかるように */}
+            {/* 「イチオシにする」が何のボタンか、初めて見た人にもわかるように(初めてはポップアップでも) */}
             {filters.type === "class" &&
               shown.some((b) => canLike(b.organizer)) && (
-                <p className="w-full max-w-md text-center text-gray-300 text-sm">
-                  気に入った展示を 1 つ「イチオシ」に選ぼう
-                  <span className="block text-gray-500 text-xs">
-                    あとから別の展示に変えられます
-                  </span>
-                </p>
+                <>
+                  <IchioshiIntro />
+                  <p className="w-full max-w-md text-center text-gray-300 text-sm">
+                    気に入った展示を 1 つ「イチオシ」に選ぼう
+                    <span className="block text-gray-500 text-xs">
+                      あとから別の展示に変えられます
+                    </span>
+                  </p>
+                </>
               )}
             {shown.length === 0 ? (
               <p className="mt-6 text-center text-gray-400">

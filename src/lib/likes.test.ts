@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { canLike, nextVote, voteMessage, voteState } from "./likes";
+import {
+  canLike,
+  markIntroSeen,
+  nextVote,
+  shouldShowIntro,
+  voteMessage,
+  voteState,
+} from "./likes";
 
 describe("nextVote(押したあとの自分の票)", () => {
   it("まだ入れていなければ、押した展示に入る", () => {
@@ -50,5 +57,35 @@ describe("canLike", () => {
     expect(canLike("3-2")).toBe(true);
     expect(canLike("天文部")).toBe(false);
     expect(canLike("")).toBe(false);
+  });
+});
+
+describe("shouldShowIntro / markIntroSeen(初めて開いたときのイチオシの説明)", () => {
+  const memory = () => {
+    const m = new Map<string, string>();
+    return {
+      getItem: (k: string) => m.get(k) ?? null,
+      setItem: (k: string, v: string) => void m.set(k, v),
+    };
+  };
+
+  it("初めては出し、閉じたあとは出さない", () => {
+    const storage = memory();
+    expect(shouldShowIntro(storage)).toBe(true);
+    markIntroSeen(storage);
+    expect(shouldShowIntro(storage)).toBe(false);
+  });
+
+  it("端末に覚えられない(読めない)ときは、毎回出してしつこくならないよう出さない", () => {
+    const broken = {
+      getItem: () => {
+        throw new Error("blocked");
+      },
+      setItem: () => {
+        throw new Error("blocked");
+      },
+    };
+    expect(shouldShowIntro(broken)).toBe(false);
+    expect(() => markIntroSeen(broken)).not.toThrow();
   });
 });

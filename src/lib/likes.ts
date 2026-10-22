@@ -39,3 +39,22 @@ export function voteMessage(
 export function canLike(organizer: string): boolean {
   return parseGrade(organizer) !== null;
 }
+
+const INTRO_KEY = "kct-ichioshi-intro-seen";
+type IntroStorage = Pick<Storage, "getItem" | "setItem">;
+
+/** 初めて開いたときにイチオシの説明を出すか。端末に覚えられないときは、毎回出さないよう出さない */
+export function shouldShowIntro(storage: IntroStorage): boolean {
+  try {
+    return storage.getItem(INTRO_KEY) === null;
+  } catch {
+    return false;
+  }
+}
+
+/** 説明を閉じたことを覚える(覚えられなくても何もしない) */
+export function markIntroSeen(storage: IntroStorage): void {
+  try {
+    storage.setItem(INTRO_KEY, "1");
+  } catch {}
+}
