@@ -17,6 +17,7 @@ import {
   toScreen,
   type XY,
 } from "@/lib/map/campus";
+import { clusterPins } from "@/lib/map/cluster";
 import { cn } from "@/lib/utils";
 import { type MapProps, PIN_COLORS } from "./types";
 
@@ -25,6 +26,8 @@ const MIN_ZOOM = 0.6;
 const MAX_ZOOM = 12;
 // これより拡大したら、ピンの横にブース名を出す(全体表示では重なるので出さない)
 const PIN_NAME_ZOOM = 2.2;
+// 画面の上でこれより近いピンは 1 つの丸にまとめる(px)。拡大するとほどける
+const CLUSTER_PX = 28;
 
 // 地図の座標 → 画面の向き(MAP_BEARING が上)に回した座標。文字は回さずにすむ
 const S = (xy: XY) => toScreen(xy, MAP_BEARING);
@@ -167,6 +170,8 @@ export function Map2D({
     if (!target) return onPickNothing();
     const pin = target.closest("[data-pin]")?.getAttribute("data-pin");
     if (pin) return onPickPin(Number(pin));
+    // まとめた丸は、そこへ寄ってほどく
+    if (target.closest("[data-cluster]")) return zoomAt(s.x, s.y, 2.5);
     const building = target
       .closest("[data-building]")
       ?.getAttribute("data-building");
@@ -189,6 +194,12 @@ export function Map2D({
   };
   const me = location ? at(location.xy) : null;
   const showPinNames = view.k >= PIN_NAME_ZOOM && !onPickPoint;
+  // 場所を選ぶ画面(管理用)ではまとめない
+  const clusters = clusterPins(
+    pins,
+    onPickPoint ? 0 : CLUSTER_PX * px,
+    selectedPinId,
+  );
 
   return (
     <div className={cn("relative h-full w-full", className)}>
@@ -292,46 +303,76 @@ export function Map2D({
               />
             </g>
           )}
-          {pins.map((pin) => {
-            const big = pin.id === selectedPinId;
-            const r = (big ? 13 : 9) * px;
-            const p = at(pin.xy);
-            const label = [
-              showPinNames || big ? pin.name : "",
-              pin.floor > 0 ? floorLabel(pin.floor) : "",
-            ]
-              .filter(Boolean)
-              .join(" ");
-            return (
-              <g
-                key={pin.id}
-                data-pin={pin.id}
-                transform={`translate(${p.x} ${p.y})`}
-              >
-                <circle
-                  r={r}
-                  fill={PIN_COLORS[pin.congestion]}
-                  stroke="#fff"
-                  strokeWidth={2.5 * px}
-                />
-                {label && (
+          {clusters
+            .filter((c) => c.members.length > 1)
+            .map((c) => {
+              const p = at(c.xy);
+              return (
+                <g
+                  key={`c${c.members[0].id}`}
+                  data-cluster
+                  transform={`translate(${p.x} ${p.y})`}
+                >
+                  <circle
+                    r={15 * px}
+                    fill="#0b0d10"
+                    stroke="#fff"
+                    strokeWidth={2.5 * px}
+                  />
                   <text
-                    x={r + 3 * px}
-                    y={0}
-                    fontSize={12 * px}
+                    fontSize={13 * px}
                     fontWeight="bold"
                     fill="#fff"
-                    stroke="#000"
-                    strokeWidth={3 * px}
-                    paintOrder="stroke"
+                    textAnchor="middle"
                     dominantBaseline="central"
                   >
-                    {label}
+                    {c.members.length}
                   </text>
-                )}
-              </g>
-            );
-          })}
+                </g>
+              );
+            })}
+          {clusters
+            .filter((c) => c.members.length === 1)
+            .map(({ members: [pin] }) => {
+              const big = pin.id === selectedPinId;
+              const r = (big ? 13 : 9) * px;
+              const p = at(pin.xy);
+              const label = [
+                showPinNames || big ? pin.name : "",
+                pin.floor > 0 ? floorLabel(pin.floor) : "",
+              ]
+                .filter(Boolean)
+                .join(" ");
+              return (
+                <g
+                  key={pin.id}
+                  data-pin={pin.id}
+                  transform={`translate(${p.x} ${p.y})`}
+                >
+                  <circle
+                    r={r}
+                    fill={PIN_COLORS[pin.congestion]}
+                    stroke="#fff"
+                    strokeWidth={2.5 * px}
+                  />
+                  {label && (
+                    <text
+                      x={r + 3 * px}
+                      y={0}
+                      fontSize={12 * px}
+                      fontWeight="bold"
+                      fill="#fff"
+                      stroke="#000"
+                      strokeWidth={3 * px}
+                      paintOrder="stroke"
+                      dominantBaseline="central"
+                    >
+                      {label}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
         </g>
       </svg>
       {/* 上が北ではないので、北の向きを出す */}
