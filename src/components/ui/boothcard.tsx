@@ -112,7 +112,8 @@ function BoothCard({
             )}
           >
             <div className="flex flex-row bg-[#ffffff] rounded-sm h-full w-full shadow-2xl p-2">
-              <div className="relative aspect-square h-full bg-gray-300 overflow-hidden mr-2 rounded-sm">
+              {/* 名前が長くても横に押しつぶされず、いつも正方形のまま */}
+              <div className="relative aspect-square h-full shrink-0 bg-gray-300 overflow-hidden mr-2 rounded-sm">
                 {imageUrl && (
                   <Image
                     alt={imageAlt}
@@ -126,7 +127,8 @@ function BoothCard({
                 )}
               </div>
               <div className="flex flex-col mr-auto min-w-0">
-                <span className="text-black">{name}</span>
+                {/* 長い名前は 1 行で切る(2 行になると下の行がボタンに隠れる)。全部は詳細で読める */}
+                <span className="text-black line-clamp-1">{name}</span>
                 {/* 全文はタップで開く詳細ダイアログで読めるため、カードでは1行に抑える */}
                 <span className="text-black text-sm line-clamp-1">
                   {description}

@@ -24,6 +24,14 @@ describe("parseGrade", () => {
     expect(parseGrade("5-2")).toBe(5);
   });
 
+  it("3 年からの学科の表記(3M・5C など)からも学年を取り出す", () => {
+    expect(parseGrade("3M")).toBe(3);
+    expect(parseGrade("5C")).toBe(5);
+    expect(parseGrade(" 4 R ")).toBe(4);
+    expect(parseGrade("6M")).toBeNull();
+    expect(parseGrade("3MR")).toBeNull();
+  });
+
   it("前後や区切りの空白を許容する", () => {
     expect(parseGrade(" 3 - 1 ")).toBe(3);
   });
