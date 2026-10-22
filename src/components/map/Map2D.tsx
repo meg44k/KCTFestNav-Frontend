@@ -323,11 +323,12 @@ export function Map2D({
                   data-pin={pin.id}
                   transform={`translate(${p.x} ${p.y})`}
                 >
+                  {/* 真ん中は白、ふちを混雑度の色にする(太めにして色が分かるように) */}
                   <circle
                     r={r}
-                    fill={PIN_COLORS[pin.congestion]}
-                    stroke={OFF_WHITE}
-                    strokeWidth={2.5 * px}
+                    fill={OFF_WHITE}
+                    stroke={PIN_COLORS[pin.congestion]}
+                    strokeWidth={4 * px}
                   />
                   {label && (
                     <text
