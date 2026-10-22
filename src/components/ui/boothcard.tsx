@@ -240,7 +240,6 @@ function BoothCard({
       {likeBoothId !== undefined && (
         <LikeButton
           boothId={likeBoothId}
-          compact
           className={cn(
             "absolute bottom-3",
             latitude !== undefined && longitude !== undefined

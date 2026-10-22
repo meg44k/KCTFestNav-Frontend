@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Vote } from "lucide-react";
+import { Check } from "lucide-react";
 import { voteState } from "@/lib/likes";
 import { cn } from "@/lib/utils";
 import { useLikes } from "./LikesProvider";
@@ -14,15 +14,13 @@ const LABEL = {
 /**
  * クラス展示への投票(1 人 1 票)。入れている展示ではもう一度押すと取り消し、
  * ほかの展示に入れているときは押すとこちらへ移る。数は出さない。
- * compact は一覧の小さいカード用で、文字の代わりに丸いアイコンだけにする(名前に重ならない大きさ)
+ * アイコンだけでは何のボタンか伝わらないので、いつも文字で出す。見た目はナビ(コンパス)のボタンにそろえる
  */
 export function LikeButton({
   boothId,
-  compact = false,
   className,
 }: {
   boothId: number;
-  compact?: boolean;
   className?: string;
 }) {
   const likes = useLikes();
@@ -36,19 +34,13 @@ export function LikeButton({
       aria-label={on ? "投票済み(押すと取り消す)" : LABEL[state]}
       onClick={() => likes.toggle(boothId)}
       className={cn(
-        "flex h-9 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full font-bold text-xs shadow transition-transform active:scale-90",
-        // 小さいカードではナビボタンと同じ大きさにして並べる
-        compact ? "h-8 w-8" : "px-3",
-        on ? "bg-[#e54141] text-white" : "bg-white/90 text-black/70",
+        "flex h-8 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border border-black px-3 font-bold text-xs transition-transform active:scale-90",
+        on ? "bg-black text-white" : "bg-white text-black",
         className,
       )}
     >
-      {on ? (
-        <Check size={compact ? 20 : 16} strokeWidth={3} aria-hidden />
-      ) : (
-        compact && <Vote size={20} aria-hidden />
-      )}
-      {!compact && LABEL[state]}
+      {on && <Check size={14} strokeWidth={3} aria-hidden />}
+      {LABEL[state]}
     </button>
   );
 }
