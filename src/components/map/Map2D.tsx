@@ -19,7 +19,6 @@ import {
   type XY,
 } from "@/lib/map/campus";
 import { clusterPins } from "@/lib/map/cluster";
-import { pinShape } from "@/lib/map/pin-shape";
 import { cn } from "@/lib/utils";
 import { type MapProps, PIN_COLORS } from "./types";
 
@@ -310,12 +309,7 @@ export function Map2D({
             .filter((c) => c.members.length === 1)
             .map(({ members: [pin] }) => {
               const big = pin.id === selectedPinId;
-              const r = (big ? 12 : 9) * px;
-              const shape = pinShape(
-                r,
-                (big ? 30 : 22) * px,
-                (big ? 5 : 3.6) * px,
-              );
+              const r = (big ? 13 : 9) * px;
               const p = at(pin.xy);
               const label = [
                 showPinNames || big ? pin.name : "",
@@ -329,22 +323,16 @@ export function Map2D({
                   data-pin={pin.id}
                   transform={`translate(${p.x} ${p.y})`}
                 >
-                  {/*
-                    しずく形のピン。先が場所を指し、頭を混雑度の色にして真ん中は穴(透明)。
-                    穴も押せるよう、押した判定は頭の丸全体で取る
-                  */}
-                  <path
-                    d={shape.d}
-                    fillRule="evenodd"
+                  <circle
+                    r={r}
                     fill={PIN_COLORS[pin.congestion]}
-                    stroke="#0009"
-                    strokeWidth={px}
+                    stroke={OFF_WHITE}
+                    strokeWidth={2.5 * px}
                   />
-                  <circle cy={shape.head.y} r={r} fill="transparent" />
                   {label && (
                     <text
                       x={r + 3 * px}
-                      y={shape.head.y}
+                      y={0}
                       fontSize={12 * px}
                       fontWeight="bold"
                       fill={OFF_WHITE}
