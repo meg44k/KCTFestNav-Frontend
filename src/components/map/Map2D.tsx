@@ -353,7 +353,12 @@ export function Map2D({
               const c = at(b.center);
               const focused = focus?.buildingId === b.id;
               return (
-                <g key={b.id} pointerEvents="none">
+                <g
+                  key={b.id}
+                  pointerEvents="none"
+                  // 半透明にして、下に重なったピンや丸の数も透けて見えるように(選んだ棟ははっきり)
+                  opacity={focused ? 1 : 0.6}
+                >
                   <rect
                     x={c.x - w / 2}
                     y={c.y - h / 2}
