@@ -37,7 +37,8 @@ export function LikeButton({
       onClick={() => likes.toggle(boothId)}
       className={cn(
         "flex h-9 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full font-bold text-xs shadow transition-transform active:scale-90",
-        compact ? "w-9" : "px-3",
+        // 小さいカードではナビボタンと同じ大きさにして並べる
+        compact ? "h-8 w-8" : "px-3",
         on ? "bg-[#e54141] text-white" : "bg-white/90 text-black/70",
         className,
       )}
