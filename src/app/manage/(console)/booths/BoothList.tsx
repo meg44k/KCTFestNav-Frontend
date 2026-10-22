@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   type BoothResponse,
   CONGESTION_LABELS,
@@ -7,6 +9,7 @@ import {
   toCongestionStatus,
 } from "@/lib/api/booths";
 import { splitBoothsByKind } from "@/lib/manage/booth-groups";
+import { cn } from "@/lib/utils";
 import { BoothFormDialog } from "./BoothFormDialog";
 import { DeleteBoothButton } from "./DeleteBoothButton";
 
@@ -36,7 +39,7 @@ function Congestion({
   );
 }
 
-/** クラス展示とクラブバザーを別々の表にする(混ざると探しにくい) */
+/** クラス展示とクラブバザーをタブで切り替える(混ざると探しにくい) */
 export function BoothList({
   booths,
   staffed,
@@ -44,6 +47,7 @@ export function BoothList({
   booths: BoothResponse[];
   staffed: number[];
 }) {
+  const [tab, setTab] = useState<"classes" | "clubs">("classes");
   if (booths.length === 0) {
     return (
       <p className="text-gray-500">
@@ -52,24 +56,37 @@ export function BoothList({
     );
   }
   const { classes, clubs } = splitBoothsByKind(booths);
+  const tabs = [
+    { key: "classes", title: "クラス展示", list: classes },
+    { key: "clubs", title: "クラブバザー", list: clubs },
+  ] as const;
+  const current = tabs.find((t) => t.key === tab) ?? tabs[0];
   return (
-    <div className="flex flex-col gap-10">
-      {[
-        { title: "クラス展示", list: classes },
-        { title: "クラブバザー", list: clubs },
-      ].map(({ title, list }) => (
-        <section key={title} className="flex flex-col gap-3">
-          <h2 className="font-bold text-xl">
-            {title}{" "}
-            <span className="text-base text-gray-500">{list.length}件</span>
-          </h2>
-          {list.length === 0 ? (
-            <p className="text-gray-500">ありません。</p>
-          ) : (
-            <BoothTable booths={list} staffed={staffed} />
-          )}
-        </section>
-      ))}
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-2 overflow-x-auto" role="tablist">
+        {tabs.map((t) => (
+          <button
+            key={t.key}
+            type="button"
+            role="tab"
+            aria-selected={t.key === current.key}
+            onClick={() => setTab(t.key)}
+            className={cn(
+              "h-10 shrink-0 cursor-pointer rounded-full border px-4 font-bold text-sm",
+              t.key === current.key
+                ? "border-black bg-black text-white"
+                : "border-black/20 text-gray-600",
+            )}
+          >
+            {t.title} {t.list.length}件
+          </button>
+        ))}
+      </div>
+      {current.list.length === 0 ? (
+        <p className="text-gray-500">ありません。</p>
+      ) : (
+        <BoothTable booths={current.list} staffed={staffed} />
+      )}
     </div>
   );
 }
