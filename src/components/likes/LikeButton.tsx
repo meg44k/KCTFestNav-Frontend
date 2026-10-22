@@ -30,12 +30,9 @@ const GREEN = "#00B894";
  */
 export function LikeButton({
   boothId,
-  name,
   className,
 }: {
   boothId: number;
-  /** 押したあとの一言に出す展示の名前 */
-  name: string;
   className?: string;
 }) {
   const likes = useLikes();
@@ -47,7 +44,7 @@ export function LikeButton({
       type="button"
       aria-pressed={on}
       aria-label={ARIA_LABEL[state]}
-      onClick={() => likes.toggle(boothId, name)}
+      onClick={() => likes.toggle(boothId)}
       className={cn(
         "flex h-8 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-3 font-bold text-xs transition-transform active:scale-90",
         on ? "text-white" : "border-black bg-white text-black",
