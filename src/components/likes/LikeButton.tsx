@@ -6,17 +6,17 @@ import { cn } from "@/lib/utils";
 import { useLikes } from "./LikesProvider";
 
 const LABEL = {
-  none: "ここがよかった！",
-  mine: "投票済",
+  none: "イチオシ！",
+  mine: "イチオシ済",
   // ほかの展示に入れていても同じ見た目。押すとこちらへ移る
-  other: "ここがよかった！",
+  other: "イチオシ！",
 } as const;
 
 // 読み上げでは、押すと何が起きるかまで伝える
 const ARIA_LABEL = {
-  none: "投票する",
-  mine: "投票済み(押すと取り消す)",
-  other: "ここに投票し直す",
+  none: "イチオシにする",
+  mine: "イチオシ済み(押すと取り消す)",
+  other: "ここをイチオシにし直す",
 } as const;
 
 // 「すぐ入れる」のカードと同じ緑
