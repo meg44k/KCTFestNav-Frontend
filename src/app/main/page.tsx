@@ -5,32 +5,22 @@ import { StageHeadlineCard } from "@/components/home/StageHeadlineCard";
 import { StarField } from "@/components/home/StarField";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
 import { RefreshEvery } from "@/components/RefreshEvery";
-import { BulletinBoard } from "@/components/ui/bulletinBoard";
 import { apiFetch } from "@/lib/api/client";
 import type { StageSectionResponse } from "@/lib/api/stage";
 import { BG } from "@/lib/home/palette";
-import { announcementOrDefault } from "@/lib/live-schedule";
 import { stageHeadline } from "@/lib/stage-schedule";
 
 export default async function Main() {
-  // 学生会が管理画面から書き換えるので、どちらもキャッシュしない。
-  // 片方が落ちていても、もう片方とタイルは出す
-  const [announcement, stage] = await Promise.allSettled([
-    apiFetch<{ content: string }>("/announcements", { cache: "no-store" }),
+  // 学生会が管理画面から書き換えるので、キャッシュしない。落ちていてもタイルは出す。
+  // お知らせの帯は全ページ共通の枠(GlobalBulletin)が出す
+  const [stage] = await Promise.allSettled([
     apiFetch<{ sections: StageSectionResponse[] }>("/stage", {
       cache: "no-store",
     }),
   ]);
-  if (announcement.status === "rejected") {
-    console.error("お知らせの取得に失敗しました", announcement.reason);
-  }
   if (stage.status === "rejected") {
     console.error("ステージイベントの取得に失敗しました", stage.reason);
   }
-  const content =
-    announcement.status === "fulfilled"
-      ? announcement.value.content
-      : undefined;
   const sections = stage.status === "fulfilled" ? stage.value.sections : [];
 
   return (
@@ -38,16 +28,14 @@ export default async function Main() {
     <div
       // 入口ページは 1 画面に全部収める(画面の高さに合わせてロゴが伸び縮みする)。
       // ただしとても低い画面(横向きなど)では縮めすぎないよう、下限を決めてスクロールさせる
-      className="relative isolate flex h-dvh min-h-[560px] flex-col"
+      // 上のお知らせの帯の分を除いた高さ
+      className="relative isolate flex h-[calc(100dvh-var(--bulletin-h))] min-h-[560px] flex-col"
       style={{ background: BG }}
     >
       <StarField />
       {/* intro-* はタイトル画面から来たときだけ、見出しのまわりをふわっと出す目印(globals.css) */}
-      {/* お知らせの帯には星を透かさない */}
-      <div className="intro-bulletin" style={{ background: BG }}>
-        <BulletinBoard content={announcementOrDefault(content)} />
-      </div>
-      <SideMenu />
+      {/* 帯がこのページの外(上)に移ったので、メニューは帯のすぐ下に置く(前と同じ位置) */}
+      <SideMenu menuClassName="top-2.5" />
       <RefreshEvery seconds={60} />
       {/*
         上: お知らせのすぐ下に「いまのステージ」、まん中: ロゴ、下: 「さがす」(画面の下にそろえる)。
