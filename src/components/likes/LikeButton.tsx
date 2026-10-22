@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 import { useLikes } from "./LikesProvider";
 
 const LABEL = {
-  none: "投票！",
+  none: "ここがよかった！",
   mine: "投票済",
   // ほかの展示に入れていても同じ見た目。押すとこちらへ移る
-  other: "投票！",
+  other: "ここがよかった！",
 } as const;
 
 // 読み上げでは、押すと何が起きるかまで伝える
