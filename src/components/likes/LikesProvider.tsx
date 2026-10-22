@@ -10,33 +10,36 @@ import {
   useState,
 } from "react";
 import { myLikes, toggleLike } from "@/app/actions/likes";
-import { FAILED, withLike } from "@/lib/likes";
+import { FAILED, nextVote } from "@/lib/likes";
 
 type Likes = {
-  isLiked: (boothId: number) => boolean;
+  /** 自分が投票している展示(1 人 1 票)。入れていなければ null */
+  voted: number | null;
   toggle: (boothId: number) => void;
 };
 
 const LikesContext = createContext<Likes | null>(null);
 
-/** ハートのボタンが使う。Provider の外では null(ハートを出さない) */
+/** 投票のボタンが使う。Provider の外では null(ボタンを出さない) */
 export function useLikes(): Likes | null {
   return useContext(LikesContext);
 }
 
 /**
- * 自分のいいねを持つ。一覧は全員で同じ HTML なので、開いたあとに自分が押したものを問い合わせる。
- * 押した瞬間に見た目を変え、失敗したら戻して短いメッセージを出す
+ * 自分の票を持つ。一覧は全員で同じ HTML なので、開いたあとに自分が入れた展示を問い合わせる。
+ * 押した瞬間に見た目を変え(ほかの展示に入れていた票はすぐ外れる)、失敗したら戻して短いメッセージを出す
  */
 export function LikesProvider({ children }: { children: ReactNode }) {
-  const [liked, setLiked] = useState<Set<number>>(new Set());
+  const [voted, setVoted] = useState<number | null>(null);
+  // 問い合わせの答えより先に押していたら、押したほうを残す
+  const touched = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     let alive = true;
     myLikes().then((ids) => {
-      if (alive) setLiked((cur) => new Set([...cur, ...ids]));
+      if (alive && !touched.current) setVoted(ids[0] ?? null);
     });
     return () => {
       alive = false;
@@ -46,24 +49,27 @@ export function LikesProvider({ children }: { children: ReactNode }) {
 
   const toggle = useCallback(
     (boothId: number) => {
-      const on = !liked.has(boothId);
-      setLiked((cur) => withLike(cur, boothId, on));
+      touched.current = true;
+      const before = voted;
+      const next = nextVote(before, boothId);
+      setVoted(next);
       // つながらないなどで Server Action 自体が失敗したときも元に戻す
-      toggleLike(boothId, on)
+      toggleLike(boothId, next === boothId)
         .catch(() => ({ error: FAILED }))
         .then((res) => {
           if (!res.error) return;
-          setLiked((cur) => withLike(cur, boothId, !on));
+          // 失敗した間にほかを押していなければ、押す前に戻す
+          setVoted((cur) => (cur === next ? before : cur));
           setError(res.error);
           clearTimeout(timer.current);
           timer.current = setTimeout(() => setError(null), 3000);
         });
     },
-    [liked],
+    [voted],
   );
 
   return (
-    <LikesContext.Provider value={{ isLiked: (id) => liked.has(id), toggle }}>
+    <LikesContext.Provider value={{ voted, toggle }}>
       {children}
       {error && (
         <div

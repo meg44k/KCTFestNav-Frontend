@@ -1,4 +1,4 @@
-// いいねの API を呼ぶ。Next.js のサーバーだけが知る合言葉(X-Internal-Key)を付ける。
+// 投票の API を呼ぶ。Next.js のサーバーだけが知る合言葉(X-Internal-Key)を付ける。
 // 合言葉はサーバーの環境変数で、ブラウザには出さない(NEXT_PUBLIC_ を付けない)
 import { API_BASE_URL, REQUEST_TIMEOUT_MS } from "./client";
 
@@ -8,7 +8,7 @@ export const VOTER_COOKIE = "kct-voter";
 export const VOTER_MAX_AGE = 60 * 60 * 24 * 90;
 export const TOO_MANY =
   "混み合っています。少し待ってからもう一度押してください";
-export const FAILED = "いいねできませんでした。もう一度押してください";
+export const FAILED = "投票できませんでした。もう一度押してください";
 
 /** 応答の状態。つながらない・合言葉が無いときは 0 */
 export async function internalRequest(

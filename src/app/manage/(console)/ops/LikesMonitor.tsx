@@ -17,7 +17,7 @@ type Pending =
   | { kind: "range"; row: LikeRow; from: string; to: string; count: number }
   | { kind: "all" };
 
-/** クラス展示のいいねの順位。行を開くと 10 分ごとの推移と、時間帯の取り消し */
+/** クラス展示の投票の順位。行を開くと 10 分ごとの推移と、時間帯の取り消し */
 export function LikesMonitor({
   rows,
   isAdmin,
@@ -48,7 +48,7 @@ export function LikesMonitor({
         p.kind === "all"
           ? await removeAllLikes()
           : await removeLikes(p.row.boothId, p.from, p.to);
-      setMessage(res.error ?? `${res.removed ?? 0} 件のいいねを取り消しました`);
+      setMessage(res.error ?? `${res.removed ?? 0} 件の投票を取り消しました`);
       setPicked([]);
     });
   };
@@ -57,7 +57,7 @@ export function LikesMonitor({
     <div className="flex flex-col gap-4">
       <p className="text-black/50 text-sm">
         来場者には数は見えません。⚠
-        は、10分間のいいねがそのブースのふだんの5倍以上(30件以上)に増えた時間帯があるブースです。
+        は、10分間の投票がそのブースのふだんの5倍以上(30件以上)に増えた時間帯があるブースです。
       </p>
       {message && (
         <output className="block rounded-md bg-black/5 px-3 py-2 text-sm">
@@ -111,7 +111,7 @@ export function LikesMonitor({
                   <div className="flex flex-col gap-3 px-3 pb-4">
                     {row.buckets.length === 0 ? (
                       <p className="text-black/50 text-sm">
-                        まだいいねがありません。
+                        まだ投票がありません。
                       </p>
                     ) : (
                       <>
@@ -166,7 +166,7 @@ export function LikesMonitor({
                             }
                             className="h-11 cursor-pointer bg-[#e54141] font-bold text-white hover:bg-[#e54141]/90"
                           >
-                            {toJstTime(sel.from)}〜{toJstTime(sel.to)} のいいね(
+                            {toJstTime(sel.from)}〜{toJstTime(sel.to)} の投票(
                             {selCount}件)を取り消す
                           </Button>
                         )}
@@ -187,7 +187,7 @@ export function LikesMonitor({
           onClick={() => setPending({ kind: "all" })}
           className="h-11 cursor-pointer self-start border-[#e54141] bg-transparent text-[#e54141] hover:bg-[#e54141]/10"
         >
-          いいねを全部消す
+          投票を全部消す
         </Button>
       )}
 
@@ -200,20 +200,20 @@ export function LikesMonitor({
         <DialogContent showCloseButton={false}>
           <DialogTitle>
             {pending?.kind === "all"
-              ? "いいねを全部消しますか？"
-              : "この時間帯のいいねを取り消しますか？"}
+              ? "投票を全部消しますか？"
+              : "この時間帯の投票を取り消しますか？"}
           </DialogTitle>
           <DialogDescription render={<div />} className="flex flex-col gap-2">
             {pending?.kind === "range" && (
               <p>
                 {pending.row.name}の {toJstTime(pending.from)}〜
-                {toJstTime(pending.to)} のいいね {pending.count}
+                {toJstTime(pending.to)} の投票 {pending.count}
                 件を取り消します。
               </p>
             )}
             {pending?.kind === "all" && (
               <p>
-                全ブースのいいねを消します。文化祭の前の試しの票を消すときに使ってください。
+                全ブースの投票を消します。文化祭の前の試しの票を消すときに使ってください。
               </p>
             )}
             <p className="font-bold text-[#e54141]">元には戻せません。</p>

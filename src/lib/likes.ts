@@ -2,21 +2,45 @@ import { parseGrade } from "@/lib/booth-grade";
 
 export const TOO_MANY =
   "混み合っています。少し待ってからもう一度押してください";
-export const FAILED = "いいねできませんでした。もう一度押してください";
+export const FAILED = "投票できませんでした。もう一度押してください";
 
-/** 自分のいいねの集まりに、押した(on)・取り消したを反映した新しい集まり */
-export function withLike(
-  liked: ReadonlySet<number>,
-  boothId: number,
-  on: boolean,
-): Set<number> {
-  const next = new Set(liked);
-  if (on) next.add(boothId);
-  else next.delete(boothId);
-  return next;
+/**
+ * 展示を押したあとの自分の票(1 人 1 票)。入れている展示を押すと取り消し、
+ * ほかの展示に入れていれば押した展示へ移す
+ */
+export function nextVote(current: number | null, boothId: number) {
+  return current === boothId ? null : boothId;
 }
 
-/** いいねできるのはクラス展示だけ(主催者が "1-1" のようなクラス表記) */
+/** その展示のボタンの見た目。入れていない・この展示に入れている・ほかの展示に入れている */
+export function voteState(
+  current: number | null,
+  boothId: number,
+): "none" | "mine" | "other" {
+  if (current === null) return "none";
+  return current === boothId ? "mine" : "other";
+}
+
+/** 投票できるのはクラス展示だけ(主催者が "1-1" のようなクラス表記) */
 export function canLike(organizer: string): boolean {
   return parseGrade(organizer) !== null;
+}
+
+const INTRO_KEY = "kct-ichioshi-intro-seen";
+type IntroStorage = Pick<Storage, "getItem" | "setItem">;
+
+/** 初めて開いたときにイチオシの説明を出すか。端末に覚えられないときは、毎回出さないよう出さない */
+export function shouldShowIntro(storage: IntroStorage): boolean {
+  try {
+    return storage.getItem(INTRO_KEY) === null;
+  } catch {
+    return false;
+  }
+}
+
+/** 説明を閉じたことを覚える(覚えられなくても何もしない) */
+export function markIntroSeen(storage: IntroStorage): void {
+  try {
+    storage.setItem(INTRO_KEY, "1");
+  } catch {}
 }

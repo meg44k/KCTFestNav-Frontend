@@ -52,7 +52,7 @@ export async function saveAnnouncement(
   return { saved: true };
 }
 
-/** そのブースの from 以上 to 未満(UTC)のいいねを取り消す(管理者・学生会) */
+/** そのブースの from 以上 to 未満(UTC)の投票を取り消す(管理者・学生会) */
 export async function removeLikes(
   boothId: number,
   from: string,
@@ -68,7 +68,7 @@ export async function removeLikes(
   return { removed: res.data.removed };
 }
 
-/** いいねを全部消す(管理者。文化祭の前の試しの票を消す用) */
+/** 投票を全部消す(管理者。文化祭の前の試しの票を消す用) */
 export async function removeAllLikes(): Promise<{
   removed?: number;
   error?: string;

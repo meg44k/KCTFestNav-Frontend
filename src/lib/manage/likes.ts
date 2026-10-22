@@ -1,4 +1,4 @@
-// 管理画面のいいね(順位・10 分ごとの推移・時間帯の取り消し)で使う計算
+// 管理画面の投票(順位・10 分ごとの推移・時間帯の取り消し)で使う計算
 
 export type LikeBucket = { start: string; count: number; burst: boolean };
 export type BoothLikes = {

@@ -27,7 +27,7 @@ const OPS: MenuItem[] = [
   { href: "/manage/ops/congestion", label: "混雑度" },
   { href: "/manage/ops/lives", label: "ライブ" },
   { href: "/manage/ops/announcement", label: "お知らせ" },
-  { href: "/manage/ops/likes", label: "いいね" },
+  { href: "/manage/ops/likes", label: "投票" },
 ];
 
 /** ログイン後に最初に開く画面。管理画面を使えないロールは null */
