@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canLike, nextVote, voteState } from "./likes";
+import { canLike, nextVote, voteMessage, voteState } from "./likes";
 
 describe("nextVote(押したあとの自分の票)", () => {
   it("まだ入れていなければ、押した展示に入る", () => {
@@ -20,6 +20,28 @@ describe("voteState(ボタンの見た目)", () => {
     expect(voteState(null, 2)).toBe("none");
     expect(voteState(2, 2)).toBe("mine");
     expect(voteState(1, 2)).toBe("other");
+  });
+});
+
+describe("voteMessage(押したあとに出す一言)", () => {
+  it("まだ選んでいなければ、選んだことと 1 人 1 つまでを伝える", () => {
+    expect(voteMessage(null, 2, "たこ焼き")).toEqual({
+      text: "「たこ焼き」をイチオシにしました",
+      note: "イチオシは 1 人 1 つまでです",
+    });
+  });
+
+  it("ほかの展示から移したら、移したことを伝える", () => {
+    expect(voteMessage(1, 2, "たこ焼き")).toEqual({
+      text: "イチオシを「たこ焼き」に移しました",
+      note: "イチオシは 1 人 1 つまでです",
+    });
+  });
+
+  it("選んでいる展示をもう一度押したら、取り消したことを伝える", () => {
+    expect(voteMessage(2, 2, "たこ焼き")).toEqual({
+      text: "イチオシを取り消しました",
+    });
   });
 });
 

@@ -205,6 +205,16 @@ export function BoothBrowser({
           </div>
 
           <div className="flex flex-col items-center gap-3 px-4 pt-3 pb-10">
+            {/* 「イチオシにする」が何のボタンか、初めて見た人にもわかるように */}
+            {filters.type === "class" &&
+              shown.some((b) => canLike(b.organizer)) && (
+                <p className="w-full max-w-md text-center text-gray-300 text-sm">
+                  気に入った展示を 1 つ「イチオシ」に選ぼう
+                  <span className="block text-gray-500 text-xs">
+                    あとから別の展示に変えられます
+                  </span>
+                </p>
+              )}
             {shown.length === 0 ? (
               <p className="mt-6 text-center text-gray-400">
                 {booths.length === 0

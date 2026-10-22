@@ -21,6 +21,20 @@ export function voteState(
   return current === boothId ? "mine" : "other";
 }
 
+/** 押したあとに出す一言(text)と、添える小さい注意(note)。選んだ・移したときは 1 人 1 つまでであることも知らせる */
+export function voteMessage(
+  current: number | null,
+  boothId: number,
+  name: string,
+): { text: string; note?: string } {
+  const state = voteState(current, boothId);
+  if (state === "mine") return { text: "イチオシを取り消しました" };
+  const note = "イチオシは 1 人 1 つまでです";
+  if (state === "other")
+    return { text: `イチオシを「${name}」に移しました`, note };
+  return { text: `「${name}」をイチオシにしました`, note };
+}
+
 /** 投票できるのはクラス展示だけ(主催者が "1-1" のようなクラス表記) */
 export function canLike(organizer: string): boolean {
   return parseGrade(organizer) !== null;

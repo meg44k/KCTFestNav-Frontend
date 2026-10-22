@@ -189,7 +189,7 @@ function BoothCard({
                       {name}
                     </DialogTitle>
                     {likeBoothId !== undefined && (
-                      <LikeButton boothId={likeBoothId} />
+                      <LikeButton boothId={likeBoothId} name={name} />
                     )}
                   </div>
                   <div className="flex flex-wrap gap-x-3 text-black/60 text-xs">
@@ -240,6 +240,7 @@ function BoothCard({
       {likeBoothId !== undefined && (
         <LikeButton
           boothId={likeBoothId}
+          name={name}
           className={cn(
             "absolute bottom-3",
             latitude !== undefined && longitude !== undefined

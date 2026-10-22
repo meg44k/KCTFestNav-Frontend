@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 import { useLikes } from "./LikesProvider";
 
 const LABEL = {
-  none: "イチオシ！",
+  none: "イチオシにする",
   mine: "イチオシ済",
   // ほかの展示に入れていても同じ見た目。押すとこちらへ移る
-  other: "イチオシ！",
+  other: "イチオシにする",
 } as const;
 
 // 読み上げでは、押すと何が起きるかまで伝える
@@ -30,9 +30,12 @@ const GREEN = "#00B894";
  */
 export function LikeButton({
   boothId,
+  name,
   className,
 }: {
   boothId: number;
+  /** 押したあとの一言に出す展示の名前 */
+  name: string;
   className?: string;
 }) {
   const likes = useLikes();
@@ -44,7 +47,7 @@ export function LikeButton({
       type="button"
       aria-pressed={on}
       aria-label={ARIA_LABEL[state]}
-      onClick={() => likes.toggle(boothId)}
+      onClick={() => likes.toggle(boothId, name)}
       className={cn(
         "flex h-8 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-3 font-bold text-xs transition-transform active:scale-90",
         on ? "text-white" : "border-black bg-white text-black",
