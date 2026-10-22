@@ -6,6 +6,7 @@ import {
   congestionLabel,
   toCongestionStatus,
 } from "@/lib/api/booths";
+import { splitBoothsByKind } from "@/lib/manage/booth-groups";
 import { BoothFormDialog } from "./BoothFormDialog";
 import { DeleteBoothButton } from "./DeleteBoothButton";
 
@@ -35,6 +36,7 @@ function Congestion({
   );
 }
 
+/** クラス展示とクラブバザーを別々の表にする(混ざると探しにくい) */
 export function BoothList({
   booths,
   staffed,
@@ -49,6 +51,36 @@ export function BoothList({
       </p>
     );
   }
+  const { classes, clubs } = splitBoothsByKind(booths);
+  return (
+    <div className="flex flex-col gap-10">
+      {[
+        { title: "クラス展示", list: classes },
+        { title: "クラブバザー", list: clubs },
+      ].map(({ title, list }) => (
+        <section key={title} className="flex flex-col gap-3">
+          <h2 className="font-bold text-xl">
+            {title}{" "}
+            <span className="text-base text-gray-500">{list.length}件</span>
+          </h2>
+          {list.length === 0 ? (
+            <p className="text-gray-500">ありません。</p>
+          ) : (
+            <BoothTable booths={list} staffed={staffed} />
+          )}
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function BoothTable({
+  booths,
+  staffed,
+}: {
+  booths: BoothResponse[];
+  staffed: number[];
+}) {
   const hasStaff = (id: number) => staffed.includes(id);
   const actions = (b: BoothResponse) => (
     <div className="flex gap-2">
