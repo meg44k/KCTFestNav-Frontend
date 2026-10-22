@@ -348,7 +348,8 @@ export function Map2D({
             .map((b) => {
               const name = shortName(b.name as string);
               const size = 12 * px;
-              const w = textWidth(name, size) + 10 * px;
+              // 文字の左右に 9px ずつあける
+              const w = textWidth(name, size) + 18 * px;
               const h = 20 * px;
               const c = at(b.center);
               const focused = focus?.buildingId === b.id;
