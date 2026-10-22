@@ -138,10 +138,6 @@ export function BoothBrowser({
                 <div className="flex gap-1 overflow-x-auto" role="tablist">
                   {gradeTabs.map((g) => {
                     const active = filters.grade === g;
-                    const count =
-                      g === "all"
-                        ? grades.reduce((n, x) => n + x.count, 0)
-                        : grades.find((x) => x.grade === g)?.count;
                     return (
                       <button
                         key={g}
@@ -157,7 +153,6 @@ export function BoothBrowser({
                         )}
                       >
                         {g === "all" ? "全学年" : `${g}年`}
-                        <span className="ml-1 text-xs">({count})</span>
                       </button>
                     );
                   })}
