@@ -242,41 +242,6 @@ export function Map2D({
               </g>
             );
           })}
-          {campus.buildings
-            .filter((b) => b.name)
-            .map((b) => {
-              const name = shortName(b.name as string);
-              const size = 12 * px;
-              const w = textWidth(name, size) + 10 * px;
-              const h = 20 * px;
-              const c = at(b.center);
-              const focused = focus?.buildingId === b.id;
-              return (
-                <g key={b.id} pointerEvents="none">
-                  <rect
-                    x={c.x - w / 2}
-                    y={c.y - h / 2}
-                    width={w}
-                    height={h}
-                    rx={h / 2}
-                    fill={focused ? "#fbbf24" : "#0b0d10"}
-                    stroke="#ffffffb3"
-                    strokeWidth={px}
-                  />
-                  <text
-                    x={c.x}
-                    y={c.y}
-                    fontSize={size}
-                    fontWeight="bold"
-                    fill={focused ? "#000" : "#fff"}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                  >
-                    {name}
-                  </text>
-                </g>
-              );
-            })}
           {location && me && (
             <g pointerEvents="none">
               <circle
@@ -374,6 +339,42 @@ export function Map2D({
                       {label}
                     </text>
                   )}
+                </g>
+              );
+            })}
+          {/* 棟の名札はピンや丸より前に出す(重なっても何号館か読めるように)。押した判定は下のピンに通す */}
+          {campus.buildings
+            .filter((b) => b.name)
+            .map((b) => {
+              const name = shortName(b.name as string);
+              const size = 12 * px;
+              const w = textWidth(name, size) + 10 * px;
+              const h = 20 * px;
+              const c = at(b.center);
+              const focused = focus?.buildingId === b.id;
+              return (
+                <g key={b.id} pointerEvents="none">
+                  <rect
+                    x={c.x - w / 2}
+                    y={c.y - h / 2}
+                    width={w}
+                    height={h}
+                    rx={h / 2}
+                    fill={focused ? "#fbbf24" : "#0b0d10"}
+                    stroke="#ffffffb3"
+                    strokeWidth={px}
+                  />
+                  <text
+                    x={c.x}
+                    y={c.y}
+                    fontSize={size}
+                    fontWeight="bold"
+                    fill={focused ? "#000" : "#fff"}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                  >
+                    {name}
+                  </text>
                 </g>
               );
             })}
