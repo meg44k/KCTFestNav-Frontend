@@ -320,8 +320,9 @@ export function Map2D({
                     strokeWidth={2.5 * px}
                   />
                   <text
-                    fontSize={13 * px}
-                    fontWeight="bold"
+                    fontSize={14 * px}
+                    // 数がひと目で読めるよう、いちばん太く
+                    fontWeight={900}
                     fill="#fff"
                     textAnchor="middle"
                     dominantBaseline="central"
