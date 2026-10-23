@@ -1,11 +1,15 @@
 "use server";
 
-import { headers } from "next/headers";
+import { randomUUID } from "node:crypto";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { API_BASE_URL, REQUEST_TIMEOUT_MS } from "@/lib/api/client";
 import { failureMessage } from "@/lib/api/manage";
 import { isBot } from "@/lib/bot";
 import { clearToken, saveToken } from "@/lib/manage/cookie";
+
+// ログインの回数の上限を数える、ブラウザの番号
+const LOGIN_CLIENT_COOKIE = "kct_login_client";
 
 // 失敗したときは入力した ID を返し、フォームに残す(React はアクション後にフォームを空にするため)
 export type LoginState = { error: string; loginId: string } | undefined;
@@ -35,12 +39,20 @@ export async function loginAction(
     );
     return { error: failureMessage("unavailable"), loginId };
   }
-  // ログインした人の接続元。バックエンドが回数の上限を数えるのに使う(Vercel が付ける値)
-  const h = await headers();
-  const ip =
-    h.get("x-real-ip") ??
-    h.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    "unknown";
+  // このブラウザの番号。バックエンドが回数の上限を数えるのに使う(失敗したブラウザだけが止まり、
+  // 同じ Wi-Fi の本人は締め出されない)。まだ無ければ作って置いておく
+  const jar = await cookies();
+  let client = jar.get(LOGIN_CLIENT_COOKIE)?.value;
+  if (!client) {
+    client = randomUUID();
+    jar.set(LOGIN_CLIENT_COOKIE, client, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/manage",
+      maxAge: 60 * 60 * 24 * 365,
+    });
+  }
 
   let res: Response;
   try {
@@ -49,7 +61,7 @@ export async function loginAction(
       headers: {
         "Content-Type": "application/json",
         "X-Internal-Key": key,
-        "X-Client-IP": ip,
+        "X-Login-Client": client,
       },
       body: JSON.stringify({ login_id: loginId, password }),
       cache: "no-store",

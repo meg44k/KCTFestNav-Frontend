@@ -3,10 +3,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const cookieSet = vi.hoisted(() => vi.fn());
 const checkBotId = vi.hoisted(() => vi.fn());
 vi.mock("botid/server", () => ({ checkBotId }));
-const requestHeaders = vi.hoisted(() => new Headers());
+const cookieGet = vi.hoisted(() => vi.fn());
 vi.mock("next/headers", () => ({
-  cookies: async () => ({ set: cookieSet }),
-  headers: async () => requestHeaders,
+  cookies: async () => ({ set: cookieSet, get: cookieGet }),
 }));
 vi.mock("next/navigation", () => ({
   redirect: (path: string) => {
@@ -26,8 +25,10 @@ const form = (loginId: string, password: string) => {
 
 beforeEach(() => {
   vi.stubEnv("INTERNAL_API_KEY", "test-key");
-  for (const k of [...requestHeaders.keys()]) requestHeaders.delete(k);
-  requestHeaders.set("x-forwarded-for", "203.0.113.1, 10.0.0.1");
+  cookieGet.mockReset();
+  cookieGet.mockImplementation((name: string) =>
+    name === "kct_login_client" ? { value: "browser-a" } : undefined,
+  );
   checkBotId.mockReset();
   checkBotId.mockResolvedValue({ isBot: false });
   cookieSet.mockReset();
@@ -56,10 +57,10 @@ describe("loginAction", () => {
       login_id: "booth-1",
       password: "pass",
     });
-    // 合言葉と、ログインした人の接続元(回数の上限を数える)をバックエンドに渡す
+    // 合言葉と、ログインしたブラウザの番号(回数の上限を数える)をバックエンドに渡す
     expect(init.headers).toMatchObject({
       "X-Internal-Key": "test-key",
-      "X-Client-IP": "203.0.113.1",
+      "X-Login-Client": "browser-a",
     });
     expect(cookieSet).toHaveBeenCalledWith("kct_manage_token", "jwt", {
       httpOnly: true,
@@ -68,6 +69,23 @@ describe("loginAction", () => {
       path: "/manage",
       maxAge: 60 * 60 * 72,
     });
+  });
+
+  it("ブラウザの番号がまだ無ければ作って cookie に置き、それを渡す", async () => {
+    cookieGet.mockReturnValue(undefined);
+    fetchMock.mockResolvedValue(new Response("{}", { status: 401 }));
+    await loginAction(undefined, form("booth-1", "wrong"));
+
+    const call = cookieSet.mock.calls.find(([n]) => n === "kct_login_client");
+    expect(call).toBeDefined();
+    const [, id, opts] = call as [string, string, Record<string, unknown>];
+    expect(id).toMatch(/^[0-9a-f-]{36}$/);
+    expect(opts).toMatchObject({
+      httpOnly: true,
+      secure: true,
+      path: "/manage",
+    });
+    expect(fetchMock.mock.calls[0][1].headers["X-Login-Client"]).toBe(id);
   });
 
   it("応答が返らないまま待ち続けないよう、タイムアウトを付ける", async () => {
@@ -113,7 +131,11 @@ describe("loginAction", () => {
       error: "ID かパスワードが違います",
       loginId: "booth-1",
     });
-    expect(cookieSet).not.toHaveBeenCalled();
+    expect(cookieSet).not.toHaveBeenCalledWith(
+      "kct_manage_token",
+      expect.anything(),
+      expect.anything(),
+    );
   });
 
   it("失敗が続いて止められた(429)ときは、待ってから試すよう伝える", async () => {
@@ -123,7 +145,11 @@ describe("loginAction", () => {
         "ログインに続けて失敗したため、しばらく止めています。10 分ほど待ってからもう一度お試しください",
       loginId: "booth-1",
     });
-    expect(cookieSet).not.toHaveBeenCalled();
+    expect(cookieSet).not.toHaveBeenCalledWith(
+      "kct_manage_token",
+      expect.anything(),
+      expect.anything(),
+    );
   });
 
   it("ボットと見分けたら、パスワードを試させずに断る(総当たりを入口で止める)", async () => {
@@ -131,7 +157,11 @@ describe("loginAction", () => {
     const res = await loginAction(undefined, form("booth-1", "guess"));
     expect(res?.error).toBeTruthy();
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(cookieSet).not.toHaveBeenCalled();
+    expect(cookieSet).not.toHaveBeenCalledWith(
+      "kct_manage_token",
+      expect.anything(),
+      expect.anything(),
+    );
   });
 
   it("BotID 自体が失敗したときは止めない(本人が締め出されないように)", async () => {
@@ -156,7 +186,11 @@ describe("loginAction", () => {
       error: "接続できませんでした。時間をおいて再度お試しください。",
       loginId: "booth-1",
     });
-    expect(cookieSet).not.toHaveBeenCalled();
+    expect(cookieSet).not.toHaveBeenCalledWith(
+      "kct_manage_token",
+      expect.anything(),
+      expect.anything(),
+    );
   });
 });
 
