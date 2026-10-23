@@ -72,6 +72,8 @@
 }
 
 :root {
+  /* お知らせの帯(GlobalBulletin)の高さ。帯があるページだけ 42px(下の html:has)。画面に固定するもの(地図など)はこの分を下げる */
+  --bulletin-h: 0px;
   --background: oklch(0% 0 0);
   --foreground: oklch(100% 0.00011 271.152);
   --card: oklch(1 0 0);
@@ -138,6 +140,10 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+html:has([data-bulletin]) {
+  --bulletin-h: 42px;
 }
 
 @layer base {

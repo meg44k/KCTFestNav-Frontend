@@ -15,8 +15,14 @@ import {
 } from "@/components/ui/drawer";
 import { Marker } from "@/components/ui/marker";
 import { NAV_ENTRANCES, NAV_HOME, type NavItem } from "@/lib/navigation";
+import { cn } from "@/lib/utils";
 
-export default function SideMenu() {
+/** menuClassName: 右上のメニューボタンの位置を変えるとき(入口ページなど) */
+export default function SideMenu({
+  menuClassName,
+}: {
+  menuClassName?: string;
+} = {}) {
   return (
     <>
       {/* 左上の戻るボタン(右上のメニューと対になる) */}
@@ -27,7 +33,10 @@ export default function SideMenu() {
             <Button
               variant="outline"
               size="icon-lg"
-              className="absolute rounded-full top-13 right-4 bg-black/80 w-10 h-10 z-50"
+              className={cn(
+                "absolute rounded-full top-13 right-4 bg-black/80 w-10 h-10 z-50",
+                menuClassName,
+              )}
             />
           }
         >

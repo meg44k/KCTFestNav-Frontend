@@ -9,6 +9,7 @@ import {
   useState,
   type WheelEvent,
 } from "react";
+import { OFF_WHITE } from "@/lib/home/palette";
 import {
   floorLabel,
   fromScreen,
@@ -17,6 +18,7 @@ import {
   toScreen,
   type XY,
 } from "@/lib/map/campus";
+import { clusterPins } from "@/lib/map/cluster";
 import { cn } from "@/lib/utils";
 import { type MapProps, PIN_COLORS } from "./types";
 
@@ -25,6 +27,12 @@ const MIN_ZOOM = 0.6;
 const MAX_ZOOM = 12;
 // これより拡大したら、ピンの横にブース名を出す(全体表示では重なるので出さない)
 const PIN_NAME_ZOOM = 2.2;
+// 画面の上でこれより近いピンは 1 つの丸にまとめる(px)。拡大するとほどける
+const CLUSTER_PX = 28;
+// 地図の上の白は、タイトル画面・入口ページと同じ少しあたたかい白(OFF_WHITE)。
+// 真っ白だと黒い地図の上でチカチカする(現在地の青い点のふちだけは真っ白のまま)
+// 丸や名札の中は、真っ黒ではなく暗い灰色にして白との差をやわらげる
+const DARK = "#2b3038";
 
 // 地図の座標 → 画面の向き(MAP_BEARING が上)に回した座標。文字は回さずにすむ
 const S = (xy: XY) => toScreen(xy, MAP_BEARING);
@@ -167,6 +175,8 @@ export function Map2D({
     if (!target) return onPickNothing();
     const pin = target.closest("[data-pin]")?.getAttribute("data-pin");
     if (pin) return onPickPin(Number(pin));
+    // まとめた丸は、そこへ寄ってほどく
+    if (target.closest("[data-cluster]")) return zoomAt(s.x, s.y, 2.5);
     const building = target
       .closest("[data-building]")
       ?.getAttribute("data-building");
@@ -189,6 +199,12 @@ export function Map2D({
   };
   const me = location ? at(location.xy) : null;
   const showPinNames = view.k >= PIN_NAME_ZOOM && !onPickPoint;
+  // 場所を選ぶ画面(管理用)ではまとめない
+  const clusters = clusterPins(
+    pins,
+    onPickPoint ? 0 : CLUSTER_PX * px,
+    selectedPinId,
+  );
 
   return (
     <div className={cn("relative h-full w-full", className)}>
@@ -231,41 +247,6 @@ export function Map2D({
               </g>
             );
           })}
-          {campus.buildings
-            .filter((b) => b.name)
-            .map((b) => {
-              const name = shortName(b.name as string);
-              const size = 12 * px;
-              const w = textWidth(name, size) + 10 * px;
-              const h = 20 * px;
-              const c = at(b.center);
-              const focused = focus?.buildingId === b.id;
-              return (
-                <g key={b.id} pointerEvents="none">
-                  <rect
-                    x={c.x - w / 2}
-                    y={c.y - h / 2}
-                    width={w}
-                    height={h}
-                    rx={h / 2}
-                    fill={focused ? "#fbbf24" : "#0b0d10"}
-                    stroke="#ffffffb3"
-                    strokeWidth={px}
-                  />
-                  <text
-                    x={c.x}
-                    y={c.y}
-                    fontSize={size}
-                    fontWeight="bold"
-                    fill={focused ? "#000" : "#fff"}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                  >
-                    {name}
-                  </text>
-                </g>
-              );
-            })}
           {location && me && (
             <g pointerEvents="none">
               <circle
@@ -292,46 +273,122 @@ export function Map2D({
               />
             </g>
           )}
-          {pins.map((pin) => {
-            const big = pin.id === selectedPinId;
-            const r = (big ? 13 : 9) * px;
-            const p = at(pin.xy);
-            const label = [
-              showPinNames || big ? pin.name : "",
-              pin.floor > 0 ? floorLabel(pin.floor) : "",
-            ]
-              .filter(Boolean)
-              .join(" ");
-            return (
-              <g
-                key={pin.id}
-                data-pin={pin.id}
-                transform={`translate(${p.x} ${p.y})`}
-              >
-                <circle
-                  r={r}
-                  fill={PIN_COLORS[pin.congestion]}
-                  stroke="#fff"
-                  strokeWidth={2.5 * px}
-                />
-                {label && (
+          {clusters
+            .filter((c) => c.members.length > 1)
+            .map((c) => {
+              const p = at(c.xy);
+              return (
+                <g
+                  key={`c${c.members[0].id}`}
+                  data-cluster
+                  transform={`translate(${p.x} ${p.y})`}
+                >
+                  <circle
+                    r={15 * px}
+                    fill={DARK}
+                    stroke={OFF_WHITE}
+                    strokeWidth={2.5 * px}
+                  />
                   <text
-                    x={r + 3 * px}
-                    y={0}
-                    fontSize={12 * px}
+                    fontSize={14 * px}
+                    // 数がひと目で読めるよう太く。文字の書体は 700 より太いものが無いので、
+                    // 同じ色のふちを足して太らせる
                     fontWeight="bold"
-                    fill="#fff"
-                    stroke="#000"
-                    strokeWidth={3 * px}
-                    paintOrder="stroke"
+                    fill={OFF_WHITE}
+                    stroke={OFF_WHITE}
+                    strokeWidth={1.1 * px}
+                    textAnchor="middle"
                     dominantBaseline="central"
                   >
-                    {label}
+                    {c.members.length}
                   </text>
-                )}
-              </g>
-            );
-          })}
+                </g>
+              );
+            })}
+          {clusters
+            .filter((c) => c.members.length === 1)
+            .map(({ members: [pin] }) => {
+              const big = pin.id === selectedPinId;
+              const r = (big ? 13 : 9) * px;
+              const p = at(pin.xy);
+              const label = [
+                showPinNames || big ? pin.name : "",
+                pin.floor > 0 ? floorLabel(pin.floor) : "",
+              ]
+                .filter(Boolean)
+                .join(" ");
+              return (
+                <g
+                  key={pin.id}
+                  data-pin={pin.id}
+                  transform={`translate(${p.x} ${p.y})`}
+                >
+                  <circle
+                    r={r}
+                    fill={PIN_COLORS[pin.congestion]}
+                    stroke={OFF_WHITE}
+                    strokeWidth={2.5 * px}
+                  />
+                  {label && (
+                    <text
+                      x={r + 3 * px}
+                      y={0}
+                      fontSize={12 * px}
+                      fontWeight="bold"
+                      fill={OFF_WHITE}
+                      stroke="#000"
+                      strokeWidth={3 * px}
+                      paintOrder="stroke"
+                      dominantBaseline="central"
+                    >
+                      {label}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+          {/* 棟の名札はピンや丸より前に出す(重なっても何号館か読めるように)。押した判定は下のピンに通す */}
+          {campus.buildings
+            .filter((b) => b.name)
+            .map((b) => {
+              const name = shortName(b.name as string);
+              const size = 12 * px;
+              // 文字の左右に 9px ずつあける
+              const w = textWidth(name, size) + 18 * px;
+              const h = 20 * px;
+              const c = at(b.center);
+              const focused = focus?.buildingId === b.id;
+              return (
+                <g
+                  key={b.id}
+                  pointerEvents="none"
+                  // 半透明にして、下に重なったピンや丸の数も透けて見えるように(選んだ棟ははっきり)
+                  opacity={focused ? 1 : 0.6}
+                >
+                  <rect
+                    x={c.x - w / 2}
+                    y={c.y - h / 2}
+                    width={w}
+                    height={h}
+                    rx={h / 2}
+                    fill={focused ? "#fbbf24" : DARK}
+                    stroke={`${OFF_WHITE}b3`}
+                    strokeWidth={px}
+                  />
+                  <text
+                    x={c.x}
+                    y={c.y}
+                    fontSize={size}
+                    fontWeight="bold"
+                    fill={focused ? "#000" : OFF_WHITE}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                  >
+                    {name}
+                  </text>
+                </g>
+              );
+            })}
         </g>
       </svg>
       {/* 上が北ではないので、北の向きを出す */}

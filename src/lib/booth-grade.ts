@@ -8,11 +8,12 @@ export type GradeGroup = {
 
 /**
  * 主催者名から学年を取り出す。
- * クラス展示の主催者は "1-1" のようなクラス表記で、部活の場合は "天文部" のような
- * 名前になっているため、クラス表記でないものは null を返す。
+ * クラス展示の主催者は "1-1" のようなクラス表記(3 年からは "3M" のような学科の 1 文字)で、
+ * 部活の場合は "天文部" のような名前になっているため、クラス表記でないものは null を返す。
+ * バックエンドの IsClassOrganizer と同じ決まり
  */
 export function parseGrade(organizer: string): number | null {
-  const matched = organizer.trim().match(/^(\d+)\s*-\s*\d+$/);
+  const matched = organizer.trim().match(/^(\d+)\s*(?:-\s*\d+|[A-Z])$/);
   if (!matched) return null;
 
   const grade = Number(matched[1]);

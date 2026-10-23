@@ -118,7 +118,8 @@ export function BoothBrowser({
           {/* スクロールしても条件を変えられるよう上に固定する */}
           <div
             data-no-swipe
-            className="sticky top-0 z-40 mt-4 bg-black/95 px-4 py-3"
+            // 上のお知らせの帯のすぐ下に止める
+            className="sticky top-[var(--bulletin-h)] z-40 mt-4 bg-black/95 px-4 py-3"
           >
             <div className="mx-auto flex max-w-md flex-col gap-2">
               <div className="flex gap-2 overflow-x-auto">
@@ -138,10 +139,6 @@ export function BoothBrowser({
                 <div className="flex gap-1 overflow-x-auto" role="tablist">
                   {gradeTabs.map((g) => {
                     const active = filters.grade === g;
-                    const count =
-                      g === "all"
-                        ? grades.reduce((n, x) => n + x.count, 0)
-                        : grades.find((x) => x.grade === g)?.count;
                     return (
                       <button
                         key={g}
@@ -157,7 +154,6 @@ export function BoothBrowser({
                         )}
                       >
                         {g === "all" ? "全学年" : `${g}年`}
-                        <span className="ml-1 text-xs">({count})</span>
                       </button>
                     );
                   })}
