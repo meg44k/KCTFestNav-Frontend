@@ -1,11 +1,12 @@
 import { initBotId } from "botid/client/core";
 
-// 投票の Server Action を呼ぶページ。ここに挙げたページからの POST に、
+// 投票・ログインの Server Action を呼ぶページ。ここに挙げたページからの POST に、
 // BotID がボットかどうかを見分けるための情報を付ける(付いていないと checkBotId で弾かれる)
 initBotId({
   protect: [
     { path: "/class-booth", method: "POST" },
     { path: "/bazaar", method: "POST" },
     { path: "/map", method: "POST" },
+    { path: "/manage/login", method: "POST" },
   ],
 });
