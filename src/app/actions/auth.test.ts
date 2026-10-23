@@ -82,6 +82,16 @@ describe("loginAction", () => {
     expect(cookieSet).not.toHaveBeenCalled();
   });
 
+  it("失敗が続いて止められた(429)ときは、待ってから試すよう伝える", async () => {
+    fetchMock.mockResolvedValue(new Response("{}", { status: 429 }));
+    expect(await loginAction(undefined, form("booth-1", "wrong"))).toEqual({
+      error:
+        "ログインに続けて失敗したため、しばらく止めています。10 分ほど待ってからもう一度お試しください",
+      loginId: "booth-1",
+    });
+    expect(cookieSet).not.toHaveBeenCalled();
+  });
+
   it("未入力なら API を呼ばない", async () => {
     expect(await loginAction(undefined, form("", ""))).toEqual({
       error: "ID とパスワードを入力してください",

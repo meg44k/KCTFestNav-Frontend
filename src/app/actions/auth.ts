@@ -35,6 +35,14 @@ export async function loginAction(
   if (res.status === 401) {
     return { error: "ID かパスワードが違います", loginId };
   }
+  // 続けて失敗した ID(または全体)は、バックエンドがしばらく止める
+  if (res.status === 429) {
+    return {
+      error:
+        "ログインに続けて失敗したため、しばらく止めています。10 分ほど待ってからもう一度お試しください",
+      loginId,
+    };
+  }
   if (!res.ok) return { error: failureMessage("unavailable"), loginId };
 
   const { token } = (await res.json()) as { token: string };
