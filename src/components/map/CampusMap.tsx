@@ -138,7 +138,8 @@ export function CampusMap({
     : undefined;
 
   return (
-    <div className="fixed inset-0 bg-black">
+    // 上のお知らせの帯の下から
+    <div className="fixed inset-x-0 top-[var(--bulletin-h)] bottom-0 bg-black">
       {state.view === "3d" ? (
         <Map3D {...props} />
       ) : (

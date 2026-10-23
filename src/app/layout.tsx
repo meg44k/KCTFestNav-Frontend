@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { currentAnnouncement } from "@/app/actions/announcement";
+import { GlobalBulletin } from "@/components/layout/GlobalBulletin";
 import { LazyFont } from "@/components/layout/LazyFont";
 import { VisitTracker } from "@/components/layout/VisitTracker";
 
@@ -14,7 +16,7 @@ export const metadata: Metadata = {
   description: "北九州高専 高専祭 2026のマップウェブサイトです。",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -28,7 +30,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <LazyFont />
         <VisitTracker />
-        {children}
+        <GlobalBulletin initial={await currentAnnouncement()} />
+        {/* 帯の下から始まる枠。各ページの戻る・メニューのボタン(absolute)は、この枠を基準に置く */}
+        <div className="relative flex flex-1 flex-col">{children}</div>
       </body>
     </html>
   );
