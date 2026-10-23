@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { API_BASE_URL, REQUEST_TIMEOUT_MS } from "@/lib/api/client";
 import { failureMessage } from "@/lib/api/manage";
+import { isBot } from "@/lib/bot";
 import { clearToken, saveToken } from "@/lib/manage/cookie";
 
 // 失敗したときは入力した ID を返し、フォームに残す(React はアクション後にフォームを空にするため)
@@ -16,6 +17,13 @@ export async function loginAction(
   const password = String(formData.get("password") ?? "");
   if (!loginId || !password) {
     return { error: "ID とパスワードを入力してください", loginId };
+  }
+  // パスワードの総当たりを入口で止める(ボットにはどちらが違ったかも教えない)
+  if (await isBot()) {
+    return {
+      error: "ログインできませんでした。もう一度お試しください",
+      loginId,
+    };
   }
 
   let res: Response;

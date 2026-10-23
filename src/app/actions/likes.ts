@@ -1,6 +1,5 @@
 "use server";
 
-import { checkBotId } from "botid/server";
 import { cookies } from "next/headers";
 import {
   FAILED,
@@ -9,6 +8,7 @@ import {
   VOTER_COOKIE,
   VOTER_MAX_AGE,
 } from "@/lib/api/internal";
+import { isBot } from "@/lib/bot";
 
 /** 新しい投票者番号をもらって cookie に入れる。もらえなければ応答の状態を返す */
 async function issueVoter(): Promise<string | number> {
@@ -23,20 +23,6 @@ async function issueVoter(): Promise<string | number> {
     maxAge: VOTER_MAX_AGE,
   });
   return voter;
-}
-
-/**
- * プログラムからの大量投票を入口で止める(Vercel BotID。`next dev` では常に人として通る)。
- * BotID 自体が失敗したとき(Vercel の外・一時的な障害)は止めない。投票が全部できなくなるより、
- * 後から管理画面で見つけて取り消すほうを選ぶ
- */
-async function isBot(): Promise<boolean> {
-  try {
-    return (await checkBotId()).isBot;
-  } catch (e) {
-    console.error("BotID の判定に失敗しました。止めずに通します", e);
-    return false;
-  }
 }
 
 const errorOf = (status: number) => (status === 429 ? TOO_MANY : FAILED);

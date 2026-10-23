@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const cookieSet = vi.hoisted(() => vi.fn());
+const checkBotId = vi.hoisted(() => vi.fn());
+vi.mock("botid/server", () => ({ checkBotId }));
 vi.mock("next/headers", () => ({
   cookies: async () => ({ set: cookieSet }),
 }));
@@ -21,6 +23,8 @@ const form = (loginId: string, password: string) => {
 };
 
 beforeEach(() => {
+  checkBotId.mockReset();
+  checkBotId.mockResolvedValue({ isBot: false });
   cookieSet.mockReset();
   fetchMock.mockReset();
   vi.stubGlobal("fetch", fetchMock);
@@ -90,6 +94,21 @@ describe("loginAction", () => {
       loginId: "booth-1",
     });
     expect(cookieSet).not.toHaveBeenCalled();
+  });
+
+  it("ボットと見分けたら、パスワードを試させずに断る(総当たりを入口で止める)", async () => {
+    checkBotId.mockResolvedValue({ isBot: true });
+    const res = await loginAction(undefined, form("booth-1", "guess"));
+    expect(res?.error).toBeTruthy();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(cookieSet).not.toHaveBeenCalled();
+  });
+
+  it("BotID 自体が失敗したときは止めない(本人が締め出されないように)", async () => {
+    checkBotId.mockRejectedValue(new Error("x-vercel-oidc-token missing"));
+    fetchMock.mockResolvedValue(new Response("{}", { status: 401 }));
+    await loginAction(undefined, form("booth-1", "wrong"));
+    expect(fetchMock).toHaveBeenCalled();
   });
 
   it("未入力なら API を呼ばない", async () => {
