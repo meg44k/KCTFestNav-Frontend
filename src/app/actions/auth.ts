@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { API_BASE_URL, REQUEST_TIMEOUT_MS } from "@/lib/api/client";
 import { failureMessage } from "@/lib/api/manage";
@@ -26,11 +27,30 @@ export async function loginAction(
     };
   }
 
+  // ログインはこのサーバーからだけ受け付けられる(合言葉が要る)。BotID をすり抜けた直接の呼び出しを断るため
+  const key = process.env.INTERNAL_API_KEY;
+  if (!key) {
+    console.error(
+      "INTERNAL_API_KEY が設定されていないため、ログインできません",
+    );
+    return { error: failureMessage("unavailable"), loginId };
+  }
+  // ログインした人の接続元。バックエンドが回数の上限を数えるのに使う(Vercel が付ける値)
+  const h = await headers();
+  const ip =
+    h.get("x-real-ip") ??
+    h.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "unknown";
+
   let res: Response;
   try {
     res = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "X-Internal-Key": key,
+        "X-Client-IP": ip,
+      },
       body: JSON.stringify({ login_id: loginId, password }),
       cache: "no-store",
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
@@ -41,7 +61,13 @@ export async function loginAction(
   }
 
   if (res.status === 401) {
-    return { error: "ID かパスワードが違います", loginId };
+    // あと何回試せるか(バックエンドが返すとき)
+    const remaining = await res
+      .json()
+      .then((b: { remaining?: unknown }) => b.remaining)
+      .catch(() => undefined);
+    const left = typeof remaining === "number" ? `(あと ${remaining} 回)` : "";
+    return { error: `ID かパスワードが違います${left}`, loginId };
   }
   // 続けて失敗した ID(または全体)は、バックエンドがしばらく止める
   if (res.status === 429) {

@@ -3,8 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const cookieSet = vi.hoisted(() => vi.fn());
 const checkBotId = vi.hoisted(() => vi.fn());
 vi.mock("botid/server", () => ({ checkBotId }));
+const requestHeaders = vi.hoisted(() => new Headers());
 vi.mock("next/headers", () => ({
   cookies: async () => ({ set: cookieSet }),
+  headers: async () => requestHeaders,
 }));
 vi.mock("next/navigation", () => ({
   redirect: (path: string) => {
@@ -23,6 +25,9 @@ const form = (loginId: string, password: string) => {
 };
 
 beforeEach(() => {
+  vi.stubEnv("INTERNAL_API_KEY", "test-key");
+  for (const k of [...requestHeaders.keys()]) requestHeaders.delete(k);
+  requestHeaders.set("x-forwarded-for", "203.0.113.1, 10.0.0.1");
   checkBotId.mockReset();
   checkBotId.mockResolvedValue({ isBot: false });
   cookieSet.mockReset();
@@ -30,6 +35,7 @@ beforeEach(() => {
   vi.stubGlobal("fetch", fetchMock);
 });
 afterEach(() => {
+  vi.unstubAllEnvs();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
@@ -49,6 +55,11 @@ describe("loginAction", () => {
     expect(JSON.parse(init.body)).toEqual({
       login_id: "booth-1",
       password: "pass",
+    });
+    // 合言葉と、ログインした人の接続元(回数の上限を数える)をバックエンドに渡す
+    expect(init.headers).toMatchObject({
+      "X-Internal-Key": "test-key",
+      "X-Client-IP": "203.0.113.1",
     });
     expect(cookieSet).toHaveBeenCalledWith("kct_manage_token", "jwt", {
       httpOnly: true,
@@ -75,6 +86,25 @@ describe("loginAction", () => {
     expect(JSON.parse(fetchMock.mock.calls[0][1].body).login_id).toBe(
       "booth-1",
     );
+  });
+
+  it("パスワード違いで残りの回数が分かれば「あと N 回」と出す", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ error: "unauthorized", remaining: 3 }), {
+        status: 401,
+      }),
+    );
+    expect(await loginAction(undefined, form("booth-1", "wrong"))).toEqual({
+      error: "ID かパスワードが違います(あと 3 回)",
+      loginId: "booth-1",
+    });
+  });
+
+  it("合言葉が設定されていなければ、バックエンドを呼ばずに案内を出す", async () => {
+    vi.stubEnv("INTERNAL_API_KEY", "");
+    const res = await loginAction(undefined, form("booth-1", "pass"));
+    expect(res?.error).toBeTruthy();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("パスワード違い(401)はエラー文言を返し、Cookie は保存しない", async () => {
