@@ -19,6 +19,9 @@ export type MapProps = {
 };
 
 /** ピンの色。ブースのカードと同じ混雑度の色(クラス展示とクラブバザーで分けない) */
+/** 平面図の敷地の外の色(「お祭りの夜」の紺)。地図の入れ物と平面図で使う */
+export const MAP_BG = "#0B0E17";
+
 export const PIN_COLORS = {
   empty: "#00B894",
   clouded: "#FDCB6E",
