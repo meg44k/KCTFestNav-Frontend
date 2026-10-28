@@ -109,6 +109,17 @@ function NaviButton({
                 />
               </svg>
 
+              {/*
+                切れ込みの真ん中に置く動かない的(=目標 / A)。中を空けた輪にして、
+                動くマーカーがぴったり重なると埋まって見える。位置と大きさはマーカーと同じ
+              */}
+              <div
+                className={cn(
+                  "absolute left-1/2 top-[5%] -translate-x-1/2 -translate-y-1/2 w-[10%] aspect-square rounded-full border-2 border-gray-500 transition-colors duration-300",
+                  isFacingTarget && "border-green-500",
+                )}
+              />
+
               {/* 回転レイヤー:矢印 + 動くマーカー(=現在の向き / B) */}
               <div
                 className="absolute inset-0"
