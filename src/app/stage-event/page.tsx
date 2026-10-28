@@ -1,6 +1,9 @@
 import { PageTitle } from "@/components/layout/PageTitle";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
-import { RefreshEvery } from "@/components/RefreshEvery";
+import {
+  RefreshEvery,
+  VISITOR_REFRESH_SECONDS,
+} from "@/components/RefreshEvery";
 import { DayTabs } from "@/components/stage/DayTabs";
 import { NowPlayingBanner } from "@/components/stage/NowPlayingBanner";
 import { StageSectionCard } from "@/components/stage/StageSectionCard";
@@ -45,7 +48,7 @@ export default async function StageEvent({
   return (
     <div>
       <SideMenu />
-      <RefreshEvery seconds={60} />
+      <RefreshEvery seconds={VISITOR_REFRESH_SECONDS} />
       <PageTitle>ステージイベント</PageTitle>
       {loadFailed ? (
         <p className="mt-10 flex justify-center text-gray-400">
