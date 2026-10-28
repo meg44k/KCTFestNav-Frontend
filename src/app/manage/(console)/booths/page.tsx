@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ConsoleMessage } from "@/components/manage/ConsoleMessage";
 import type { BoothResponse } from "@/lib/api/booths";
 import { failureMessage, manageRequest, requireRole } from "@/lib/api/manage";
@@ -46,7 +47,15 @@ export default async function BoothsPage() {
             {booths.data.booths.length}件
           </span>
         </h1>
-        <BoothFormDialog />
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/manage/booths/map"
+            className="flex h-10 items-center rounded-full border border-black/20 px-4 font-bold text-sm"
+          >
+            地図で位置を直す
+          </Link>
+          <BoothFormDialog />
+        </div>
       </div>
       <BoothList booths={booths.data.booths} staffed={staffed} />
     </div>
