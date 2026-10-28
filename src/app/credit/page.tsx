@@ -40,8 +40,7 @@ export default function Credit() {
             山田 優吾
           </p>
           <p className="text-sm leading-relaxed" style={{ color: GRAY }}>
-            バイトとかお仕事、絶賛募集中です！Web
-            サイトづくりなど、なんでも気軽に声かけてください〜
+            バイトやお仕事ください。金欠です。
           </p>
           <a
             href="mailto:yugomegane@gmail.com"
