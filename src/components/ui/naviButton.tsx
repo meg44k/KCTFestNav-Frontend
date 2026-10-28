@@ -125,11 +125,12 @@ function NaviButton({
                 {/*
                   リングをくり抜くのではなく、不透明な丸をリングの上に「乗せる」だけ。
                   こうすると見えるのは丸自身の丸い縁だけになり、尖りが出ない。
-                  位置(-top-2)はリムに乗る量を見ながら微調整可。
+                  リングの線は viewBox 100 の y=5(半径 45)にあるので、丸の真ん中を上から 5% に置く。
+                  px で置くとコンパスの大きさが変わったときに線から外れるため、位置も大きさも % にする
                 */}
                 <div
                   className={cn(
-                    "absolute left-1/2 -top-2 -translate-x-1/2 h-6 w-6 rounded-full bg-gray-200 transition-colors duration-300",
+                    "absolute left-1/2 top-[5%] -translate-x-1/2 -translate-y-1/2 w-[10%] aspect-square rounded-full bg-gray-200 transition-colors duration-300",
                     isFacingTarget && "bg-green-500",
                   )}
                 ></div>
