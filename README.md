@@ -41,3 +41,16 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 - Vercel の画面で: リポジトリを取り込む → Settings → Git の Production Branch を `main` → 環境変数 `NEXT_PUBLIC_API_BASE_URL` に Cloud Run の URL(バックエンドの `terraform output -raw api_url`、`https://kctfestnav-api-....run.app`)を入れる(Production)。`api.kctfes.app` は Google がまだプレビューとしている機能なので通り道に使わない→ Domains に `kctfes.app` と `www.kctfes.app`(www は kctfes.app へ転送)
 - DNS のレコードはバックエンドの `infra/`(Terraform)が作る。作り方は KCTFestNav-Backend の `infra/README.md`
 - 負荷テスト(k6): `k6 run -e BASE_URL=https://kctfes.app scripts/loadtest.js`(同時 300 人・10 分。エラー 0・95% が 1 秒以内)
+
+## メンテナンス画面
+
+当日などに来場者のページを止めたいときに使う。バックエンドが止まっていても切り替えられるよう、フロント(Vercel)だけで決める。
+
+1. Vercel の Settings → Environment Variables(Production)で `MAINTENANCE_MODE` を `1` にする。再開の目安を出すなら `MAINTENANCE_MESSAGE`(ex. `14:00 ごろ再開の予定です。`)も入れる
+2. Deployments の最新の本番を Redeploy する(1〜2 分で切り替わる)
+3. 戻すときは `MAINTENANCE_MODE` を `0` にして、もう一度 Redeploy する
+
+- 来場者のページは URL はそのままで、中身がメンテナンス画面(`/maintenance`)に差し替わる(503)
+- 管理画面(`/manage`)はメンテナンス中も使える(混雑度やお知らせを直せる)
+- メンテナンス中でないときに `/maintenance` を開くとトップへ戻す
+- これとは別に、ページが予想外のエラーで描けないときは `src/app/error.tsx`(「うまく読み込めませんでした」と「もう一度読み込む」)が自動で出る
