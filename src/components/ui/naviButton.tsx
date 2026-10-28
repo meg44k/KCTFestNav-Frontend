@@ -180,7 +180,8 @@ function NaviButton({
                 {/* 回転レイヤー:矢印 + 動くマーカー(=現在の向き / B)。向きが取れていない間はあてにならないので薄くする */}
                 <div
                   className={cn(
-                    "absolute inset-0 transition-[transform,opacity] duration-150",
+                    // 回転にはアニメーションを付けない(センサーの値が次々来て途中で打ち切られ、ピクピクするため)
+                    "absolute inset-0 transition-opacity duration-300",
                     !hasHeading && "opacity-30",
                   )}
                   style={{ transform: `rotate(${snap.angle}deg)` }}
