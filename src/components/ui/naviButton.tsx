@@ -152,7 +152,7 @@ function NaviButton({
               */}
                 <div
                   className={cn(
-                    "absolute left-1/2 top-[5%] -translate-x-1/2 -translate-y-1/2 w-[10%] aspect-square rounded-full border-2 border-gray-500 transition-colors duration-300",
+                    "absolute left-1/2 top-[5%] -translate-x-1/2 -translate-y-1/2 w-[10%] aspect-square rounded-full border-4 border-gray-500 transition-colors duration-300",
                     isFacingTarget && "border-green-500",
                   )}
                 />
