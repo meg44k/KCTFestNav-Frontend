@@ -9,7 +9,7 @@ import {
   useState,
   type WheelEvent,
 } from "react";
-import { OFF_WHITE } from "@/lib/home/palette";
+import { YELLOW as BRAND_YELLOW, OFF_WHITE } from "@/lib/home/palette";
 import {
   floorLabel,
   fromScreen,
@@ -19,8 +19,9 @@ import {
   type XY,
 } from "@/lib/map/campus";
 import { clusterPins } from "@/lib/map/cluster";
+import { GROUND } from "@/lib/map/ground";
 import { cn } from "@/lib/utils";
-import { type MapProps, PIN_COLORS } from "./types";
+import { MAP_BG, type MapProps, PIN_COLORS } from "./types";
 
 const MARGIN = 12;
 const MIN_ZOOM = 0.6;
@@ -31,8 +32,17 @@ const PIN_NAME_ZOOM = 2.2;
 const CLUSTER_PX = 28;
 // 地図の上の白は、タイトル画面・入口ページと同じ少しあたたかい白(OFF_WHITE)。
 // 真っ白だと黒い地図の上でチカチカする(現在地の青い点のふちだけは真っ白のまま)
-// 丸や名札の中は、真っ黒ではなく暗い灰色にして白との差をやわらげる
-const DARK = "#2b3038";
+// 平面図の色(「お祭りの夜」: タイトルの星空に合わせた紺)。鮮やかな色は混雑度のピンだけに使い、
+// ほかは「地面 → 道 → 建物 → 名札 → ピン」の順に明るくする。
+// 地面の絵(道・草・駐輪場)の色は scripts/map-ground.py で同じ考えにそろえる
+const MAP = {
+  bg: MAP_BG, // 敷地の外
+  building: "#5E6787",
+  buildingEdge: "#B3BAD3",
+  focus: BRAND_YELLOW, // 選んだ棟
+  tag: MAP_BG, // 棟の名札の地
+  cluster: "#141A2A", // まとめた丸の地
+};
 
 // 地図の座標 → 画面の向き(MAP_BEARING が上)に回した座標。文字は回さずにすむ
 const S = (xy: XY) => toScreen(xy, MAP_BEARING);
@@ -213,7 +223,8 @@ export function Map2D({
         role="img"
         aria-label="キャンパスの平面図"
         viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`}
-        className="h-full w-full touch-none select-none bg-black"
+        className="h-full w-full touch-none select-none"
+        style={{ background: MAP.bg }}
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
@@ -221,6 +232,16 @@ export function Map2D({
         onWheel={onWheel}
       >
         <g transform={`translate(${view.tx} ${view.ty}) scale(${view.k})`}>
+          {/* 地面の絵(道・草)。建物より下。onPickPoint の地図(管理用)でも同じに出す */}
+          <image
+            href={GROUND.href}
+            x={GROUND.left}
+            y={-GROUND.top}
+            width={GROUND.right - GROUND.left}
+            height={GROUND.top - GROUND.bottom}
+            preserveAspectRatio="none"
+            pointerEvents="none"
+          />
           {campus.buildings.map((b) => {
             const focused = focus?.buildingId === b.id;
             return (
@@ -233,14 +254,10 @@ export function Map2D({
                       .map((poly) => poly.map(ring).join(""))
                       .join("")}
                     fillRule="evenodd"
-                    // 名前のある棟は明るく、渡り廊下などは背景に引かせる
-                    fill={
-                      focused ? "#fbbf2499" : b.name ? "#5b6472" : "#1c2025"
-                    }
-                    stroke={
-                      focused ? "#fbbf24" : b.name ? "#d1d5db" : "#3a4048"
-                    }
-                    strokeWidth={(focused ? 2.5 : b.name ? 1.5 : 1) * px}
+                    // 名前の無い棟(渡り廊下・物置など)も、地面の絵の上で埋もれないよう同じ色にする
+                    fill={focused ? `${MAP.focus}99` : MAP.building}
+                    stroke={focused ? MAP.focus : MAP.buildingEdge}
+                    strokeWidth={(focused ? 2.5 : 1.5) * px}
                     strokeLinejoin="round"
                   />
                 ))}
@@ -285,7 +302,7 @@ export function Map2D({
                 >
                   <circle
                     r={15 * px}
-                    fill={DARK}
+                    fill={MAP.cluster}
                     stroke={OFF_WHITE}
                     strokeWidth={2.5 * px}
                   />
@@ -371,8 +388,8 @@ export function Map2D({
                     width={w}
                     height={h}
                     rx={h / 2}
-                    fill={focused ? "#fbbf24" : DARK}
-                    stroke={`${OFF_WHITE}b3`}
+                    fill={focused ? MAP.focus : MAP.tag}
+                    stroke={`${OFF_WHITE}40`}
                     strokeWidth={px}
                   />
                   <text
