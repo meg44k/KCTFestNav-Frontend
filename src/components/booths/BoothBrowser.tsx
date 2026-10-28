@@ -229,6 +229,7 @@ export function BoothBrowser({
                   description={booth.description}
                   organizer={booth.organizer}
                   location={booth.location}
+                  floor={booth.floor}
                   imageUrl={booth.imageUrl}
                   imageAlt={booth.name}
                   congestionStatus={booth.congestionStatus}

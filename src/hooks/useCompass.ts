@@ -1,4 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
+import {
+  geoErrorMessage,
+  readHeading,
+  sensorErrorMessage,
+} from "@/lib/compass";
 
 // iOS Safari だけが持つ、真北基準の方位を返す独自プロパティ
 type CompassOrientationEvent = DeviceOrientationEvent & {
@@ -59,20 +64,29 @@ export function useCompass(targetLat: number, targetLng: number) {
   const [heading, setHeading] = useState(0); // 現在向いている方向
   const [bearing, setBearing] = useState(0); // 目的地への角度;
   const [isActive, setIsActive] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // 現在地のエラーは取れたら消すが、向きのエラーは消さないので分けて持つ
+  const [geoError, setGeoError] = useState<string | null>(null);
+  const [sensorError, setSensorError] = useState<string | null>(null);
+  // 向きが 1 度でも取れたか。取れるまでは角度 0 なので「向きが合った」と言わない
+  const [hasHeading, setHasHeading] = useState(false);
   const [distance, setDistance] = useState(0);
 
   // 緯度と経度から角度を計算する
 
   const handleOrientation = useCallback((event: DeviceOrientationEvent) => {
-    let currentHeading = 0;
-    const compassHeading = (event as CompassOrientationEvent)
-      .webkitCompassHeading;
-    if (compassHeading !== undefined) {
-      currentHeading = compassHeading;
-    } else if (event.alpha !== null) {
-      currentHeading = (360 - event.alpha) % 360;
+    const currentHeading = readHeading({
+      webkitCompassHeading: (event as CompassOrientationEvent)
+        .webkitCompassHeading,
+      alpha: event.alpha,
+      absolute: event.absolute,
+    });
+    if (typeof currentHeading !== "number") {
+      setSensorError(sensorErrorMessage(currentHeading));
+      return;
     }
+    // 開いた直後に空の値が来て文が出ても、正しい向きが取れたら消す
+    setSensorError(null);
+    setHasHeading(true);
 
     // 生のセンサー値はブレが大きいので、最短角度差で指数移動平均をかけて滑らかにする
     const smoothing = 0.3;
@@ -104,11 +118,11 @@ export function useCompass(targetLat: number, targetLng: number) {
         );
         setDistance(newDistance);
         setBearing(newBearing);
-        setError(null);
+        setGeoError(null);
       },
       (err) => {
         if (err.code === err.POSITION_UNAVAILABLE) return;
-        setError(`GPS取得エラー(code:${err.code}): ${err.message}`);
+        setGeoError(geoErrorMessage(err.code));
       },
       { enableHighAccuracy: true },
     );
@@ -141,11 +155,18 @@ export function useCompass(targetLat: number, targetLng: number) {
       try {
         const permission = await orientationEvent.requestPermission();
         if (permission !== "granted") {
-          setError("コンパスの使用が許可されませんでした");
+          setSensorError(
+            "向きのセンサーが許可されませんでした。ページを開き直してから、もう一度コンパスを開いて「許可」を押してください。",
+          );
+          // 向きが分からなくても、距離と「着いた」は出せるので現在地は取る
+          setIsActive(true);
           return;
         }
       } catch {
-        setError("コンパスの許可リクエストに失敗しました");
+        setSensorError(
+          "向きのセンサーを使えませんでした。ページを開き直してから、もう一度開いてください。",
+        );
+        setIsActive(true);
         return;
       }
     }
@@ -172,13 +193,16 @@ export function useCompass(targetLat: number, targetLng: number) {
     );
     window.removeEventListener("deviceorientation", handleOrientation);
     setIsActive(false);
+    setHasHeading(false);
+    setSensorError(null);
   };
 
   return {
     angle,
     heading,
     bearing,
-    error,
+    error: geoError ?? sensorError,
+    hasHeading,
     isActive,
     startCompass,
     stopCompass,
