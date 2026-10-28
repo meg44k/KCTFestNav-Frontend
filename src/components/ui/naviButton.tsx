@@ -157,6 +157,16 @@ function NaviButton({
                   )}
                 />
 
+                {/* 動かない灰色の矢印(=合わせる向き)。動く矢印と同じ位置・大きさで、重なると隠れる */}
+                <Image
+                  src="/Arrow.png"
+                  alt=""
+                  width={501}
+                  height={521}
+                  sizes="(min-width: 768px) 240px, 48vw"
+                  className="absolute left-1/2 top-1/2 w-[80%] h-auto -translate-x-1/2 -translate-y-1/2 opacity-30"
+                />
+
                 {/* 回転レイヤー:矢印 + 動くマーカー(=現在の向き / B)。向きが取れていない間はあてにならないので薄くする */}
                 <div
                   className={cn(
