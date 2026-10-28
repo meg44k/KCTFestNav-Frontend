@@ -114,13 +114,14 @@ function NaviButton({
                 className="absolute inset-0"
                 style={{ transform: `rotate(${angle}deg)` }}
               >
+                {/* 矢印はリングに付かないよう少し小さくし、コンパスの真ん中を中心に置く */}
                 <Image
                   src="/Arrow.png"
                   alt=""
                   width={501}
                   height={521}
-                  sizes="(min-width: 768px) 300px, 60vw"
-                  className="w-full h-auto"
+                  sizes="(min-width: 768px) 240px, 48vw"
+                  className="absolute left-1/2 top-1/2 w-[80%] h-auto -translate-x-1/2 -translate-y-1/2"
                 />
                 {/*
                   リングをくり抜くのではなく、不透明な丸をリングの上に「乗せる」だけ。
