@@ -31,6 +31,9 @@ export function EntranceTiles() {
             <Link
               key={href}
               href={href}
+              // 先回りの読み込みはしない。このサイトのページは開くたびに中身を作るので骨組みしか先に取れず、
+              // 入口を開くたびに 4 ページ分の問い合わせが Vercel の回数の上限(CDN Requests・関数)を使うだけになる
+              prefetch={false}
               // 高さの低い画面では、ロゴに場所をゆずるため少し低くする
               className="relative block aspect-[84/84] active:brightness-150 [@media(max-height:720px)]:aspect-[84/68]"
               style={{
@@ -72,6 +75,7 @@ export function EntranceTiles() {
         </div>
         <Link
           href={href}
+          prefetch={false}
           // 上の 3 つと同じ見た目(黒地・黄色の細い枠・黄色のアイコンと文字)。大きさはそのまま
           className="relative block aspect-[264/88] w-full active:brightness-150"
           style={{
