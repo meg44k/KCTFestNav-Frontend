@@ -125,7 +125,7 @@ function NaviButton({
               */}
               <div
                 className={cn(
-                  "relative flex w-3/4 aspect-square items-center justify-center text-gray-500 transition-colors duration-300",
+                  "relative flex w-3/4 aspect-square items-center justify-center text-gray-600 transition-colors duration-300",
                   isFacingTarget && "text-green-500",
                 )}
               >
