@@ -233,7 +233,7 @@ function NaviButton({
           )}
           <p className="mt-6 flex items-start justify-center gap-1 text-xs text-white/70">
             <TriangleAlert size={14} className="mt-px shrink-0" />
-            画面を見ながら歩かず、前と周りに気をつけてください
+            画面を見ながら歩かず、周りに気をつけてください
           </p>
         </div>
       </DialogContent>
