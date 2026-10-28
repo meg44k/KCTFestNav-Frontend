@@ -16,6 +16,8 @@ export type MapPin = {
   kind: "class" | "club";
   /** ピンの色に使う */
   congestion: CongestionStatus;
+  /** 混雑度の代わりに塗る色(管理画面で動かしたピンなど) */
+  color?: string;
   buildingId?: string;
 };
 
