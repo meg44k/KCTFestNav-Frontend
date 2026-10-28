@@ -225,6 +225,7 @@ function BoothCard({
                         name={name}
                         floor={floor}
                         location={location}
+                        mapHref={mapHref}
                       />
                     )}
                   </div>
@@ -242,6 +243,7 @@ function BoothCard({
           name={name}
           floor={floor}
           location={location}
+          mapHref={mapHref}
           className="absolute bottom-3 right-3"
         />
       )}
