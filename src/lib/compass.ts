@@ -47,22 +47,3 @@ export function sensorErrorMessage(problem: HeadingProblem): string {
     ? "この端末では向きが分からないので、矢印は使えません。距離と地図で場所を確かめてください。"
     : "この端末では北の向きが分からないため、矢印が正しくない場合があります。地図で場所を確かめてください。";
 }
-
-/** 矢印を真上に吸い付けるずれ(度)。吸い付いたあとは SNAP_OUT を超えるまで離さない */
-export const SNAP_IN = 12;
-export const SNAP_OUT = 20;
-
-/**
- * 正しい向きの近くでは、磁石のように矢印を真上に吸い付ける。
- * 吸い付く所と離れる所をずらし、境目でチカチカしたり何度も震えたりしないようにする。
- * angle は何周も回った値のまま来るので、いちばん近い真上(360 の倍数)に合わせる
- */
-export function snapToTarget(
-  angle: number,
-  wasSnapped: boolean,
-): { angle: number; snapped: boolean } {
-  // 真上からのずれ(-180〜180)
-  const off = ((((angle + 180) % 360) + 360) % 360) - 180;
-  const snapped = Math.abs(off) <= (wasSnapped ? SNAP_OUT : SNAP_IN);
-  return { angle: snapped ? angle - off : angle, snapped };
-}

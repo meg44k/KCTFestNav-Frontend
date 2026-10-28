@@ -3,12 +3,12 @@
 import { MapPin, Navigation, TriangleAlert } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import campusData from "@/data/campus.json";
 import { useCompass } from "@/hooks/useCompass";
 import { useWakeLock } from "@/hooks/useWakeLock";
-import { hasArrived, snapToTarget } from "@/lib/compass";
+import { hasArrived } from "@/lib/compass";
 import { type Campus, type CampusData, loadCampus } from "@/lib/map/campus";
 import { placeLabel } from "@/lib/map/place-label";
 import { cn } from "@/lib/utils";
@@ -51,24 +51,16 @@ function NaviButton({
   } = useCompass(latitude, longitude);
   // コンパスを見ている間は画面が暗くならないようにする
   useWakeLock(isActive);
+  const normalizedAngle = ((angle % 360) + 360) % 360;
   const place = placeLabel(
     campusOnce(),
     { latitude, longitude, floor },
     location,
   );
   const arrived = hasArrived(distance);
-  // 正しい向きの近くでは矢印を真上に吸い付け、少しのずれでは動かさない(磁石のように)。
-  // 吸い付いたかは前の描画から引き継ぐ(離れる所を吸い付く所より遠くするため)
-  const wasSnapped = useRef(false);
-  // 向きが取れるまでは角度 0 なので吸い付けない
-  const snap = hasHeading
-    ? snapToTarget(angle, wasSnapped.current)
-    : { angle, snapped: false };
-  useEffect(() => {
-    wasSnapped.current = snap.snapped;
-  });
-  // 吸い付いている間を正解方向とみなす。着いたら矢印はあてにならないので合わせない
-  const isFacingTarget = !arrived && snap.snapped;
+  // 誤差±15度以内なら正解方向とみなす。着いたら矢印はあてにならないので合わせない
+  const isFacingTarget =
+    hasHeading && !arrived && (normalizedAngle < 15 || normalizedAngle > 345);
 
   // 向きが合った瞬間に短く震わせる(震わせられるのは Android だけ。iPhone では何もしない)
   useEffect(() => {
@@ -180,11 +172,10 @@ function NaviButton({
                 {/* 回転レイヤー:矢印 + 動くマーカー(=現在の向き / B)。向きが取れていない間はあてにならないので薄くする */}
                 <div
                   className={cn(
-                    // 回転にはアニメーションを付けない(センサーの値が次々来て途中で打ち切られ、ピクピクするため)
                     "absolute inset-0 transition-opacity duration-300",
                     !hasHeading && "opacity-30",
                   )}
-                  style={{ transform: `rotate(${snap.angle}deg)` }}
+                  style={{ transform: `rotate(${angle}deg)` }}
                 >
                   {/* 矢印はリングに付かないよう少し小さくし、コンパスの真ん中を中心に置く */}
                   <Image

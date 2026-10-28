@@ -4,7 +4,6 @@ import {
   hasArrived,
   readHeading,
   sensorErrorMessage,
-  snapToTarget,
 } from "./compass";
 
 describe("hasArrived(着いたか)", () => {
@@ -69,29 +68,5 @@ describe("sensorErrorMessage(向きが取れないときの文)", () => {
 
   it("北基準でないときは、矢印がずれるかもと書く", () => {
     expect(sensorErrorMessage("notAbsolute")).toContain("正しくない");
-  });
-});
-
-describe("snapToTarget(磁石のように真上に吸い付ける)", () => {
-  it("ずれが小さければ真上(360 の倍数)に吸い付く", () => {
-    expect(snapToTarget(10, false)).toEqual({ angle: 0, snapped: true });
-    expect(snapToTarget(-8, false)).toEqual({ angle: 0, snapped: true });
-  });
-
-  it("何周も回ったあとでも、いちばん近い真上に吸い付く(逆回りさせない)", () => {
-    expect(snapToTarget(725, false)).toEqual({ angle: 720, snapped: true });
-    expect(snapToTarget(-355, false)).toEqual({ angle: -360, snapped: true });
-  });
-
-  it("吸い付く前は、12° より大きくずれていればそのまま", () => {
-    expect(snapToTarget(16, false)).toEqual({ angle: 16, snapped: false });
-  });
-
-  it("吸い付いたあとは、20° までのずれでは離れない", () => {
-    expect(snapToTarget(18, true)).toEqual({ angle: 0, snapped: true });
-  });
-
-  it("吸い付いたあとでも、20° より大きくずれたら離れる", () => {
-    expect(snapToTarget(25, true)).toEqual({ angle: 25, snapped: false });
   });
 });
