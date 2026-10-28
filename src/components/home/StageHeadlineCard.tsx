@@ -23,6 +23,8 @@ export function StageHeadlineCard({ headline }: { headline: StageHeadline }) {
     >
       <Link
         href="/stage-event"
+        // 入口のタイルと同じく、先回りの読み込みはしない(Vercel の回数の上限を使うだけになるため)
+        prefetch={false}
         className="flex items-center active:opacity-70"
         // 右上のメニューボタンと重ならないよう、右をあける
         style={{ paddingRight: u(40) }}

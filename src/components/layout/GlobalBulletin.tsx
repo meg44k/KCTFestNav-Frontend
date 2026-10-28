@@ -7,8 +7,9 @@ import { BulletinBoard } from "@/components/ui/bulletinBoard";
 import { showsBulletin } from "@/lib/bulletin";
 import { BG } from "@/lib/home/palette";
 
-// 管理画面で変えたお知らせを、開いている画面にも出すまでの間隔
-const RELOAD_MS = 60_000;
+// 管理画面で変えたお知らせを、開いている画面にも出すまでの間隔。
+// 読み直すたびに Vercel の関数を 1 回呼ぶ(回数の上限がある)ので長めにし、画面が裏にある間は読まない
+const RELOAD_MS = 180_000;
 
 /**
  * 来場者のどのページでも、いちばん上に固定して流すお知らせの帯。
@@ -24,6 +25,7 @@ export function GlobalBulletin({ initial }: { initial: string }) {
     if (!show) return;
     let alive = true;
     const id = setInterval(() => {
+      if (document.visibilityState !== "visible") return;
       currentAnnouncement()
         .then((c) => {
           if (alive) setContent(c);
