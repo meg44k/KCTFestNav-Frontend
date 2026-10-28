@@ -17,7 +17,7 @@ vi.mock("next/headers", () => ({
 }));
 
 import type { BoothResponse } from "@/lib/api/booths";
-import { deleteBooth, saveBooth } from "./manage-booths";
+import { deleteBooth, moveBooths, saveBooth } from "./manage-booths";
 
 const form = (name: string) => {
   const f = new FormData();
@@ -85,5 +85,74 @@ describe("deleteBooth", () => {
       method: "DELETE",
     });
     expect(revalidatePath).toHaveBeenCalledWith("/manage/booths");
+  });
+});
+
+describe("moveBooths(地図でピンを動かしたブースの位置だけを保存する)", () => {
+  const latest: BoothResponse = {
+    id: 5,
+    name: "たこ焼き",
+    organizer: "1-1",
+    detail: "おいしい",
+    location: "中庭",
+    image_url: "https://img/a.webp",
+    congestion_status: 2,
+    x: 0,
+    y: 0,
+    z: 0,
+    latitude: 33.1,
+    longitude: 130.1,
+    floor: 0,
+  };
+
+  it("最新の内容を読み直し、位置と階だけを書き換えて保存する", async () => {
+    manageRequest
+      .mockResolvedValueOnce({ ok: true, data: latest })
+      .mockResolvedValueOnce({ ok: true, data: undefined });
+    expect(
+      await moveBooths([{ id: 5, latitude: 33.2, longitude: 130.2, floor: 3 }]),
+    ).toEqual({ saved: 1 });
+
+    expect(manageRequest.mock.calls[0][0]).toBe("/booths/5");
+    const [path, init] = manageRequest.mock.calls[1];
+    expect(path).toBe("/manage/booths/5");
+    expect(init.method).toBe("PUT");
+    // ほかの項目(名前・混雑度・写真など)は最新のまま
+    expect(JSON.parse(init.body)).toEqual({
+      name: "たこ焼き",
+      organizer: "1-1",
+      detail: "おいしい",
+      location: "中庭",
+      image_url: "https://img/a.webp",
+      congestion_status: 2,
+      x: 0,
+      y: 0,
+      z: 0,
+      latitude: 33.2,
+      longitude: 130.2,
+      floor: 3,
+    });
+    expect(revalidatePath).toHaveBeenCalled();
+  });
+
+  it("途中で失敗したら止めて、何件保存できたかとエラーを返す", async () => {
+    manageRequest
+      .mockResolvedValueOnce({ ok: true, data: latest })
+      .mockResolvedValueOnce({ ok: true, data: undefined })
+      .mockResolvedValueOnce({ ok: false, reason: "unavailable" });
+    const res = await moveBooths([
+      { id: 5, latitude: 33.2, longitude: 130.2, floor: 0 },
+      { id: 6, latitude: 33.3, longitude: 130.3, floor: 0 },
+    ]);
+    expect(res.saved).toBe(1);
+    expect(res.error).toBeTruthy();
+  });
+
+  it("おかしな値は送らない", async () => {
+    const res = await moveBooths([
+      { id: 5, latitude: Number.NaN, longitude: 130.2, floor: 0 },
+    ]);
+    expect(res.error).toBeTruthy();
+    expect(manageRequest).not.toHaveBeenCalled();
   });
 });

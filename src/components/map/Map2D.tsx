@@ -65,10 +65,13 @@ export function Map2D({
   onPickBuilding,
   onPickNothing,
   onPickPoint,
+  onMovePin,
   className,
   controlsClassName = "right-3 bottom-3",
 }: MapProps & {
   onPickPoint?: (xy: XY) => void;
+  /** 管理用: ピンを押さえたまま動かすと呼ぶ(そのあいだ地図は動かさない)。渡すとピンをまとめず、名前もいつも出す */
+  onMovePin?: (id: number, xy: XY) => void;
   className?: string;
   /** 拡大・縮小ボタンの位置(地図の上に他のボタンがあるときにずらす) */
   controlsClassName?: string;
@@ -134,7 +137,16 @@ export function Map2D({
   const gesture = useRef<{ moved: number; dist?: number }>({ moved: 0 });
   const lastTap = useRef<{ at: number; x: number; y: number } | null>(null);
 
+  // 動かしているピン(onMovePin のとき)
+  const dragPin = useRef<number | null>(null);
+
   const onDown = (e: PointerEvent<SVGSVGElement>) => {
+    if (onMovePin && pointers.current.size === 0) {
+      const pin = (e.target as Element)
+        .closest("[data-pin]")
+        ?.getAttribute("data-pin");
+      dragPin.current = pin ? Number(pin) : null;
+    }
     e.currentTarget.setPointerCapture(e.pointerId);
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pointers.current.size === 1) gesture.current = { moved: 0 };
@@ -145,6 +157,15 @@ export function Map2D({
     if (!prev) return;
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     const pts = [...pointers.current.values()];
+    if (dragPin.current !== null && onMovePin) {
+      // 2 本目の指が来たら、ピンを動かすのをやめて拡大・縮小にする
+      if (pts.length > 1) dragPin.current = null;
+      else {
+        const s = toSvg(e.clientX, e.clientY);
+        gesture.current.moved = Number.POSITIVE_INFINITY;
+        return onMovePin(dragPin.current, toMap(s.x, s.y));
+      }
+    }
     if (pts.length === 1) {
       const a = toSvg(prev.x, prev.y);
       const b = toSvg(e.clientX, e.clientY);
@@ -165,6 +186,7 @@ export function Map2D({
   const onUp = (e: PointerEvent<SVGSVGElement>) => {
     const was = pointers.current.size;
     pointers.current.delete(e.pointerId);
+    if (pointers.current.size === 0) dragPin.current = null;
     if (was !== 1 || gesture.current.moved > 6) return;
     const s = toSvg(e.clientX, e.clientY);
     if (onPickPoint) return onPickPoint(toMap(s.x, s.y));
@@ -208,11 +230,14 @@ export function Map2D({
     return { x, y: -y };
   };
   const me = location ? at(location.xy) : null;
-  const showPinNames = view.k >= PIN_NAME_ZOOM && !onPickPoint;
+  const showPinNames = onMovePin
+    ? true
+    : view.k >= PIN_NAME_ZOOM && !onPickPoint;
   // 場所を選ぶ画面(管理用)ではまとめない
   const clusters = clusterPins(
     pins,
-    onPickPoint ? 0 : CLUSTER_PX * px,
+    // 動かす画面では、同じ場所に重なったピンも 1 本ずつ動かせるよう、まったくまとめない(-1)
+    onMovePin ? -1 : onPickPoint ? 0 : CLUSTER_PX * px,
     selectedPinId,
   );
 
@@ -342,7 +367,7 @@ export function Map2D({
                 >
                   <circle
                     r={r}
-                    fill={PIN_COLORS[pin.congestion]}
+                    fill={pin.color ?? PIN_COLORS[pin.congestion]}
                     stroke={OFF_WHITE}
                     strokeWidth={2.5 * px}
                   />
