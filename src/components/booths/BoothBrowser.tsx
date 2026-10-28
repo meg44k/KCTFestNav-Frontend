@@ -5,7 +5,10 @@ import { type TouchEvent, useRef, useState } from "react";
 import { PageTitle } from "@/components/layout/PageTitle";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
 import { IchioshiIntro } from "@/components/likes/IchioshiIntro";
-import { RefreshEvery } from "@/components/RefreshEvery";
+import {
+  RefreshEvery,
+  VISITOR_REFRESH_SECONDS,
+} from "@/components/RefreshEvery";
 import { BoothCard } from "@/components/ui/boothcard";
 import type { Booth } from "@/lib/api/booths";
 import {
@@ -106,7 +109,7 @@ export function BoothBrowser({
       onTouchEnd={onTouchEnd}
     >
       <SideMenu />
-      <RefreshEvery seconds={60} />
+      <RefreshEvery seconds={VISITOR_REFRESH_SECONDS} />
       <PageTitle>{TITLES[filters.type]}</PageTitle>
 
       {loadFailed ? (

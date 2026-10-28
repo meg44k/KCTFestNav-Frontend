@@ -4,7 +4,10 @@ import { CatchcopyTitle } from "@/components/home/FestivalTitle";
 import { StageHeadlineCard } from "@/components/home/StageHeadlineCard";
 import { StarField } from "@/components/home/StarField";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
-import { RefreshEvery } from "@/components/RefreshEvery";
+import {
+  RefreshEvery,
+  VISITOR_REFRESH_SECONDS,
+} from "@/components/RefreshEvery";
 import { apiFetch } from "@/lib/api/client";
 import type { StageSectionResponse } from "@/lib/api/stage";
 import { BG } from "@/lib/home/palette";
@@ -36,7 +39,7 @@ export default async function Main() {
       {/* intro-* はタイトル画面から来たときだけ、見出しのまわりをふわっと出す目印(globals.css) */}
       {/* 帯がこのページの外(上)に移ったので、メニューは帯のすぐ下に置く(前と同じ位置) */}
       <SideMenu menuClassName="top-2.5" />
-      <RefreshEvery seconds={60} />
+      <RefreshEvery seconds={VISITOR_REFRESH_SECONDS} />
       {/*
         上: お知らせのすぐ下に「いまのステージ」、まん中: ロゴ、下: 「さがす」(画面の下にそろえる)。
         部品はデザインの案(幅 264)の比率で描くので、ここが幅の基準になる入れ物

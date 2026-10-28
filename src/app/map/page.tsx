@@ -1,7 +1,10 @@
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
 import { LikesProvider } from "@/components/likes/LikesProvider";
 import { CampusMap } from "@/components/map/CampusMap";
-import { RefreshEvery } from "@/components/RefreshEvery";
+import {
+  RefreshEvery,
+  VISITOR_REFRESH_SECONDS,
+} from "@/components/RefreshEvery";
 import { type Booth, fetchBooths } from "@/lib/api/booths";
 import { parseMapQuery, resolveInitial } from "@/lib/map/map-booths";
 
@@ -27,7 +30,7 @@ export default async function MapPage({
         <CampusMap booths={booths} initial={initial} loadFailed={loadFailed} />
       </LikesProvider>
       <SideMenu />
-      <RefreshEvery seconds={60} />
+      <RefreshEvery seconds={VISITOR_REFRESH_SECONDS} />
     </div>
   );
 }
