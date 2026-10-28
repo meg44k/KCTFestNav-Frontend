@@ -256,6 +256,7 @@ export function CampusMap({
                 description={selectedBooth.description}
                 organizer={selectedBooth.organizer}
                 location={selectedBooth.location}
+                floor={selectedBooth.floor}
                 imageUrl={selectedBooth.imageUrl}
                 imageAlt={selectedBooth.name}
                 congestionStatus={selectedBooth.congestionStatus}

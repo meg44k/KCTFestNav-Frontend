@@ -41,6 +41,7 @@ function BoothCard({
   congestionStatus,
   latitude,
   longitude,
+  floor,
   updatedLabel,
   mapHref,
   likeBoothId,
@@ -59,6 +60,8 @@ function BoothCard({
   congestionStatus?: string;
   latitude?: number;
   longitude?: number;
+  /** 階。0 は屋外(または未設定)。コンパスに「N号館 N階」を出すのに使う */
+  floor?: number;
   /** 混雑度タブの横に出す「○分前に更新」。未更新なら出さない */
   updatedLabel?: string;
   /** 地図でこのブースを開くリンク。位置が無いブースや地図の上では渡さない */
@@ -220,6 +223,8 @@ function BoothCard({
                         latitude={latitude}
                         longitude={longitude}
                         name={name}
+                        floor={floor}
+                        location={location}
                       />
                     )}
                   </div>
@@ -235,6 +240,8 @@ function BoothCard({
           latitude={latitude}
           longitude={longitude}
           name={name}
+          floor={floor}
+          location={location}
           className="absolute bottom-3 right-3"
         />
       )}

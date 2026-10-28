@@ -3,25 +3,46 @@
 import { Navigation } from "lucide-react";
 import Image from "next/image";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import campusData from "@/data/campus.json";
 import { useCompass } from "@/hooks/useCompass";
+import { type Campus, type CampusData, loadCampus } from "@/lib/map/campus";
+import { placeLabel } from "@/lib/map/place-label";
 import { cn } from "@/lib/utils";
+
+// カードの数だけ読み直さないよう、最初に要ったときに 1 度だけ作る
+let campus: Campus | undefined;
+const campusOnce = () => {
+  campus ??= loadCampus(campusData as unknown as CampusData);
+  return campus;
+};
 
 function NaviButton({
   latitude,
   longitude,
   name,
+  floor = 0,
+  location,
   className,
 }: {
   className?: string;
   latitude: number;
   longitude: number;
   name: string;
+  /** 階。0 は屋外(または未設定) */
+  floor?: number;
+  /** 場所の説明。屋外や棟が分からないときに出す */
+  location?: string;
 }) {
   const { angle, error, startCompass, stopCompass, distance } = useCompass(
     latitude,
     longitude,
   );
   const normalizedAngle = ((angle % 360) + 360) % 360;
+  const place = placeLabel(
+    campusOnce(),
+    { latitude, longitude, floor },
+    location,
+  );
   const isFacingTarget = normalizedAngle < 15 || normalizedAngle > 345; // 誤差±15度以内なら正解方向とみなす
 
   return (
@@ -58,7 +79,7 @@ function NaviButton({
         <div className="flex flex-col">
           <div className="h-1/3 relative">
             <div className="text-2xl text-white">目的地: {name}</div>
-            <div className="text-2xl text-white">{Math.floor(distance)}m</div>
+            {place && <div className="text-lg text-white/80">{place}</div>}
             {error && <div className="text-red-500 text-sm">{error}</div>}
           </div>
           <div className="flex justify-center">
@@ -117,6 +138,22 @@ function NaviButton({
               {/* 中心の点 */}
               <div className="w-1 aspect-square rounded-full border-8"></div>
             </div>
+          </div>
+          {/* 距離は現在地がまだ取れていない間は 0 なので、そのあいだは数字を出さない */}
+          <div className="mt-6 text-center text-white">
+            {distance > 0 ? (
+              <span className="text-4xl font-bold">
+                {Math.floor(distance)}
+                <span className="ml-1 text-2xl">m</span>
+              </span>
+            ) : (
+              // 取れなかったときは上にエラーが出るので、こちらは消す
+              !error && (
+                <span className="text-lg text-white/70">
+                  現在地を確かめています
+                </span>
+              )
+            )}
           </div>
         </div>
       </DialogContent>
