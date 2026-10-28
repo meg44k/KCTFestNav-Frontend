@@ -2,7 +2,7 @@
 
 import { X } from "lucide-react";
 import dynamic from "next/dynamic";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { BoothCard } from "@/components/ui/boothcard";
 import campusData from "@/data/campus.json";
@@ -61,7 +61,6 @@ export function CampusMap({
   initial: MapState;
   loadFailed: boolean;
 }) {
-  const router = useRouter();
   const pathname = usePathname();
   const campus = useMemo(
     () => loadCampus(campusData as unknown as CampusData),
@@ -93,7 +92,9 @@ export function CampusMap({
   const update = (patch: Partial<MapState>) => {
     const next = { ...state, ...patch };
     setState(next);
-    router.replace(`${pathname}${mapQuery(next)}`, { scroll: false });
+    // URL だけ書き換える(戻ったとき同じ状態にするため)。router.replace だと押すたびに
+    // サーバーでページを作り直し、Vercel の CPU を使うので、ブラウザの中で済ませる
+    window.history.replaceState(null, "", `${pathname}${mapQuery(next)}`);
   };
 
   const pins = useMemo(

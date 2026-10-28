@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { type TouchEvent, useRef, useState } from "react";
 import { PageTitle } from "@/components/layout/PageTitle";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
@@ -62,16 +62,19 @@ export function BoothBrowser({
   /** ページを描画したサーバーの時刻(「○分前に更新」の基準) */
   serverNow: number;
 }) {
-  const router = useRouter();
   const pathname = usePathname();
   const [filters, setFilters] = useState(initialFilters);
 
   const update = (patch: Partial<BoothFilters>) => {
     const next = { ...filters, ...patch };
     setFilters(next);
-    router.replace(`${pathname}${filtersToQuery(next, defaultType)}`, {
-      scroll: false,
-    });
+    // URL だけ書き換える(戻ったとき同じ条件にするため)。router.replace だと押すたび・打つたびに
+    // サーバーでページを作り直し、Vercel の CPU を使うので、ブラウザの中で済ませる
+    window.history.replaceState(
+      null,
+      "",
+      `${pathname}${filtersToQuery(next, defaultType)}`,
+    );
   };
 
   const shown = applyFilters(booths, filters);
