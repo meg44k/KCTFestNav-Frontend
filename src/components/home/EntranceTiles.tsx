@@ -116,7 +116,7 @@ export function EntranceTiles() {
               className="font-normal"
               style={{ fontSize: u(10.2), lineHeight: 1 }}
             >
-              展示・ゴミ箱・バザーの場所
+              展示・バザーの場所
             </span>
           </span>
         </Link>
