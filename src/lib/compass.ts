@@ -21,3 +21,29 @@ export function geoErrorMessage(code: number): string {
       return "現在地が取れませんでした。少し待ってから、もう一度開いてください。";
   }
 }
+
+/** 向きが取れない理由。noSensor: 値が無い(センサーの無い PC など) / notAbsolute: 北基準でない */
+export type HeadingProblem = "noSensor" | "notAbsolute";
+
+/**
+ * 向きのイベントから、北から時計回りの向き(度)を読む。
+ * 目的地の方角は北基準なので、北基準でない値は引き算できず使えない
+ */
+export function readHeading(e: {
+  webkitCompassHeading?: number;
+  alpha: number | null;
+  absolute: boolean;
+}): number | HeadingProblem {
+  // iOS Safari だけが持つ、真北基準の方位
+  if (e.webkitCompassHeading !== undefined) return e.webkitCompassHeading;
+  if (e.alpha === null) return "noSensor";
+  if (!e.absolute) return "notAbsolute";
+  // alpha は反時計回りなので、時計回りに直す
+  return (360 - e.alpha) % 360;
+}
+
+export function sensorErrorMessage(problem: HeadingProblem): string {
+  return problem === "noSensor"
+    ? "この端末では向きが分からないので、矢印は使えません。距離と地図で場所を確かめてください。"
+    : "この端末では北の向きが分からないため、矢印が正しくない場合があります。地図で場所を確かめてください。";
+}

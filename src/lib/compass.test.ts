@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { geoErrorMessage, hasArrived } from "./compass";
+import {
+  geoErrorMessage,
+  hasArrived,
+  readHeading,
+  sensorErrorMessage,
+} from "./compass";
 
 describe("hasArrived(着いたか)", () => {
   it("20m 以内なら着いた", () => {
@@ -33,5 +38,35 @@ describe("geoErrorMessage(現在地が取れないときの文)", () => {
         /code|denied|timeout|unavailable|\d/i,
       );
     }
+  });
+});
+
+describe("readHeading(向きのイベントから北基準の向きを読む)", () => {
+  it("iPhone は webkitCompassHeading をそのまま使う", () => {
+    expect(
+      readHeading({ webkitCompassHeading: 90, alpha: 10, absolute: false }),
+    ).toBe(90);
+  });
+
+  it("北基準(absolute)の alpha は時計回りに直す", () => {
+    expect(readHeading({ alpha: 90, absolute: true })).toBe(270);
+  });
+
+  it("値が無い(センサーの無い PC など)は noSensor", () => {
+    expect(readHeading({ alpha: null, absolute: false })).toBe("noSensor");
+  });
+
+  it("北基準でない alpha は notAbsolute", () => {
+    expect(readHeading({ alpha: 90, absolute: false })).toBe("notAbsolute");
+  });
+});
+
+describe("sensorErrorMessage(向きが取れないときの文)", () => {
+  it("センサーが無いときは、矢印が使えないと書く", () => {
+    expect(sensorErrorMessage("noSensor")).toContain("使えません");
+  });
+
+  it("北基準でないときは、矢印がずれるかもと書く", () => {
+    expect(sensorErrorMessage("notAbsolute")).toContain("正しくない");
   });
 });

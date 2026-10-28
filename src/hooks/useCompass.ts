@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { geoErrorMessage } from "@/lib/compass";
+import {
+  geoErrorMessage,
+  readHeading,
+  sensorErrorMessage,
+} from "@/lib/compass";
 
 // iOS Safari だけが持つ、真北基準の方位を返す独自プロパティ
 type CompassOrientationEvent = DeviceOrientationEvent & {
@@ -70,20 +74,18 @@ export function useCompass(targetLat: number, targetLng: number) {
   // 緯度と経度から角度を計算する
 
   const handleOrientation = useCallback((event: DeviceOrientationEvent) => {
-    let currentHeading = 0;
-    const compassHeading = (event as CompassOrientationEvent)
-      .webkitCompassHeading;
-    if (compassHeading !== undefined) {
-      currentHeading = compassHeading;
-    } else if (event.alpha !== null && event.absolute) {
-      currentHeading = (360 - event.alpha) % 360;
-    } else {
-      // 北が基準でない値(absolute が false)では目的地の方角と引き算できず、矢印がずれる
-      setSensorError(
-        "この端末では向きが分からないため、矢印が正しくない場合があります。地図で場所を確かめてください。",
-      );
+    const currentHeading = readHeading({
+      webkitCompassHeading: (event as CompassOrientationEvent)
+        .webkitCompassHeading,
+      alpha: event.alpha,
+      absolute: event.absolute,
+    });
+    if (typeof currentHeading !== "number") {
+      setSensorError(sensorErrorMessage(currentHeading));
       return;
     }
+    // 開いた直後に空の値が来て文が出ても、正しい向きが取れたら消す
+    setSensorError(null);
     setHasHeading(true);
 
     // 生のセンサー値はブレが大きいので、最短角度差で指数移動平均をかけて滑らかにする

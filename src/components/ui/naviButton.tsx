@@ -157,9 +157,12 @@ function NaviButton({
                   )}
                 />
 
-                {/* 回転レイヤー:矢印 + 動くマーカー(=現在の向き / B) */}
+                {/* 回転レイヤー:矢印 + 動くマーカー(=現在の向き / B)。向きが取れていない間はあてにならないので薄くする */}
                 <div
-                  className="absolute inset-0"
+                  className={cn(
+                    "absolute inset-0 transition-opacity duration-300",
+                    !hasHeading && "opacity-30",
+                  )}
                   style={{ transform: `rotate(${angle}deg)` }}
                 >
                   {/* 矢印はリングに付かないよう少し小さくし、コンパスの真ん中を中心に置く */}
