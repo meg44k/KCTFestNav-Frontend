@@ -156,14 +156,8 @@ export function CampusMap({
             key={t.value}
             type="button"
             aria-pressed={state.type === t.value}
-            onClick={() =>
-              update({
-                type: t.value,
-                boothId: null,
-                // バザーは屋外なので 2D が分かりやすい
-                ...(t.value === "club" && { view: "2d" }),
-              })
-            }
+            // 2D・3D は見ている方のまま変えない
+            onClick={() => update({ type: t.value, boothId: null })}
             className={cn(
               "h-9 shrink-0 rounded-full border px-3 text-sm font-bold",
               state.type === t.value
