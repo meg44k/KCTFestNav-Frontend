@@ -23,7 +23,7 @@ import { BottomPanel } from "./BottomPanel";
 import { BuildingSheet } from "./BuildingSheet";
 import { LocationButton } from "./LocationButton";
 import { Map2D } from "./Map2D";
-import { type MapFocus, type MapLocation, PIN_COLORS } from "./types";
+import { MAP_BG, type MapFocus, type MapLocation, PIN_COLORS } from "./types";
 
 const Map3D = dynamic(() => import("./Map3D"), {
   ssr: false,
@@ -139,7 +139,10 @@ export function CampusMap({
 
   return (
     // 上のお知らせの帯の下から
-    <div className="fixed inset-x-0 top-[var(--bulletin-h)] bottom-0 bg-black">
+    <div
+      className="fixed inset-x-0 top-[var(--bulletin-h)] bottom-0"
+      style={{ background: MAP_BG }}
+    >
       {state.view === "3d" ? (
         <Map3D {...props} />
       ) : (
