@@ -17,7 +17,7 @@ export default function MaintenancePage() {
       title="ただいまメンテナンス中です"
       note={
         <>
-          ご不便をおかけしてすみません。しばらくしてから、もう一度開いてください。
+          ご不便をおかけしてしまい、申し訳ございません。しばらくしてからお試しください。
           {message && (
             <>
               <br />
