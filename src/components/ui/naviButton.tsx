@@ -120,7 +120,15 @@ function NaviButton({
             </div>
           ) : (
             <div className="flex justify-center">
-              <div className="relative flex w-3/4 aspect-square items-center justify-center">
+              {/*
+                リング・的・灰色の矢印はこの文字色(currentColor)で塗る。色を変えるときはここだけ直す
+              */}
+              <div
+                className={cn(
+                  "relative flex w-3/4 aspect-square items-center justify-center text-gray-500 transition-colors duration-300",
+                  isFacingTarget && "text-green-500",
+                )}
+              >
                 {/* リング本体:上に丸い切れ込み(=目標スロット / A) */}
                 <svg
                   viewBox="0 0 100 100"
@@ -139,10 +147,7 @@ function NaviButton({
                     fill="none"
                     strokeWidth={6}
                     strokeLinecap="round"
-                    className={cn(
-                      "stroke-gray-500 transition-colors duration-300",
-                      isFacingTarget && "stroke-green-500",
-                    )}
+                    className="stroke-current"
                   />
                 </svg>
 
@@ -150,21 +155,18 @@ function NaviButton({
                 切れ込みの真ん中に置く動かない的(=目標 / A)。中を空けた輪にして、
                 動くマーカーがぴったり重なると埋まって見える。位置と大きさはマーカーと同じ
               */}
-                <div
-                  className={cn(
-                    "absolute left-1/2 top-[5%] -translate-x-1/2 -translate-y-1/2 w-[10%] aspect-square rounded-full border-4 border-gray-500 transition-colors duration-300",
-                    isFacingTarget && "border-green-500",
-                  )}
-                />
+                <div className="absolute left-1/2 top-[5%] -translate-x-1/2 -translate-y-1/2 w-[10%] aspect-square rounded-full border-4 border-current" />
 
-                {/* 動かない灰色の矢印(=合わせる向き)。動く矢印と同じ位置・大きさで、重なると隠れる */}
-                <Image
-                  src="/Arrow.png"
-                  alt=""
-                  width={501}
-                  height={521}
-                  sizes="(min-width: 768px) 240px, 48vw"
-                  className="absolute left-1/2 top-1/2 w-[80%] h-auto -translate-x-1/2 -translate-y-1/2 opacity-30"
+                {/*
+                  動かない矢印(=合わせる向き)。動く矢印と同じ位置・大きさで、重なると隠れる。
+                  画像の色は変えられないので、矢印の形で切り抜いた(mask)四角をリングと同じ色で塗る
+                */}
+                <div
+                  className="absolute left-1/2 top-1/2 w-[80%] aspect-[501/521] -translate-x-1/2 -translate-y-1/2 bg-current"
+                  style={{
+                    maskImage: "url(/Arrow.png)",
+                    maskSize: "100% 100%",
+                  }}
                 />
 
                 {/* 回転レイヤー:矢印 + 動くマーカー(=現在の向き / B)。向きが取れていない間はあてにならないので薄くする */}
@@ -199,7 +201,7 @@ function NaviButton({
                 </div>
 
                 {/* 中心の点 */}
-                <div className="w-1 aspect-square rounded-full border-8"></div>
+                <div className="w-1 aspect-square rounded-full border-8 border-white"></div>
               </div>
             </div>
           )}
