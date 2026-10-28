@@ -333,8 +333,16 @@ export function createScene(
     for (const pin of pins) {
       const big = pin.id === selected;
       const color = new THREE.Color(PIN_COLORS[pin.congestion]);
-      const stickMat = new THREE.MeshBasicMaterial({ color, depthTest: false });
-      const headMat = new THREE.MeshBasicMaterial({ color, depthTest: false });
+      // 深さを見ないで建物の手前に描く。深さを見ないと深さの記録もしないので、あとから描く半透明のもの
+      // (内側の航空写真)に上から塗られて消えてしまう。半透明の組に入れて、それより後(renderOrder 20)に描く
+      const pinMat = () =>
+        new THREE.MeshBasicMaterial({
+          color,
+          depthTest: false,
+          transparent: true,
+        });
+      const stickMat = pinMat();
+      const headMat = pinMat();
       const stick = new THREE.Mesh(
         new THREE.CylinderGeometry(0.15, 0.15, 4),
         stickMat,
