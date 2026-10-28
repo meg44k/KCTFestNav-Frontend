@@ -1,3 +1,4 @@
+import { Mail } from "lucide-react";
 import type { Metadata } from "next";
 import { PageTitle } from "@/components/layout/PageTitle";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
@@ -39,9 +40,16 @@ export default function Credit() {
             山田 優吾
           </p>
           <p className="text-sm leading-relaxed" style={{ color: GRAY }}>
-            アルバイトやお仕事のご依頼、お待ちしています。Web
-            サイトづくりのことなど、お気軽に声をかけてください！
+            バイトとかお仕事、絶賛募集中です！Web
+            サイトづくりなど、なんでも気軽に声かけてください〜
           </p>
+          <a
+            href="mailto:yugomegane@gmail.com"
+            className="flex w-fit items-center gap-2 text-sm underline underline-offset-4"
+          >
+            <Mail size={16} aria-hidden />
+            yugomegane@gmail.com
+          </a>
         </Section>
 
         {/* 地図のデータは、それぞれの利用条件により出典を出す */}
