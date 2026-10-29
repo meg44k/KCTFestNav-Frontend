@@ -40,7 +40,7 @@ const chip = (active: boolean) =>
     "h-10 shrink-0 rounded-full border px-4 text-sm font-bold",
     active
       ? "border-white bg-white text-black"
-      : "border-white/30 text-gray-300",
+      : "border-transparent glass text-gray-300",
   );
 
 /**
@@ -171,7 +171,7 @@ export function BoothBrowser({
                 onChange={(e) => update({ q: e.target.value })}
                 placeholder="ブース名・クラス・キーワードで探す"
                 aria-label="ブースを探す"
-                className="h-11 w-full rounded-md border border-white/30 bg-black px-3 text-base text-white placeholder:text-gray-500"
+                className="h-11 w-full rounded-md glass px-3 text-base text-white placeholder:text-gray-500"
               />
               {/* 並び順 2 つと「すぐ入れる展示/バザー」は必ず 1 行に並べる */}
               <div className="grid grid-cols-[auto_auto_1fr] gap-2">
@@ -197,7 +197,7 @@ export function BoothBrowser({
                     "h-10 rounded-full border px-3 text-sm font-bold whitespace-nowrap",
                     filters.onlyEmpty
                       ? "border-[#00B894] bg-[#00B894] text-black"
-                      : "border-[#00B894]/60 text-[#00B894]",
+                      : "border-transparent glass text-[#00B894]",
                   )}
                 >
                   {filters.onlyEmpty ? "✓ " : ""}
