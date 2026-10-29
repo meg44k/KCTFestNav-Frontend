@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { unstable_rethrow } from "next/navigation";
 import { EntranceTiles } from "@/components/home/EntranceTiles";
 import { CatchcopyTitle } from "@/components/home/FestivalTitle";
 import { StageHeadlineCard } from "@/components/home/StageHeadlineCard";
@@ -22,6 +23,8 @@ export default async function Main() {
     }),
   ]);
   if (stage.status === "rejected") {
+    // ビルド時の「このページは毎回作る」などの Next.js の合図はエラーの形で来るので、受け止めずに返す
+    unstable_rethrow(stage.reason);
     console.error("ステージイベントの取得に失敗しました", stage.reason);
   }
   const sections = stage.status === "fulfilled" ? stage.value.sections : [];
