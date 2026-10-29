@@ -1,4 +1,4 @@
-import { MapPin, XIcon } from "lucide-react";
+import { Map as MapIcon, MapPin, XIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { LikeButton } from "@/components/likes/LikeButton";
@@ -80,6 +80,8 @@ function BoothCard({
       congestionStatus === "veryClouded",
     "bg-[#9CA3AF] border-l border-[#d1d5db]": congestionStatus === "preparing",
   };
+
+  const hasLocation = latitude !== undefined && longitude !== undefined;
 
   return (
     // ナビボタンをカードの上に重ねるための基準。
@@ -247,15 +249,23 @@ function BoothCard({
           className="absolute bottom-3 right-3"
         />
       )}
-      {/* ナビボタンと同じく、詳細のトリガーの外に重ねる。ナビボタンがあればその左に並べる */}
+      {/* コンパスの左に、地図でこのブースを開くボタン(地図の上のカードでは mapHref を渡さないので出さない) */}
+      {mapHref && hasLocation && (
+        <Link
+          href={mapHref}
+          aria-label={`${name}を地図で見る`}
+          className="absolute right-13 bottom-3 flex h-8 w-8 items-center justify-center rounded-full border border-black"
+        >
+          <MapIcon size={18} strokeWidth={1.5} className="text-black" />
+        </Link>
+      )}
+      {/* ナビボタンと同じく、詳細のトリガーの外に重ねる。右のボタン(コンパス・地図)の左に並べる */}
       {likeBoothId !== undefined && (
         <LikeButton
           boothId={likeBoothId}
           className={cn(
             "absolute bottom-3",
-            latitude !== undefined && longitude !== undefined
-              ? "right-13"
-              : "right-3",
+            !hasLocation ? "right-3" : mapHref ? "right-23" : "right-13",
           )}
         />
       )}
