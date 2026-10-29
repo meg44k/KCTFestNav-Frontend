@@ -27,7 +27,7 @@ export function BackButton() {
       type="button"
       onClick={back}
       aria-label="戻る"
-      className="absolute top-13 left-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-white/60 bg-black/80 text-white"
+      className="absolute top-13 left-4 z-50 flex h-10 w-10 items-center justify-center rounded-full glass text-white"
     >
       <ChevronLeft size={22} />
     </button>

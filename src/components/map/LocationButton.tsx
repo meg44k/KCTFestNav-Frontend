@@ -30,7 +30,7 @@ export function LocationButton({
         type="button"
         onClick={onStart}
         aria-label="現在地を表示"
-        className="flex h-11 w-11 items-center justify-center rounded-full border border-white/60 bg-black/80"
+        className="flex h-11 w-11 items-center justify-center rounded-full glass"
       >
         <LocateFixed
           size={20}

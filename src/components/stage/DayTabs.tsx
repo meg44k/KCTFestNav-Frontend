@@ -27,7 +27,7 @@ export function DayTabs({
               "flex h-10 shrink-0 items-center rounded-full border px-4 font-bold text-sm",
               active
                 ? "border-white bg-white text-black"
-                : "border-white/30 text-gray-300",
+                : "border-transparent glass text-gray-300",
             )}
           >
             {d.short}

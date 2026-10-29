@@ -183,7 +183,7 @@ export function CampusMap({
               "h-9 shrink-0 rounded-full border px-3 text-sm font-bold",
               state.type === t.value
                 ? "border-white bg-white text-black"
-                : "border-white/30 bg-black/70 text-gray-200",
+                : "border-transparent glass text-gray-200",
             )}
           >
             {t.label}
@@ -236,7 +236,7 @@ export function CampusMap({
         <button
           type="button"
           onClick={() => update({ view: state.view === "3d" ? "2d" : "3d" })}
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-white/60 bg-black/80 font-bold"
+          className="flex h-11 w-11 items-center justify-center rounded-full glass font-bold"
           aria-label={
             state.view === "3d" ? "2D に切り替える" : "3D に切り替える"
           }
