@@ -197,7 +197,7 @@ export function BoothBrowser({
                     "h-10 rounded-full border px-3 text-sm font-bold whitespace-nowrap",
                     filters.onlyEmpty
                       ? "border-[#00B894] bg-[#00B894] text-black"
-                      : "border-[#00B894]/60 text-[#00B894]",
+                      : "border-transparent glass text-[#00B894]",
                   )}
                 >
                   {filters.onlyEmpty ? "✓ " : ""}
