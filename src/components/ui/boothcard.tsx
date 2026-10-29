@@ -1,4 +1,4 @@
-import { Map as MapIcon, MapPin, XIcon } from "lucide-react";
+import { Map as MapIcon, XIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { LikeButton } from "@/components/likes/LikeButton";
@@ -82,6 +82,34 @@ function BoothCard({
   };
 
   const hasLocation = latitude !== undefined && longitude !== undefined;
+  const showMap = mapHref !== undefined && hasLocation;
+  const hasActions = hasLocation || likeBoothId !== undefined;
+  // 右下のボタン。小さいカードと詳細のカードで同じ並びにする(右から コンパス・地図・イチオシ)
+  const actions = (
+    <div className="flex items-center gap-2">
+      {likeBoothId !== undefined && <LikeButton boothId={likeBoothId} />}
+      {/* 地図でこのブースを開く(地図の上のカードでは mapHref を渡さないので出さない) */}
+      {showMap && (
+        <Link
+          href={mapHref}
+          aria-label={`${name}を地図で見る`}
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-black"
+        >
+          <MapIcon size={18} strokeWidth={1.5} className="text-black" />
+        </Link>
+      )}
+      {hasLocation && (
+        <NaviButton
+          latitude={latitude}
+          longitude={longitude}
+          name={name}
+          floor={floor}
+          location={location}
+          mapHref={mapHref}
+        />
+      )}
+    </div>
+  );
 
   return (
     // ナビボタンをカードの上に重ねるための基準。
@@ -191,14 +219,9 @@ function BoothCard({
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <div className="flex items-start gap-2">
-                    <DialogTitle className="mr-auto text-black text-xl">
-                      {name}
-                    </DialogTitle>
-                    {likeBoothId !== undefined && (
-                      <LikeButton boothId={likeBoothId} />
-                    )}
-                  </div>
+                  <DialogTitle className="text-black text-xl">
+                    {name}
+                  </DialogTitle>
                   <div className="flex flex-wrap gap-x-3 text-black/60 text-xs">
                     {organizer && <span>{organizer}</span>}
                     {location && <span>{location}</span>}
@@ -207,30 +230,9 @@ function BoothCard({
                 <DialogDescription className="text-black text-sm">
                   {description}
                 </DialogDescription>
-                {(mapHref ||
-                  (latitude !== undefined && longitude !== undefined)) && (
-                  // 説明文と重ならないよう、絶対配置ではなく最後の行として右に寄せる
-                  <div className="flex items-center justify-end">
-                    {mapHref && (
-                      <Link
-                        href={mapHref}
-                        className="mr-auto flex items-center gap-1 rounded-full border border-black/20 px-3 py-1 text-sm"
-                      >
-                        <MapPin size={16} />
-                        場所を見る
-                      </Link>
-                    )}
-                    {latitude !== undefined && longitude !== undefined && (
-                      <NaviButton
-                        latitude={latitude}
-                        longitude={longitude}
-                        name={name}
-                        floor={floor}
-                        location={location}
-                        mapHref={mapHref}
-                      />
-                    )}
-                  </div>
+                {/* ボタンは小さいカードと同じ並び(右下に イチオシ・地図・コンパス)。説明文と重ならないよう最後の行に置く */}
+                {hasActions && (
+                  <div className="flex justify-end">{actions}</div>
                 )}
               </div>
             </div>
@@ -238,37 +240,8 @@ function BoothCard({
         </DialogContent>
       </Dialog>
 
-      {latitude !== undefined && longitude !== undefined && (
-        <NaviButton
-          latitude={latitude}
-          longitude={longitude}
-          name={name}
-          floor={floor}
-          location={location}
-          mapHref={mapHref}
-          className="absolute bottom-3 right-3"
-        />
-      )}
-      {/* コンパスの左に、地図でこのブースを開くボタン(地図の上のカードでは mapHref を渡さないので出さない) */}
-      {mapHref && hasLocation && (
-        <Link
-          href={mapHref}
-          aria-label={`${name}を地図で見る`}
-          className="absolute right-13 bottom-3 flex h-8 w-8 items-center justify-center rounded-full border border-black"
-        >
-          <MapIcon size={18} strokeWidth={1.5} className="text-black" />
-        </Link>
-      )}
-      {/* ナビボタンと同じく、詳細のトリガーの外に重ねる。右のボタン(コンパス・地図)の左に並べる */}
-      {likeBoothId !== undefined && (
-        <LikeButton
-          boothId={likeBoothId}
-          className={cn(
-            "absolute bottom-3",
-            !hasLocation ? "right-3" : mapHref ? "right-23" : "right-13",
-          )}
-        />
-      )}
+      {/* 詳細のトリガーの外に重ねる(中に入れるとボタンが入れ子になり、タップが両方に伝わる) */}
+      {hasActions && <div className="absolute right-3 bottom-3">{actions}</div>}
     </div>
   );
 }
