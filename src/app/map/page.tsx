@@ -1,3 +1,4 @@
+import { unstable_rethrow } from "next/navigation";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
 import { LikesProvider } from "@/components/likes/LikesProvider";
 import { CampusMap } from "@/components/map/CampusMap";
@@ -19,6 +20,8 @@ export default async function MapPage({
     // 混雑度が変わるので、キャッシュしない
     booths = await fetchBooths({ cache: "no-store" });
   } catch (e) {
+    // ビルド時の「このページは毎回作る」などの Next.js の合図はエラーの形で来るので、受け止めずに返す
+    unstable_rethrow(e);
     // API が落ちていても地図は出す
     console.error("ブースの取得に失敗しました", e);
     loadFailed = true;
