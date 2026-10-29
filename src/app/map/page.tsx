@@ -29,7 +29,8 @@ export default async function MapPage({
       <LikesProvider>
         <CampusMap booths={booths} initial={initial} loadFailed={loadFailed} />
       </LikesProvider>
-      <SideMenu />
+      {/* 地図はページごと画面に固定しているので、ボタンもページの中に置く */}
+      <SideMenu floating={false} />
       <RefreshEvery seconds={VISITOR_REFRESH_SECONDS} />
     </div>
   );

@@ -124,8 +124,8 @@ export function BoothBrowser({
           {/* スクロールしても条件を変えられるよう上に固定する */}
           <div
             data-no-swipe
-            // 上のお知らせの帯のすぐ下に止める
-            className="sticky top-[var(--bulletin-h)] z-40 mt-4 bg-black/95 px-4 py-3"
+            // 上のお知らせの帯と、固定した 戻る・メニュー の行のすぐ下に止める
+            className="sticky top-[calc(var(--bulletin-h)+var(--nav-h))] z-40 mt-4 bg-black/95 px-4 py-3"
           >
             <div className="mx-auto flex max-w-md flex-col gap-2">
               <div className="flex gap-2 overflow-x-auto">

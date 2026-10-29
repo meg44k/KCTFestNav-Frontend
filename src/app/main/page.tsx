@@ -38,7 +38,7 @@ export default async function Main() {
       <StarField />
       {/* intro-* はタイトル画面から来たときだけ、見出しのまわりをふわっと出す目印(globals.css) */}
       {/* 帯がこのページの外(上)に移ったので、メニューは帯のすぐ下に置く(前と同じ位置) */}
-      <SideMenu menuClassName="top-2.5" />
+      <SideMenu />
       <RefreshEvery seconds={VISITOR_REFRESH_SECONDS} />
       {/*
         上: お知らせのすぐ下に「いまのステージ」、まん中: ロゴ、下: 「さがす」(画面の下にそろえる)。
