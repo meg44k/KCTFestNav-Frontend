@@ -2,6 +2,7 @@
 
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
+import { CARD_BUTTON } from "@/components/ui/card-button";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { markIntroSeen, shouldShowIntro } from "@/lib/likes";
+import { cn } from "@/lib/utils";
 
 // 端末に覚える場所。使えない(プライベートモードなど)ときは null
 function introStorage(): Storage | null {
@@ -19,9 +21,9 @@ function introStorage(): Storage | null {
   }
 }
 
-// 説明の中に出す、本物と同じ見た目のボタン(押せない)
+// 説明の中に出す、本物(LikeButton)と同じ見た目のボタン(押せない)
 const SAMPLE =
-  "inline-flex h-8 items-center gap-1 whitespace-nowrap rounded-full border px-3 font-bold text-xs";
+  "inline-flex h-8 items-center gap-1 whitespace-nowrap rounded-full px-3 text-xs";
 
 /** クラス展示を初めて開いたときに 1 回だけ出す、イチオシの説明 */
 export function IchioshiIntro() {
@@ -54,13 +56,13 @@ export function IchioshiIntro() {
             ボタンを押してください
           </span>
           <span className="flex items-center gap-2" aria-hidden>
-            <span className={`${SAMPLE} border-black bg-white`}>
+            <span className={cn(SAMPLE, "font-semibold", CARD_BUTTON)}>
               イチオシにする
             </span>
             <span className="text-black/40">→</span>
             <span
-              className={`${SAMPLE} text-white`}
-              style={{ background: "#00B894", borderColor: "#00B894" }}
+              className={cn(SAMPLE, "font-bold text-white")}
+              style={{ background: "#00B894" }}
             >
               <Check size={14} strokeWidth={3} />
               イチオシ済
