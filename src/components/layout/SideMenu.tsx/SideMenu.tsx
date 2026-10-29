@@ -34,7 +34,8 @@ export default function SideMenu({
               variant="outline"
               size="icon-lg"
               className={cn(
-                "absolute rounded-full top-13 right-4 bg-black/80 w-10 h-10 z-50",
+                // 部品の既定の地(bg-background)を、ガラスの下の暗い色で上書きする
+                "absolute rounded-full top-13 right-4 border-transparent glass bg-[rgb(14_14_16/0.55)] w-10 h-10 z-50",
                 menuClassName,
               )}
             />

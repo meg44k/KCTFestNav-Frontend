@@ -1,13 +1,7 @@
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { u } from "@/lib/home/design-unit";
-import {
-  ICON_LINE,
-  ICON_STROKE,
-  TILE,
-  YELLOW,
-  YELLOW_LINE,
-} from "@/lib/home/palette";
+import { ICON_LINE, ICON_STROKE, YELLOW } from "@/lib/home/palette";
 import { TILE_ENTRANCES, TILE_MAP } from "@/lib/navigation";
 import { SectionLabel } from "./SectionLabel";
 
@@ -35,10 +29,8 @@ export function EntranceTiles() {
               // 入口を開くたびに 4 ページ分の問い合わせが Vercel の回数の上限(CDN Requests・関数)を使うだけになる
               prefetch={false}
               // 高さの低い画面では、ロゴに場所をゆずるため少し低くする
-              className="relative block aspect-[84/84] active:brightness-150 [@media(max-height:720px)]:aspect-[84/68]"
+              className="glass relative block aspect-[84/84] active:brightness-150 [@media(max-height:720px)]:aspect-[84/68]"
               style={{
-                background: TILE,
-                border: `1px solid ${YELLOW_LINE}`,
                 borderRadius: u(10),
               }}
             >
@@ -76,11 +68,9 @@ export function EntranceTiles() {
         <Link
           href={href}
           prefetch={false}
-          // 上の 3 つと同じ見た目(黒地・黄色の細い枠・黄色のアイコンと文字)。大きさはそのまま
-          className="relative block aspect-[264/88] w-full active:brightness-150"
+          // 上の 3 つと同じ見た目(黒地・黄色のアイコンと文字)。大きさはそのまま
+          className="glass relative block aspect-[264/88] w-full active:brightness-150"
           style={{
-            background: TILE,
-            border: `1px solid ${YELLOW_LINE}`,
             borderRadius: u(10),
           }}
         >

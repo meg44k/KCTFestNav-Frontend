@@ -62,8 +62,10 @@ describe("readHeading(向きのイベントから北基準の向きを読む)", 
 });
 
 describe("sensorErrorMessage(向きが取れないときの文)", () => {
-  it("センサーが無いときは、矢印が使えないと書く", () => {
-    expect(sensorErrorMessage("noSensor")).toContain("使えません");
+  it("向きが取れないときは「端末の向きを取得できませんでした。」", () => {
+    expect(sensorErrorMessage("noSensor")).toBe(
+      "端末の向きを取得できませんでした。",
+    );
   });
 
   it("北基準でないときは、矢印がずれるかもと書く", () => {
