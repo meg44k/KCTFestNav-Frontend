@@ -5,12 +5,15 @@ import { makeStars } from "@/lib/home/stars";
 const STARS = makeStars(90, 2026);
 const DIM = 0.7;
 
-/** 入口ページの背景の星。白い点をまだらに散らす。押せない・読み上げない飾り */
-export function StarField() {
+/**
+ * 背景の星。白い点をまだらに散らす。押せない・読み上げない飾り。
+ * ふだんは入れ物いっぱい(入口ページ)。fixed にすると画面に固定し、縦に長いページでも引き伸ばさない
+ */
+export function StarField({ fixed = false }: { fixed?: boolean }) {
   return (
     <svg
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 -z-10 h-full w-full"
+      className={`pointer-events-none ${fixed ? "fixed" : "absolute"} inset-0 -z-10 h-full w-full`}
     >
       {STARS.map((s) => (
         <circle
