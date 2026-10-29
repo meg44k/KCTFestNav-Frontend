@@ -121,12 +121,8 @@ export function BoothBrowser({
         </p>
       ) : (
         <>
-          {/* スクロールしても条件を変えられるよう上に固定する */}
-          <div
-            data-no-swipe
-            // 上のお知らせの帯と、固定した 戻る・メニュー の行のすぐ下に止める
-            className="sticky top-[calc(var(--bulletin-h)+var(--nav-h))] z-40 mt-4 bg-black/95 px-4 py-3"
-          >
+          {/* 絞り込みの欄。画面に残すのは 戻る・メニュー だけにして、ここはスクロールで流す(本人の希望) */}
+          <div data-no-swipe className="mt-4 px-4 py-3">
             <div className="mx-auto flex max-w-md flex-col gap-2">
               <div className="flex gap-2 overflow-x-auto">
                 {BOOTH_TYPES.map((t) => (
