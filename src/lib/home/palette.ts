@@ -8,8 +8,8 @@ export const YELLOW = "#F2A900";
 export const LIVE_RED = "#E5484D";
 /** 細い枠の黄色。暗めにして、線を細く見せる(ちらつきも抑える) */
 export const YELLOW_LINE = "rgba(242, 169, 0, 0.5)";
-/** タイルの地(背景から少し浮く黒) */
-export const TILE = "#1C1C1C";
+/** 入口のボタン(タイル)の地。縁を付けないので、背景からはっきり浮く暗い灰色(少し赤み) */
+export const TILE = "rgb(60 58 58)";
 /** 大きい文字の白(ロゴと同じ、少しあたたかい白) */
 export const OFF_WHITE = "#F4F1EA";
 export const GRAY = "#9E9E9E";
