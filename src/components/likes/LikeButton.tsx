@@ -1,6 +1,7 @@
 "use client";
 
 import { Check } from "lucide-react";
+import { CARD_BUTTON } from "@/components/ui/card-button";
 import { voteState } from "@/lib/likes";
 import { cn } from "@/lib/utils";
 import { useLikes } from "./LikesProvider";
@@ -46,8 +47,9 @@ export function LikeButton({
       aria-label={ARIA_LABEL[state]}
       onClick={() => likes.toggle(boothId)}
       className={cn(
-        "flex h-8 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full border px-3 font-bold text-xs transition-transform active:scale-90",
-        on ? "text-white" : "border-black bg-white text-black",
+        "flex h-8 shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-full px-3 text-xs transition-transform active:scale-90",
+        // 押す前はカードの中で目立たせない(ブース名や写真が主役)。選んだら緑の面で目立たせる
+        on ? "font-bold text-white" : cn("font-semibold", CARD_BUTTON),
         className,
       )}
       style={on ? { background: GREEN, borderColor: GREEN } : undefined}

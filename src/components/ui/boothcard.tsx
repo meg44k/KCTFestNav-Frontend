@@ -16,6 +16,7 @@ import {
   congestionLabel,
 } from "@/lib/api/booths";
 import { cn } from "@/lib/utils";
+import { CARD_BUTTON } from "./card-button";
 import { NaviButton } from "./naviButton";
 
 function congestionMessageOf(
@@ -93,9 +94,12 @@ function BoothCard({
         <Link
           href={mapHref}
           aria-label={`${name}を地図で見る`}
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-black"
+          className={cn(
+            "flex h-8 w-8 items-center justify-center rounded-full",
+            CARD_BUTTON,
+          )}
         >
-          <MapIcon size={18} strokeWidth={1.5} className="text-black" />
+          <MapIcon size={18} strokeWidth={1.5} />
         </Link>
       )}
       {hasLocation && (
@@ -161,7 +165,9 @@ function BoothCard({
               </div>
               <div className="flex flex-col mr-auto min-w-0">
                 {/* 長い名前は 1 行で切る(2 行になると下の行がボタンに隠れる)。全部は詳細で読める */}
-                <span className="text-black line-clamp-1">{name}</span>
+                <span className="text-black font-bold line-clamp-1">
+                  {name}
+                </span>
                 {/* 全文はタップで開く詳細ダイアログで読めるため、カードでは1行に抑える */}
                 <span className="text-black text-sm line-clamp-1">
                   {description}
@@ -219,7 +225,7 @@ function BoothCard({
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <DialogTitle className="text-black text-xl">
+                  <DialogTitle className="text-black text-xl font-bold">
                     {name}
                   </DialogTitle>
                   <div className="flex flex-wrap gap-x-3 text-black/60 text-xs">
