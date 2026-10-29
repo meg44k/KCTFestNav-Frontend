@@ -2,7 +2,6 @@
 
 import { Menu } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { BackButton } from "@/components/layout/BackButton";
 import { Button } from "@/components/ui/button";
 import {
@@ -33,7 +32,6 @@ export default function SideMenu({
     : "absolute top-13";
   return (
     <>
-      {floating && <NavBand />}
       {/* 左上の戻るボタン(右上のメニューと対になる) */}
       <BackButton className={cn(place, "left-4")} />
       <Drawer swipeDirection="right" showSwipeHandle={true}>
@@ -117,28 +115,5 @@ export function DrawerLabel({
     <div className="text-lg pt-2 ">
       <a href={href}>{children}</a>
     </div>
-  );
-}
-
-/**
- * スクロールしたとき、固定したボタンの行の後ろに敷く暗い帯。
- * 一番上にいるときは透明にして、見出しや星を隠さない
- */
-function NavBand() {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 4);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  return (
-    <div
-      aria-hidden
-      className={cn(
-        "pointer-events-none fixed inset-x-0 top-[var(--bulletin-h)] z-40 h-[var(--nav-h)] transition-colors duration-200",
-        scrolled ? "bg-black/90 backdrop-blur-md" : "bg-transparent",
-      )}
-    />
   );
 }
