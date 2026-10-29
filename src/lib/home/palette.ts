@@ -8,8 +8,13 @@ export const YELLOW = "#F2A900";
 export const LIVE_RED = "#E5484D";
 /** 細い枠の黄色。暗めにして、線を細く見せる(ちらつきも抑える) */
 export const YELLOW_LINE = "rgba(242, 169, 0, 0.5)";
-/** 入口のボタン(タイル)の地。縁を付けないので、背景からはっきり浮く暗い灰色(少し赤み) */
-export const TILE = "rgb(60 58 58)";
+/** 入口のボタン(タイル)の地。半透明のガラスで、後ろの星が少し透ける */
+export const TILE = "rgba(255, 255, 255, 0.07)";
+/** タイルの縁。上の縁だけ光らせ、まわりはごく薄い線で形を見せる */
+export const TILE_EDGE =
+  "inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.06)";
+/** タイルの後ろをぼかす(星がにじんで、文字の邪魔をしない) */
+export const TILE_BLUR = "blur(6px)";
 /** 大きい文字の白(ロゴと同じ、少しあたたかい白) */
 export const OFF_WHITE = "#F4F1EA";
 export const GRAY = "#9E9E9E";
