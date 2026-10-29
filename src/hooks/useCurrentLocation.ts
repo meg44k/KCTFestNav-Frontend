@@ -23,7 +23,8 @@ type OrientationWithPermission = typeof DeviceOrientationEvent & {
 };
 
 /**
- * 現在地と向き。start() を押されたときだけ許可を求める(iOS は向きの許可もタップの中で求める必要がある)
+ * 現在地と向き。start() はボタンを押したときに呼ぶ(iOS は向きの許可をタップの中で求める必要がある)。
+ * startPosition() は位置だけを取る(タップの外、地図を開いたときなどに使う)
  */
 export function useCurrentLocation() {
   const [position, setPosition] = useState<CurrentLocation>({ status: "idle" });
@@ -42,10 +43,37 @@ export function useCurrentLocation() {
     if (raw !== undefined) setHeading((Math.round(raw / 5) * 5) % 360);
   }, []);
 
+  const watchPosition = useCallback(() => {
+    if (watchId.current !== null)
+      navigator.geolocation.clearWatch(watchId.current);
+    watchId.current = navigator.geolocation.watchPosition(
+      (p) =>
+        setPosition({
+          status: "active",
+          latitude: p.coords.latitude,
+          longitude: p.coords.longitude,
+          accuracy: p.coords.accuracy,
+        }),
+      (err) =>
+        setPosition({
+          status: err.code === err.PERMISSION_DENIED ? "denied" : "unavailable",
+        }),
+      { enableHighAccuracy: true },
+    );
+  }, []);
+
+  const startPosition = useCallback(() => {
+    if (!("geolocation" in navigator))
+      return setPosition({ status: "unavailable" });
+    // すでに取れていれば「探しています」に戻さない
+    setPosition((p) => (p.status === "active" ? p : { status: "locating" }));
+    watchPosition();
+  }, [watchPosition]);
+
   const start = useCallback(async () => {
     if (!("geolocation" in navigator))
       return setPosition({ status: "unavailable" });
-    setPosition({ status: "locating" });
+    setPosition((p) => (p.status === "active" ? p : { status: "locating" }));
     const O =
       typeof DeviceOrientationEvent !== "undefined"
         ? (DeviceOrientationEvent as OrientationWithPermission)
@@ -72,23 +100,8 @@ export function useCurrentLocation() {
     } catch {
       // 向きが取れなくても位置だけは出す
     }
-    if (watchId.current !== null)
-      navigator.geolocation.clearWatch(watchId.current);
-    watchId.current = navigator.geolocation.watchPosition(
-      (p) =>
-        setPosition({
-          status: "active",
-          latitude: p.coords.latitude,
-          longitude: p.coords.longitude,
-          accuracy: p.coords.accuracy,
-        }),
-      (err) =>
-        setPosition({
-          status: err.code === err.PERMISSION_DENIED ? "denied" : "unavailable",
-        }),
-      { enableHighAccuracy: true },
-    );
-  }, [onOrientation]);
+    watchPosition();
+  }, [onOrientation, watchPosition]);
 
   useEffect(
     () => () => {
@@ -105,5 +118,5 @@ export function useCurrentLocation() {
 
   const location: CurrentLocation =
     position.status === "active" ? { ...position, heading } : position;
-  return { location, start };
+  return { location, start, startPosition };
 }
