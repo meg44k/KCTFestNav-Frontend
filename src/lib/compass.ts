@@ -44,6 +44,6 @@ export function readHeading(e: {
 
 export function sensorErrorMessage(problem: HeadingProblem): string {
   return problem === "noSensor"
-    ? "端末の向きが取得できませんでした。"
+    ? "端末の向きを取得できませんでした。"
     : "この端末では北の向きが分からないため、矢印が正しくない場合があります。地図で場所を確かめてください。";
 }

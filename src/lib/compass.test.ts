@@ -62,9 +62,9 @@ describe("readHeading(向きのイベントから北基準の向きを読む)", 
 });
 
 describe("sensorErrorMessage(向きが取れないときの文)", () => {
-  it("向きが取れないときは「端末の向きが取得できませんでした。」", () => {
+  it("向きが取れないときは「端末の向きを取得できませんでした。」", () => {
     expect(sensorErrorMessage("noSensor")).toBe(
-      "端末の向きが取得できませんでした。",
+      "端末の向きを取得できませんでした。",
     );
   });
 
