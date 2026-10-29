@@ -2,6 +2,7 @@
 
 import { Menu } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { BackButton } from "@/components/layout/BackButton";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,16 +18,24 @@ import { Marker } from "@/components/ui/marker";
 import { NAV_ENTRANCES, NAV_HOME, type NavItem } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
-/** menuClassName: 右上のメニューボタンの位置を変えるとき(入口ページなど) */
+/**
+ * 左上の戻るボタンと右上のメニュー。
+ * ふだんは画面に固定し(お知らせの帯のすぐ下)、スクロールしても上に残す。
+ * floating={false} はページ自体が画面に固定されているとき(地図)で、今までどおりページの中に置く
+ */
 export default function SideMenu({
-  menuClassName,
+  floating = true,
 }: {
-  menuClassName?: string;
+  floating?: boolean;
 } = {}) {
+  const place = floating
+    ? "fixed top-[calc(var(--bulletin-h)+0.5rem)]"
+    : "absolute top-13";
   return (
     <>
+      {floating && <NavBand />}
       {/* 左上の戻るボタン(右上のメニューと対になる) */}
-      <BackButton />
+      <BackButton className={cn(place, "left-4")} />
       <Drawer swipeDirection="right" showSwipeHandle={true}>
         <DrawerTrigger
           render={
@@ -35,8 +44,8 @@ export default function SideMenu({
               size="icon-lg"
               className={cn(
                 // 部品の既定の地(bg-background)を、ガラスの下の暗い色で上書きする
-                "absolute rounded-full top-13 right-4 border-transparent glass bg-[rgb(14_14_16/0.55)] w-10 h-10 z-50",
-                menuClassName,
+                "rounded-full right-4 border-transparent glass bg-[rgb(14_14_16/0.55)] w-10 h-10 z-50",
+                place,
               )}
             />
           }
@@ -108,5 +117,28 @@ export function DrawerLabel({
     <div className="text-lg pt-2 ">
       <a href={href}>{children}</a>
     </div>
+  );
+}
+
+/**
+ * スクロールしたとき、固定したボタンの行の後ろに敷く暗い帯。
+ * 一番上にいるときは透明にして、見出しや星を隠さない
+ */
+function NavBand() {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return (
+    <div
+      aria-hidden
+      className={cn(
+        "pointer-events-none fixed inset-x-0 top-[var(--bulletin-h)] z-40 h-[var(--nav-h)] transition-colors duration-200",
+        scrolled ? "bg-black/90 backdrop-blur-md" : "bg-transparent",
+      )}
+    />
   );
 }

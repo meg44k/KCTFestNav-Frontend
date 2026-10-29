@@ -3,12 +3,13 @@
 import { ChevronLeft } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { canGoBack, VISIT_KEY, type VisitHistory } from "@/lib/back";
+import { cn } from "@/lib/utils";
 
 /**
  * 左上の戻るボタン。サイトの中で前に見たページがあればそこへ戻り、
  * QR などから直接開いたときはトップ(/main)へ。トップでは出さない
  */
-export function BackButton() {
+export function BackButton({ className }: { className?: string }) {
   const router = useRouter();
   const pathname = usePathname();
   if (pathname === "/main") return null;
@@ -27,7 +28,10 @@ export function BackButton() {
       type="button"
       onClick={back}
       aria-label="戻る"
-      className="absolute top-13 left-4 z-50 flex h-10 w-10 items-center justify-center rounded-full glass text-white"
+      className={cn(
+        "z-50 flex h-10 w-10 items-center justify-center rounded-full glass text-white",
+        className,
+      )}
     >
       <ChevronLeft size={22} />
     </button>
