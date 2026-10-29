@@ -1,3 +1,4 @@
+import { unstable_rethrow } from "next/navigation";
 import { BoothBrowser } from "@/components/booths/BoothBrowser";
 import { LikesProvider } from "@/components/likes/LikesProvider";
 import { type Booth, fetchBooths } from "@/lib/api/booths";
@@ -17,6 +18,8 @@ export async function BoothBrowserPage({
     // 混雑度が随時変わるためキャッシュしない
     booths = await fetchBooths({ cache: "no-store" });
   } catch (e) {
+    // ビルド時の「このページは毎回作る」などの Next.js の合図はエラーの形で来るので、受け止めずに返す
+    unstable_rethrow(e);
     // APIが落ちていてもページ全体を500にせず、画面は出したうえで案内を表示する
     console.error("ブース一覧の取得に失敗しました", e);
     loadFailed = true;

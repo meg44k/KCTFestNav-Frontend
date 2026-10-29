@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { unstable_rethrow } from "next/navigation";
 import { EntranceTiles } from "@/components/home/EntranceTiles";
 import { CatchcopyTitle } from "@/components/home/FestivalTitle";
 import { StageHeadlineCard } from "@/components/home/StageHeadlineCard";
@@ -22,6 +23,8 @@ export default async function Main() {
     }),
   ]);
   if (stage.status === "rejected") {
+    // ビルド時の「このページは毎回作る」などの Next.js の合図はエラーの形で来るので、受け止めずに返す
+    unstable_rethrow(stage.reason);
     console.error("ステージイベントの取得に失敗しました", stage.reason);
   }
   const sections = stage.status === "fulfilled" ? stage.value.sections : [];
@@ -38,7 +41,7 @@ export default async function Main() {
       <StarField />
       {/* intro-* はタイトル画面から来たときだけ、見出しのまわりをふわっと出す目印(globals.css) */}
       {/* 帯がこのページの外(上)に移ったので、メニューは帯のすぐ下に置く(前と同じ位置) */}
-      <SideMenu menuClassName="top-2.5" />
+      <SideMenu />
       <RefreshEvery seconds={VISITOR_REFRESH_SECONDS} />
       {/*
         上: お知らせのすぐ下に「いまのステージ」、まん中: ロゴ、下: 「さがす」(画面の下にそろえる)。

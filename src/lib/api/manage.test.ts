@@ -3,7 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const cookieValue = vi.hoisted(() => ({
   token: "jwt-token" as string | undefined,
 }));
-vi.mock("next/navigation", () => ({
+vi.mock("next/navigation", async (importOriginal) => ({
+  // Next.js の合図だけを投げ返す本物を使う(ふつうのエラーはそのまま通す)
+  unstable_rethrow: (await importOriginal<typeof import("next/navigation")>())
+    .unstable_rethrow,
   redirect: (path: string) => {
     throw new Error(`REDIRECT:${path}`);
   },

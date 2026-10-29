@@ -12,6 +12,7 @@ import { hasArrived } from "@/lib/compass";
 import { type Campus, type CampusData, loadCampus } from "@/lib/map/campus";
 import { placeLabel } from "@/lib/map/place-label";
 import { cn } from "@/lib/utils";
+import { CARD_BUTTON } from "./card-button";
 
 // カードの数だけ読み直さないよう、最初に要ったときに 1 度だけ作る
 let campus: Campus | undefined;
@@ -80,12 +81,13 @@ function NaviButton({
       <DialogTrigger
         aria-label={`${name}への方角を見る`}
         className={cn(
-          "flex border border-black rounded-full w-8 h-8 justify-center items-center",
+          "flex rounded-full w-8 h-8 justify-center items-center",
+          CARD_BUTTON,
           className,
         )}
       >
         <Navigation
-          className="text-black -translate-x-0.5 translate-y-0.5 fill-current"
+          className="-translate-x-0.5 translate-y-0.5 fill-current"
           strokeWidth={1}
           size={20}
         />

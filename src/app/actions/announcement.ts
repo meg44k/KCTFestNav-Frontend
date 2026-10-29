@@ -1,5 +1,6 @@
 "use server";
 
+import { unstable_rethrow } from "next/navigation";
 import { apiFetch } from "@/lib/api/client";
 import { announcementOrDefault } from "@/lib/live-schedule";
 
@@ -11,6 +12,8 @@ export async function currentAnnouncement(): Promise<string> {
     });
     return announcementOrDefault(content);
   } catch (e) {
+    // ビルド時の「このページは毎回作る」などの Next.js の合図はエラーの形で来るので、受け止めずに返す
+    unstable_rethrow(e);
     console.error("お知らせの取得に失敗しました", e);
     return announcementOrDefault(undefined);
   }

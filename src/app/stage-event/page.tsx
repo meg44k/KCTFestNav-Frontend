@@ -1,3 +1,4 @@
+import { unstable_rethrow } from "next/navigation";
 import { PageTitle } from "@/components/layout/PageTitle";
 import SideMenu from "@/components/layout/SideMenu.tsx/SideMenu";
 import {
@@ -31,6 +32,8 @@ export default async function StageEvent({
       { cache: "no-store" },
     ));
   } catch (e) {
+    // ビルド時の「このページは毎回作る」などの Next.js の合図はエラーの形で来るので、受け止めずに返す
+    unstable_rethrow(e);
     // API が落ちていてもページ全体を500にせず、画面は出したうえで案内を表示する
     console.error("ステージイベントの取得に失敗しました", e);
     loadFailed = true;

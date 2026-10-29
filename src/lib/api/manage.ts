@@ -4,7 +4,7 @@
 // redirect はここではしない。呼び出し側が try/catch で包むと NEXT_REDIRECT を
 // 飲み込んでしまうため、失敗の種類を返して呼び出し側で判断する。
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import type { ManageUser, Role } from "@/lib/manage/roles";
 import { TOKEN_COOKIE } from "@/lib/manage/session";
 import { API_BASE_URL, REQUEST_TIMEOUT_MS } from "./client";
@@ -52,6 +52,8 @@ export async function manageRequest<T>(
       },
     });
   } catch (e) {
+    // ビルド時の「このページは毎回作る」などの Next.js の合図はエラーの形で来るので、受け止めずに返す
+    unstable_rethrow(e);
     console.error(`${init?.method ?? "GET"} ${path} に接続できませんでした`, e);
     return { ok: false, reason: "unavailable" };
   }
