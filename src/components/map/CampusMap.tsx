@@ -3,12 +3,13 @@
 import { X } from "lucide-react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BoothCard } from "@/components/ui/boothcard";
 import campusData from "@/data/campus.json";
 import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import { type Booth, CONGESTION_LABELS } from "@/lib/api/booths";
 import { canLike } from "@/lib/likes";
+import { shouldAutoLocate } from "@/lib/map/auto-locate";
 import { type CampusData, loadCampus, nearCampus } from "@/lib/map/campus";
 import {
   boothsByFloor,
@@ -66,7 +67,26 @@ export function CampusMap({
     () => loadCampus(campusData as unknown as CampusData),
     [],
   );
-  const { location: current, start } = useCurrentLocation();
+  const { location: current, start, startPosition } = useCurrentLocation();
+  // 開いたらすぐ現在地を取りにいく(ボタンで出せると気づかない人が多いため)。
+  // 向きはボタンを押したときに取る(iOS はタップの中でしか向きの許可を求められない)
+  useEffect(() => {
+    let alive = true;
+    const go = (state?: PermissionState) => {
+      if (alive && shouldAutoLocate(state)) startPosition();
+    };
+    if (navigator.permissions?.query) {
+      navigator.permissions
+        .query({ name: "geolocation" })
+        .then((s) => go(s.state))
+        .catch(() => go());
+    } else {
+      go();
+    }
+    return () => {
+      alive = false;
+    };
+  }, [startPosition]);
   // 位置の値が変わったときだけ作り直す(地図が毎回描き直さないように)
   const active = current.status === "active" ? current : null;
   const lat = active?.latitude;
