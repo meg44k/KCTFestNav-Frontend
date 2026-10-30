@@ -6,6 +6,7 @@ import { recordVisit } from "@/app/actions/visit";
 import {
   countsVisit,
   jstDay,
+  newVisitorId,
   shouldReport,
   VISIT_DAY_KEY,
   VISITOR_ID_KEY,
@@ -30,7 +31,7 @@ export function VisitCounter() {
     if (!shouldReport(storage.getItem(VISIT_DAY_KEY), today)) return;
     let id = storage.getItem(VISITOR_ID_KEY);
     if (!id) {
-      id = crypto.randomUUID();
+      id = newVisitorId();
       storage.setItem(VISITOR_ID_KEY, id);
     }
     // 知らせられたときだけ「今日は済み」にする(失敗したら次のページで試す)
