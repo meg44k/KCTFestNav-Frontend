@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { BoothCard } from "@/components/ui/boothcard";
 import campusData from "@/data/campus.json";
 import { useCurrentLocation } from "@/hooks/useCurrentLocation";
+import { usePinchAnywhere } from "@/hooks/usePinchAnywhere";
 import { type Booth, CONGESTION_LABELS } from "@/lib/api/booths";
 import { canLike } from "@/lib/likes";
 import { shouldAutoLocate } from "@/lib/map/auto-locate";
@@ -107,6 +108,7 @@ export function CampusMap({
     [here, outside, accuracy, heading],
   );
   const [state, setState] = useState(initial);
+  usePinchAnywhere();
   const [buildingId, setBuildingId] = useState<string | null>(null);
 
   const update = (patch: Partial<MapState>) => {

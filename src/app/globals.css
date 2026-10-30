@@ -311,3 +311,11 @@ html:has([data-bulletin]) {
     display: none;
   }
 }
+
+/* 地図の画面では、どこでピンチしてもページ全体は拡大しない(地図の拡大に回す。usePinchAnywhere)。
+   スクロールはそのまま。地図そのもの(touch-none)より弱くなるよう、base の層で詳細度 0 にする */
+@layer base {
+  :where(html.map-open, html.map-open *) {
+    touch-action: pan-x pan-y;
+  }
+}

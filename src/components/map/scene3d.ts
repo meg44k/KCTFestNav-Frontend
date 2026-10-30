@@ -188,6 +188,8 @@ export function createScene(
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(host.clientWidth, host.clientHeight);
+  // ボタンの上から始めたピンチを回す先(usePinchAnywhere)
+  renderer.domElement.dataset.mapSurface = "";
   host.appendChild(renderer.domElement);
   const labelRenderer = new CSS2DRenderer();
   labelRenderer.setSize(host.clientWidth, host.clientHeight);
