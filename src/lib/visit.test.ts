@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { countsVisit, isVisitorId, jstDay, shouldReport } from "./visit";
+import {
+  countsVisit,
+  isVisitorId,
+  jstDay,
+  newVisitorId,
+  shouldReport,
+} from "./visit";
 
 describe("jstDay(日本時間の日付)", () => {
   it("UTC の夜でも日本時間の日付にする", () => {
@@ -37,5 +43,35 @@ describe("countsVisit(数えるページか)", () => {
   it("管理画面とメンテナンス画面は数えない", () => {
     for (const p of ["/manage", "/manage/login", "/maintenance"])
       expect(countsVisit(p), p).toBe(false);
+  });
+});
+
+describe("newVisitorId(ブラウザの番号を作る)", () => {
+  it("randomUUID があればそれを使う", () => {
+    const id = newVisitorId({
+      randomUUID: () => "11111111-2222-4333-8444-555555555555",
+      getRandomValues: (a) => a,
+    });
+    expect(id).toBe("11111111-2222-4333-8444-555555555555");
+  });
+
+  it("randomUUID が無いブラウザ(古い iPhone・https でないページ)でも、同じ形の番号を作る", () => {
+    const id = newVisitorId({
+      getRandomValues: (a) => a.fill(0xab),
+    });
+    expect(isVisitorId(id)).toBe(true);
+    // UUID v4 の印(13 文字目が 4、17 文字目が 8〜b)
+    expect(id[14]).toBe("4");
+    expect("89ab").toContain(id[19]);
+  });
+
+  it("randomUUID が無いときも、毎回違う番号になる", () => {
+    const a = newVisitorId({
+      getRandomValues: (x) => crypto.getRandomValues(x),
+    });
+    const b = newVisitorId({
+      getRandomValues: (x) => crypto.getRandomValues(x),
+    });
+    expect(a).not.toBe(b);
   });
 });
