@@ -347,6 +347,8 @@ export function Map2D({
     <div className={cn("relative h-full w-full", className)}>
       <svg
         ref={svg}
+        // ボタンの上から始めたピンチを回す先(usePinchAnywhere)
+        data-map-surface
         role="img"
         aria-label="キャンパスの平面図"
         viewBox={`${vb.x} ${vb.y} ${vb.w} ${vb.h}`}
