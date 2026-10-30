@@ -1,4 +1,4 @@
-// 投票の API を呼ぶ。Next.js のサーバーだけが知る合言葉(X-Internal-Key)を付ける。
+// 投票・訪問者の API を呼ぶ。Next.js のサーバーだけが知る合言葉(X-Internal-Key)を付ける。
 // 合言葉はサーバーの環境変数で、ブラウザには出さない(NEXT_PUBLIC_ を付けない)
 import { API_BASE_URL, REQUEST_TIMEOUT_MS } from "./client";
 
@@ -13,19 +13,21 @@ export const FAILED = "投票できませんでした。もう一度押してく
 /** 応答の状態。つながらない・合言葉が無いときは 0 */
 export async function internalRequest(
   path: string,
-  init: RequestInit & { voter?: string } = {},
+  init: RequestInit & { voter?: string; json?: unknown } = {},
 ): Promise<{ status: number; body?: unknown }> {
   const key = process.env.INTERNAL_API_KEY;
   if (!key) return { status: 0 };
-  const { voter, ...rest } = init;
+  const { voter, json, ...rest } = init;
   try {
     const res = await fetch(`${API_BASE_URL}${path}`, {
       cache: "no-store",
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       ...rest,
+      ...(json !== undefined ? { body: JSON.stringify(json) } : {}),
       headers: {
         "X-Internal-Key": key,
         ...(voter ? { "X-Voter": voter } : {}),
+        ...(json !== undefined ? { "Content-Type": "application/json" } : {}),
       },
     });
     const text = await res.text();

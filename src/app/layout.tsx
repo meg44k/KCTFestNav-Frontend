@@ -6,6 +6,7 @@ import { StarField } from "@/components/home/StarField";
 import { GlobalBulletin } from "@/components/layout/GlobalBulletin";
 import { LazyFont } from "@/components/layout/LazyFont";
 import { PageStars } from "@/components/layout/PageStars";
+import { VisitCounter } from "@/components/layout/VisitCounter";
 import { VisitTracker } from "@/components/layout/VisitTracker";
 
 const geistMono = Geist_Mono({
@@ -32,6 +33,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         <LazyFont />
         <VisitTracker />
+        <VisitCounter />
         <PageStars>
           <StarField fixed />
         </PageStars>
