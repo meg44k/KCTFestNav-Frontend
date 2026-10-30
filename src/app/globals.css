@@ -287,3 +287,27 @@ html:has([data-bulletin]) {
       30% 0;
   }
 }
+
+/* 地図で選んだピンのまわりに、選んだ直後だけ 3 回広がる輪 */
+.map-pin-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: map-pin-pulse 0.9s ease-out 3 both;
+}
+
+@keyframes map-pin-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-pin-pulse {
+    display: none;
+  }
+}
