@@ -50,7 +50,11 @@ export default function SideMenu({
         >
           <Menu />
         </DrawerTrigger>
-        <DrawerContent className="[--drawer-inset:10px] max-w-55 bg-amber-400/80 after:bg-amber-400/80 border-amber-300 [&_[data-slot=drawer-swipe-handle]]:after:bg-black/40">
+        {/* 閉じている間も中身を作っておく。開いた瞬間にロゴを読みに行って、一瞬空になるのを防ぐ */}
+        <DrawerContent
+          keepMounted
+          className="[--drawer-inset:10px] max-w-55 bg-amber-400/80 after:bg-amber-400/80 border-amber-300 [&_[data-slot=drawer-swipe-handle]]:after:bg-black/40"
+        >
           <DrawerHeader>
             <DrawerTitle className="pt-2 text-black">高専祭 2026</DrawerTitle>
             {/* 高専祭のテーマ(キャッチコピーのロゴ)。黄色の上なので黒 */}
@@ -60,6 +64,8 @@ export default function SideMenu({
                 alt="ST@R G4ZER"
                 width={992}
                 height={528}
+                // 閉じている間は見えないので、lazy だと開くまで読まない。ページを開いたときに読んでおく
+                loading="eager"
                 className="h-auto w-full"
               />
             </DrawerDescription>

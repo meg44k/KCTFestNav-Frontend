@@ -1,12 +1,24 @@
 import Image from "next/image";
 import { ViewTransition } from "react";
 import { eventYear } from "@/lib/constants";
-import { OFF_WHITE } from "@/lib/home/palette";
 
-const CAPTION =
-  "absolute left-1/2 -translate-x-1/2 whitespace-nowrap font-bold leading-none tracking-widest";
-// ロゴの幅 272px のとき約 20px
-const captionStyle = { fontSize: "7.5cqw", color: OFF_WHITE };
+// ロゴの上の「北九州高専」と下の「高専祭 2026」。文字で書くと、フォント(Zen Kaku Gothic New)が
+// ページの読み込みの後に届いて切り替わる瞬間に位置がずれるので、切り替わった後の見た目を画像にしたもの。
+// 位置と幅はロゴの幅に対する割合(cqw)。前の文字のときと同じ所に置く
+const CAPTIONS = [
+  {
+    src: "/catchcopy-caption-top.png",
+    width: 448,
+    height: 120,
+    style: { left: "5.54cqw", top: "-4.89cqw", width: "41.25cqw" },
+  },
+  {
+    src: "/catchcopy-caption-bottom.png",
+    width: 484,
+    height: 120,
+    style: { left: "49.64cqw", top: "43.69cqw", width: "44.82cqw" },
+  },
+];
 
 /**
  * 入口ページのタイトル。キャッチコピーのロゴ「ST@R G4ZER」。
@@ -17,7 +29,7 @@ export function CatchcopyTitle({ className }: { className?: string }) {
   return (
     <h1 className={className}>
       <span className="sr-only">{eventYear} 北九州高専 高専祭</span>
-      {/* ロゴの上に学校名、下に祭の名前・年(読み上げは上の見出しがあるので飾り扱い) */}
+      {/* ロゴの上に学校名、下に祭の名前・年の画像(読み上げは上の見出しがあるので飾り扱い) */}
       {/*
           ロゴの幅は、横幅(最大 17rem)と、置き場所の高さ(上下の文字の分を除く)に収まる大きい方。
           高さの低いスマホでは小さくなり、入口ページが 1 画面に収まる
@@ -40,27 +52,18 @@ export function CatchcopyTitle({ className }: { className?: string }) {
             className="h-auto w-full"
           />
         </ViewTransition>
-        {/*
-            「北九州高専 高専祭 2026」の 1 行のうち、「北九州高専」だけをロゴの上に、
-            「高専祭 2026」をロゴの下に置く。同じ 1 行を上と下に置いて見せる所だけを変えるので、
-            それぞれの左右の位置は 1 行でまん中にそろえたときのまま
-          */}
-        <span
-          aria-hidden
-          // ロゴの「T」の横棒(画像の上から 14%)の少し上。星の線に少しかかってもよい
-          className={CAPTION}
-          style={{ ...captionStyle, bottom: "calc(86% + 3cqw)" }}
-        >
-          北九州高専<span className="invisible"> 高専祭 {eventYear}</span>
-        </span>
-        <span
-          aria-hidden
-          // ロゴの文字(GAZER)の下の端(画像の上から 83%)のすぐ下
-          className={CAPTION}
-          style={{ ...captionStyle, top: "calc(83.2% + 1.25cqw)" }}
-        >
-          <span className="invisible">北九州高専 </span>高専祭 {eventYear}
-        </span>
+        {CAPTIONS.map((c) => (
+          <Image
+            key={c.src}
+            src={c.src}
+            alt=""
+            width={c.width}
+            height={c.height}
+            preload
+            className="absolute h-auto"
+            style={c.style}
+          />
+        ))}
       </span>
     </h1>
   );
