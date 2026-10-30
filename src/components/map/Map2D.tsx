@@ -19,6 +19,7 @@ import {
   type XY,
 } from "@/lib/map/campus";
 import { clusterPins } from "@/lib/map/cluster";
+import { viewShowing } from "@/lib/map/focus-view";
 import { GROUND } from "@/lib/map/ground";
 import { cn } from "@/lib/utils";
 import { MAP_BG, type MapProps, PIN_COLORS } from "./types";
@@ -30,6 +31,10 @@ const MAX_ZOOM = 12;
 const PIN_NAME_ZOOM = 2.2;
 // 画面の上でこれより近いピンは 1 つの丸にまとめる(px)。拡大するとほどける
 const CLUSTER_PX = 28;
+// ブースを選んだら、ここまで拡大してそのピンへ寄せる
+const SELECT_ZOOM = 3;
+// ブースを選んでいる間、ほかのピンや丸の濃さ
+const DIM = 0.35;
 // 地図の上の白は、タイトル画面・入口ページと同じ少しあたたかい白(OFF_WHITE)。
 // 真っ白だと黒い地図の上でチカチカする(現在地の青い点のふちだけは真っ白のまま)
 // 平面図の色(「お祭りの夜」: タイトルの星空に合わせた紺)。鮮やかな色は混雑度のピンだけに使い、
@@ -108,6 +113,38 @@ export function Map2D({
     return () => ro.disconnect();
   }, [vb.w, vb.h]);
   const px = unit / view.k;
+
+  // ブースを選んだら、そのピンが下のカードに隠れない所へ寄せる(すっと動かす)
+  const viewNow = useRef(view);
+  viewNow.current = view;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: 選んだときだけ寄せる(混み具合の更新で pins が変わっても動かさない)
+  useEffect(() => {
+    const el = svg.current;
+    const pin = pins.find((p) => p.id === selectedPinId);
+    if (!el || !pin || onMovePin || onPickPoint) return;
+    const u = Math.max(vb.w / el.clientWidth, vb.h / el.clientHeight);
+    const from = viewNow.current;
+    const to = viewShowing(
+      at(pin.xy),
+      { cx: vb.x + vb.w / 2, cy: vb.y + vb.h / 2, h: el.clientHeight * u },
+      SELECT_ZOOM,
+      from.k,
+    );
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+      return setView(to);
+    const start = performance.now();
+    let raf = requestAnimationFrame(function step(now) {
+      const t = Math.min((now - start) / 400, 1);
+      const e = 1 - (1 - t) ** 3;
+      setView({
+        k: from.k + (to.k - from.k) * e,
+        tx: from.tx + (to.tx - from.tx) * e,
+        ty: from.ty + (to.ty - from.ty) * e,
+      });
+      if (t < 1) raf = requestAnimationFrame(step);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [selectedPinId]);
 
   // 画面の座標 → viewBox の座標
   const toSvg = (clientX: number, clientY: number) => {
@@ -241,6 +278,71 @@ export function Map2D({
     selectedPinId,
   );
 
+  // 選んだピン(clusterPins はまとめないので、いつも 1 本で出る)
+  const selected = pins.find((p) => p.id === selectedPinId);
+  const renderPin = (pin: (typeof pins)[number]) => {
+    const big = pin.id === selectedPinId;
+    const r = (big ? 13 : 9) * px;
+    const p = at(pin.xy);
+    const label = [
+      showPinNames || big ? pin.name : "",
+      pin.floor > 0 ? floorLabel(pin.floor) : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+    return (
+      <g
+        key={pin.id}
+        data-pin={pin.id}
+        transform={`translate(${p.x} ${p.y})`}
+        // ブースを選んでいる間は、ほかのピンを薄くする
+        opacity={selected && !big ? DIM : 1}
+      >
+        {big && (
+          <>
+            {/* 選んだ直後に広がる輪(選び直すたびに出し直す) */}
+            <circle
+              key={`pulse${pin.id}`}
+              className="map-pin-pulse"
+              r={r}
+              fill="none"
+              stroke={BRAND_YELLOW}
+              strokeWidth={3 * px}
+              pointerEvents="none"
+            />
+            <circle
+              r={r + 3 * px}
+              fill="none"
+              stroke={BRAND_YELLOW}
+              strokeWidth={3 * px}
+            />
+          </>
+        )}
+        <circle
+          r={r}
+          fill={pin.color ?? PIN_COLORS[pin.congestion]}
+          stroke={OFF_WHITE}
+          strokeWidth={2.5 * px}
+        />
+        {label && (
+          <text
+            x={r + (big ? 7 : 3) * px}
+            y={0}
+            fontSize={(big ? 14 : 12) * px}
+            fontWeight="bold"
+            fill={OFF_WHITE}
+            stroke="#000"
+            strokeWidth={3 * px}
+            paintOrder="stroke"
+            dominantBaseline="central"
+          >
+            {label}
+          </text>
+        )}
+      </g>
+    );
+  };
+
   return (
     <div className={cn("relative h-full w-full", className)}>
       <svg
@@ -324,6 +426,7 @@ export function Map2D({
                   key={`c${c.members[0].id}`}
                   data-cluster
                   transform={`translate(${p.x} ${p.y})`}
+                  opacity={selected ? DIM : 1}
                 >
                   <circle
                     r={15 * px}
@@ -348,47 +451,11 @@ export function Map2D({
               );
             })}
           {clusters
-            .filter((c) => c.members.length === 1)
-            .map(({ members: [pin] }) => {
-              const big = pin.id === selectedPinId;
-              const r = (big ? 13 : 9) * px;
-              const p = at(pin.xy);
-              const label = [
-                showPinNames || big ? pin.name : "",
-                pin.floor > 0 ? floorLabel(pin.floor) : "",
-              ]
-                .filter(Boolean)
-                .join(" ");
-              return (
-                <g
-                  key={pin.id}
-                  data-pin={pin.id}
-                  transform={`translate(${p.x} ${p.y})`}
-                >
-                  <circle
-                    r={r}
-                    fill={pin.color ?? PIN_COLORS[pin.congestion]}
-                    stroke={OFF_WHITE}
-                    strokeWidth={2.5 * px}
-                  />
-                  {label && (
-                    <text
-                      x={r + 3 * px}
-                      y={0}
-                      fontSize={12 * px}
-                      fontWeight="bold"
-                      fill={OFF_WHITE}
-                      stroke="#000"
-                      strokeWidth={3 * px}
-                      paintOrder="stroke"
-                      dominantBaseline="central"
-                    >
-                      {label}
-                    </text>
-                  )}
-                </g>
-              );
-            })}
+            .filter(
+              (c) =>
+                c.members.length === 1 && c.members[0].id !== selectedPinId,
+            )
+            .map(({ members: [pin] }) => renderPin(pin))}
           {/* 棟の名札はピンや丸より前に出す(重なっても何号館か読めるように)。押した判定は下のピンに通す */}
           {campus.buildings
             .filter((b) => b.name)
@@ -431,6 +498,8 @@ export function Map2D({
                 </g>
               );
             })}
+          {/* 選んだピンは棟の名札よりも手前に出す */}
+          {selected && renderPin(selected)}
         </g>
       </svg>
       {/* 上が北ではないので、北の向きを出す */}

@@ -103,6 +103,14 @@ const COLOR = {
   me: "#4f8cff",
 };
 
+// ブースを選んでいる間、ほかのピンの濃さ
+const PIN_DIM = 0.35;
+// 選んだピンのまわりに広がる球: 1 回の長さと回数
+const PULSE_MS = 900;
+const PULSE_TIMES = 3;
+const reduceMotion = () =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 const mat = (color: string, opacity = 1) =>
   new THREE.MeshLambertMaterial({
     color,
@@ -327,11 +335,19 @@ export function createScene(
   }
 
   // ---- ピン(建物を透かして手前に描く) ----
+  // 選んだ直後に広がる球。選び直したときだけ出し直す(混み具合の更新で描き直しても出さない)
+  let pulse: { mesh: THREE.Mesh; start: number } | null = null;
+  let pulsedFor: number | null = null;
   function setPins(pins: MapPin[], selected: number | null) {
     dispose(pinGroup);
     pinGroup.clear();
+    pulse = null;
+    const hasSelected = pins.some((p) => p.id === selected);
+    if (!hasSelected) pulsedFor = null;
     for (const pin of pins) {
       const big = pin.id === selected;
+      // ブースを選んでいる間は、ほかのピンを薄くする
+      const opacity = hasSelected && !big ? PIN_DIM : 1;
       const color = new THREE.Color(PIN_COLORS[pin.congestion]);
       // 深さを見ないで建物の手前に描く。深さを見ないと深さの記録もしないので、あとから描く半透明のもの
       // (内側の航空写真)に上から塗られて消えてしまう。半透明の組に入れて、それより後(renderOrder 20)に描く
@@ -340,6 +356,7 @@ export function createScene(
           color,
           depthTest: false,
           transparent: true,
+          opacity,
         });
       const stickMat = pinMat();
       const headMat = pinMat();
@@ -354,7 +371,38 @@ export function createScene(
       );
       head.position.copy(toScene(pin.xy, pin.elevation + 4.5));
       head.userData.pinId = pin.id;
-      stick.renderOrder = head.renderOrder = big ? 21 : 20;
+      stick.renderOrder = head.renderOrder = big ? 22 : 20;
+      if (big) {
+        // 黄色の少し大きい球を先に描き、その上に頭を描いて黄色の縁にする
+        const rim = new THREE.Mesh(
+          new THREE.SphereGeometry(2.8, 16, 12),
+          new THREE.MeshBasicMaterial({
+            color: COLOR.focus,
+            depthTest: false,
+            transparent: true,
+          }),
+        );
+        rim.position.copy(head.position);
+        rim.renderOrder = 21;
+        const name = label(pin.name, "map3d-label map3d-label-focus");
+        name.position.copy(toScene(pin.xy, pin.elevation + 9));
+        pinGroup.add(rim, name);
+        if (pulsedFor !== pin.id && !reduceMotion()) {
+          const mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(2.8, 16, 12),
+            new THREE.MeshBasicMaterial({
+              color: COLOR.focus,
+              depthTest: false,
+              transparent: true,
+            }),
+          );
+          mesh.position.copy(head.position);
+          mesh.renderOrder = 21;
+          pinGroup.add(mesh);
+          pulse = { mesh, start: performance.now() };
+        }
+        pulsedFor = pin.id;
+      }
       // 遠くから見るとピンは数 px しかないので、見えない大きな球で押しやすくする
       const hit = new THREE.Mesh(
         new THREE.SphereGeometry(6, 8, 6),
@@ -465,6 +513,19 @@ export function createScene(
   resize.observe(host);
 
   renderer.setAnimationLoop(() => {
+    if (pulse) {
+      // 0.9 秒で 3 倍に広がって消える、を 3 回
+      const t = (performance.now() - pulse.start) / PULSE_MS;
+      const m = pulse.mesh.material as THREE.MeshBasicMaterial;
+      if (t >= PULSE_TIMES) {
+        pulse.mesh.visible = false;
+        pulse = null;
+      } else {
+        const f = t % 1;
+        pulse.mesh.scale.setScalar(1 + 2 * f);
+        m.opacity = 0.6 * (1 - f);
+      }
+    }
     controls.update();
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
